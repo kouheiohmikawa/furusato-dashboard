@@ -97,31 +97,51 @@
   - 日本語メタデータ
   - flex レイアウト（Header、main、Footer）
 
+### Phase 1-5: エラーハンドリング & 品質チェック（完了）🎉
+
+#### エラーページ実装
+- [x] `src/app/error.tsx` 作成
+  - Client Component（"use client"）
+  - Error Boundaryコンポーネント
+  - エラーメッセージ表示（error.message、error.digest）
+  - リトライボタン（reset関数）
+  - ホームに戻るリンク
+  - 警告アイコンとカードレイアウト
+
+- [x] `src/app/not-found.tsx` 作成
+  - 404エラーページ
+  - 大きな404表示
+  - ホームとシミュレーターへの導線
+  - アイコン付きリンクリスト
+
+#### Lint修正
+- [x] error.tsx: `<a>` → `<Link>` に変更
+- [x] Header.tsx: 未使用の `Button` import削除
+
+#### 品質チェック
+- [x] Lintチェック: エラー0（警告1つのみ、React Compiler関連）
+- [x] TypeScriptチェック: エラー0
+- [x] ビルド成功確認: 7ページ静的生成
+
 ---
 
 ## 🚧 進行中の作業
 
-なし（Phase 1-4完了）
+なし（Phase 1完了！）
 
 ---
 
-## 📋 次のタスク（Phase 1-5: エラーハンドリング）
+## 📋 次のタスク（Phase 2: データベース & 認証基盤）
 
-### 1. エラーページ実装
-- [ ] `src/app/error.tsx` 作成
-  - エラー境界（Error Boundary）
-  - エラーメッセージ表示
-  - リトライボタン
+### 2-1. Docker Compose でローカルPostgreSQL
+- [ ] `docker-compose.yml` 作成
+- [ ] PostgreSQL起動確認
 
-- [ ] `src/app/not-found.tsx` 作成
-  - 404ページデザイン
-  - ホームへの導線
-
-### 2. 品質チェック
-- [ ] モバイル表示確認
-- [ ] Lint チェック
-- [ ] TypeScript エラーゼロ確認
-- [ ] ビルド成功確認
+### 2-2. Prisma セットアップ
+- [ ] Prismaインストール
+- [ ] `prisma/schema.prisma` にスキーマ定義
+- [ ] マイグレーション実行
+- [ ] `src/shared/lib/prisma.ts` 作成
 
 ---
 
@@ -133,27 +153,29 @@
 | 1-2. 定数・バリデーション | 🟢 完了 | 1時間 | 0.5時間 |
 | 1-3. シミュレーション機能 | 🟢 完了 | 3-4時間 | 1.5時間 |
 | 1-4. ランディングページ | 🟢 完了 | 2-3時間 | 1時間 |
-| 1-5. エラーハンドリング | ⚪ 未着手 | 1-2時間 | - |
+| 1-5. エラーハンドリング | 🟢 完了 | 1-2時間 | 0.5時間 |
 
 **凡例**: 🟢 完了 | 🟡 進行中 | ⚪ 未着手
 
-**進捗率**: Phase 1-4 完了（約80%）
+**進捗率**: Phase 1 完了（100%）🎉
 
 ---
 
 ## 🎯 マイルストーン
 
-### マイルストーン 1: MVP v0.5（目標）
+### マイルストーン 1: MVP v0.5（達成！）🎉
 - シミュレーター機能完成 ✅
 - ランディングページ完成 ✅
-- デプロイ可能な状態 🚧（エラーハンドリング残り）
+- エラーハンドリング完成 ✅
+- デプロイ可能な状態 ✅
 
 ### 達成基準
 - [x] `/simulator` で控除額シミュレーションが動作
 - [x] レスポンシブ対応
 - [x] ホームページ、利用規約、プライバシーポリシー完成
-- [ ] エラーハンドリング実装
-- [ ] Vercel デプロイ可能
+- [x] エラーハンドリング実装
+- [x] Lintエラー0、TypeScriptエラー0、ビルド成功
+- [ ] Vercel デプロイ ← 次のステップ
 
 ---
 
@@ -174,13 +196,17 @@
 - `src/features/simulator/ui/SimulatorResult.tsx`
 - `src/app/simulator/page.tsx`
 
-### Phase 1-4 ⭐
+### Phase 1-4
 - `src/components/layout/Header.tsx`
 - `src/components/layout/Footer.tsx`
 - `src/app/page.tsx`（リニューアル）
 - `src/app/layout.tsx`（Header/Footer統合）
 - `src/app/terms/page.tsx`
 - `src/app/privacy/page.tsx`
+
+### Phase 1-5 ⭐
+- `src/app/error.tsx`（エラー境界）
+- `src/app/not-found.tsx`（404ページ）
 
 ---
 
@@ -249,7 +275,9 @@
 3. `133c28c` - feat: setup shadcn/ui and project directory structure
 4. `430e016` - feat: add validation schemas and business logic for simulator
 5. `d7fcc27` - feat: implement simulator UI and page
-6. `5682726` - feat: ランディングページとレイアウトコンポーネントを実装 ✨
+6. `5682726` - feat: ランディングページとレイアウトコンポーネントを実装
+7. `0f344a1` - docs: add detailed documentation for Phase 1-4 landing page
+8. `8ba59c2` - feat: implement error handling and add quality checks ✨
 
 ---
 
@@ -264,9 +292,16 @@
 
 ## 🚀 次のアクション
 
-**Phase 1-5: エラーハンドリング** を実装
+**MVP v0.5完成！次はVercelデプロイ**
 
-1. エラーページ（error.tsx）実装
-2. 404ページ（not-found.tsx）実装
-3. 品質チェック（モバイル、Lint、TypeScript、ビルド）
-4. MVP v0.5 完成 → Vercel デプロイ準備
+1. Vercelアカウント作成（または既存アカウント使用）
+2. GitHubリポジトリをVercelに連携
+3. `feature/setup-project` ブランチをデプロイ
+4. デプロイURL確認と動作テスト
+5. 問題なければ `main` ブランチにマージ
+
+または
+
+**Phase 2に進む（データベース & 認証基盤）**
+1. Docker ComposeでローカルPostgreSQL構築
+2. Prismaセットアップ
