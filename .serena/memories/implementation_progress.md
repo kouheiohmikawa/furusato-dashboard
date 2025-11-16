@@ -12,101 +12,116 @@
 
 ### Phase 1-1: プロジェクト基盤構築（完了）
 
-#### Next.jsプロジェクト作成
-- [x] pnpm インストール
 - [x] Next.js 16.0.3 プロジェクト作成
-- [x] TypeScript 5.9.3 設定
-- [x] Tailwind CSS v4 設定
-- [x] ESLint 設定
-- [x] App Router 構成
-- [x] src/ ディレクトリ構造
-- [x] Import alias (@/*) 設定
-
-#### shadcn/ui セットアップ
-- [x] shadcn/ui 初期化（New York スタイル）
-- [x] UIコンポーネント追加（button, input, card, form, select, label）
-
-#### 依存パッケージのインストール
-- [x] React Hook Form (v7.66.0)
-- [x] Zod (v4.1.12)
-- [x] @hookform/resolvers (v5.2.2)
-
-#### ディレクトリ構造整備
-- [x] features/simulator/ui & lib/
-- [x] shared/ui, lib, config/
-- [x] types/
-- [x] entities/
-- [x] app/simulator/
+- [x] TypeScript, Tailwind CSS, ESLint 設定
+- [x] shadcn/ui セットアップ
+- [x] React Hook Form, Zod インストール
+- [x] ディレクトリ構造整備
 
 ### Phase 1-2: 定数・バリデーション準備（完了）
 
-#### 都道府県マスターデータ
-- [x] `src/shared/config/prefectures.ts` 作成
-  - 47都道府県の定義
-  - Prefecture型のエクスポート
+- [x] 都道府県マスターデータ（prefectures.ts）
+- [x] シミュレーションZodスキーマ（simulatorSchema.ts）
+- [x] シミュレーション計算ロジック（calculateLimit.ts）
+- [x] 共通型定義（types/index.ts）
 
-#### シミュレーションZodスキーマ
-- [x] `src/features/simulator/lib/simulatorSchema.ts` 作成
-  - annualIncome: 100万〜3000万円
-  - hasSpouse: boolean
-  - dependentsCount: 0〜10人
-  - prefecture: optional
-  - SimulatorInput型、SimulatorResult型の定義
-  - Zod v4対応（messageパラメータ使用）
+### Phase 1-3: シミュレーション機能実装（完了）✨
 
-#### シミュレーション計算ロジック
-- [x] `src/features/simulator/lib/calculateLimit.ts` 作成
-  - `estimateLimitYen()`: 推定上限額計算
-    - 基本係数10%、配偶者-1%、扶養家族-0.5%/人
-    - 下限5%、上下限2,000〜500,000円
-  - `calculateSafeLimit()`: 安全ライン計算（80%）
-  - `simulateLimit()`: 完全な結果生成
-  - 前提条件・注意事項の生成
+#### SimulatorFormコンポーネント
+- [x] `src/features/simulator/ui/SimulatorForm.tsx` 作成
+  - React Hook Form + Zod統合
+  - 年収入力フィールド（数値、バリデーション付き）
+  - 配偶者有無選択（Select）
+  - 扶養家族数入力（0-10人）
+  - 都道府県選択（オプション、47都道府県）
+  - 計算ボタン（ローディング状態対応）
+  - エラーメッセージ表示
+  - レスポンシブデザイン
 
-#### 型定義ファイル
-- [x] `src/types/index.ts` 作成
-  - ApiResponse型
-  - Pagination型
-  - SortOrder型
-  - DateRange型
-  - LoadingState型
+#### SimulatorResultコンポーネント
+- [x] `src/features/simulator/ui/SimulatorResult.tsx` 作成
+  - 推定上限額表示（大きく強調）
+  - 安全ライン表示（80%）
+  - 前提条件リスト表示
+  - 注意事項（警告スタイル）
+  - 会員登録への導線
+  - レスポンシブカードレイアウト
+  - ダークモード対応
+
+#### シミュレーターページ
+- [x] `src/app/simulator/page.tsx` 作成
+  - ページヘッダー（タイトル・説明）
+  - 2カラムグリッドレイアウト（レスポンシブ）
+  - フォームと結果の並列表示
+  - 結果なし時の空状態表示
+  - フッター情報セクション
+  - Client Component として実装
+
+---
+
+### Phase 1-4: ランディングページ（完了）✨
+
+#### レイアウトコンポーネント
+- [x] `src/components/layout/Header.tsx` 作成
+  - ロゴ/サイト名とホームリンク
+  - ナビゲーション（シミュレーターへのリンク）
+  - Sticky ヘッダー（backdrop-blur効果）
+  - 将来のログイン/サインアップボタン用にコメントアウト
+
+- [x] `src/components/layout/Footer.tsx` 作成
+  - 4カラムグリッドレイアウト
+  - サイト情報、機能リンク、サポートリンク
+  - 利用規約・プライバシーポリシーへのリンク
+  - コピーライト表示（動的な年号）
+
+#### ホームページ
+- [x] `src/app/page.tsx` リニューアル
+  - ヒーローセクション（キャッチコピー + CTA）
+  - 主な機能紹介（3つのカード）
+  - CTAセクション（シミュレーションへの導線）
+  - FAQセクション（3つの質問）
+  - レスポンシブデザイン
+
+#### 法的ページ
+- [x] `src/app/terms/page.tsx` 作成
+  - 利用規約（5条構成）
+  - 日本語メタデータ設定
+
+- [x] `src/app/privacy/page.tsx` 作成
+  - プライバシーポリシー（6項目）
+  - 日本語メタデータ設定
+
+#### ルートレイアウト更新
+- [x] `src/app/layout.tsx` 更新
+  - Header/Footer統合
+  - 日本語メタデータ
+  - flex レイアウト（Header、main、Footer）
 
 ---
 
 ## 🚧 進行中の作業
 
-なし（Phase 1-2完了）
+なし（Phase 1-4完了）
 
 ---
 
-## 📋 次のタスク（Phase 1-3: シミュレーション機能実装）
+## 📋 次のタスク（Phase 1-5: エラーハンドリング）
 
-### 1. SimulatorFormコンポーネント作成
-- [ ] `src/features/simulator/ui/SimulatorForm.tsx`
-  - React Hook Form実装
-  - Zodバリデーション統合
-  - 年収入力フィールド
-  - 配偶者有無選択
-  - 扶養家族数入力
-  - 都道府県選択（オプション）
-  - 送信ボタン
+### 1. エラーページ実装
+- [ ] `src/app/error.tsx` 作成
+  - エラー境界（Error Boundary）
+  - エラーメッセージ表示
+  - リトライボタン
 
-### 2. SimulatorResultコンポーネント作成
-- [ ] `src/features/simulator/ui/SimulatorResult.tsx`
-  - 推定上限額表示
-  - 安全ライン表示
-  - 前提条件・注意事項表示
-  - レスポンシブデザイン
+- [ ] `src/app/not-found.tsx` 作成
+  - 404ページデザイン
+  - ホームへの導線
 
-### 3. シミュレーターページ実装
-- [ ] `src/app/simulator/page.tsx`
-  - ページレイアウト
-  - SimulatorFormとSimulatorResult統合
-  - メタデータ設定
-
-### 4. スタイリング
-- [ ] レスポンシブ対応
-- [ ] アクセシビリティ対応
+### 2. 品質チェック
+- [ ] モバイル表示確認
+- [ ] Lint チェック
+- [ ] TypeScript エラーゼロ確認
+- [ ] ビルド成功確認
 
 ---
 
@@ -116,26 +131,27 @@
 |------------|----------|---------|---------|
 | 1-1. プロジェクト基盤構築 | 🟢 完了 | 2-3時間 | 1時間 |
 | 1-2. 定数・バリデーション | 🟢 完了 | 1時間 | 0.5時間 |
-| 1-3. シミュレーション機能 | ⚪ 未着手 | 3-4時間 | - |
-| 1-4. ランディングページ | ⚪ 未着手 | 2-3時間 | - |
+| 1-3. シミュレーション機能 | 🟢 完了 | 3-4時間 | 1.5時間 |
+| 1-4. ランディングページ | 🟢 完了 | 2-3時間 | 1時間 |
 | 1-5. エラーハンドリング | ⚪ 未着手 | 1-2時間 | - |
 
 **凡例**: 🟢 完了 | 🟡 進行中 | ⚪ 未着手
 
-**進捗率**: Phase 1-2 完了（約30%）
+**進捗率**: Phase 1-4 完了（約80%）
 
 ---
 
 ## 🎯 マイルストーン
 
 ### マイルストーン 1: MVP v0.5（目標）
-- シミュレーター機能完成
-- ランディングページ完成
-- デプロイ可能な状態
+- シミュレーター機能完成 ✅
+- ランディングページ完成 ✅
+- デプロイ可能な状態 🚧（エラーハンドリング残り）
 
 ### 達成基準
-- [ ] `/simulator` で控除額シミュレーションが動作
-- [ ] レスポンシブ対応
+- [x] `/simulator` で控除額シミュレーションが動作
+- [x] レスポンシブ対応
+- [x] ホームページ、利用規約、プライバシーポリシー完成
 - [ ] エラーハンドリング実装
 - [ ] Vercel デプロイ可能
 
@@ -144,12 +160,7 @@
 ## 📂 作成されたファイル
 
 ### Phase 1-1
-- `src/components/ui/button.tsx`
-- `src/components/ui/input.tsx`
-- `src/components/ui/card.tsx`
-- `src/components/ui/form.tsx`
-- `src/components/ui/select.tsx`
-- `src/components/ui/label.tsx`
+- `src/components/ui/*`（shadcn/ui）
 - `src/lib/utils.ts`
 
 ### Phase 1-2
@@ -158,33 +169,76 @@
 - `src/features/simulator/lib/calculateLimit.ts`
 - `src/types/index.ts`
 
+### Phase 1-3
+- `src/features/simulator/ui/SimulatorForm.tsx`
+- `src/features/simulator/ui/SimulatorResult.tsx`
+- `src/app/simulator/page.tsx`
+
+### Phase 1-4 ⭐
+- `src/components/layout/Header.tsx`
+- `src/components/layout/Footer.tsx`
+- `src/app/page.tsx`（リニューアル）
+- `src/app/layout.tsx`（Header/Footer統合）
+- `src/app/terms/page.tsx`
+- `src/app/privacy/page.tsx`
+
 ---
 
-## 💡 学んだこと・技術メモ
+## 💡 技術的なポイント
 
-### Zod v4の変更点
-- エラーメッセージの指定方法が変更
-- `required_error`, `invalid_type_error` → `message` パラメータ
-- 各メソッド（`.min()`, `.max()`, `.int()` 等）でオプションオブジェクトとして `{ message: "..." }` を指定
+### SimulatorForm実装
+- React Hook Form の `useForm` フック使用
+- `zodResolver` でバリデーション統合
+- `setValue` と `watch` でフォーム状態管理
+- `valueAsNumber` で数値型に自動変換
 
-### shadcn/ui配置
-- `src/components/ui/` を使用（標準）
-- カスタム共通コンポーネントは `src/shared/ui/` に配置予定
+### SimulatorResult実装
+- `toLocaleString("ja-JP")` で3桁区切り表示
+- 条件付きレンダリングで空状態対応
+- Tailwind CSS でダークモード対応
+
+### ビルド結果（Phase 1-4）
+```
+✓ Compiled successfully
+✓ TypeScript errors: 0
+✓ Static pages: 7 (/, /_not-found, /privacy, /simulator, /terms)
+✓ Production build: 成功
+```
 
 ---
 
-## 📝 メモ・課題
+## 📝 学んだこと・技術メモ
 
-### 技術的な決定事項
-- Tailwind CSS v4 を使用
-- React 19 を使用
-- Zod v4 を使用（エラーメッセージAPIに注意）
-- React Compiler は不使用
+### Next.js App Router
+- Client Component（"use client"）ではmetadataをエクスポート不可
+- layout.tsxまたはServer Componentでmetadata定義が必要
 
-### 今後の検討事項
-- Vitest セットアップ（計算ロジックのテスト）
-- Prettier 導入検討
-- ESLint ルールカスタマイズ
+### Zod v4
+- エラーメッセージは `message` パラメータで指定
+- オブジェクト形式: `{ message: "..." }`
+
+### shadcn/ui Select
+- `value` と `onValueChange` でコントロール
+- boolean値は文字列に変換して管理
+
+---
+
+## 🎨 UI/UX の特徴
+
+### デザイン
+- New York スタイル（shadcn/ui）
+- Neutral カラーパレット
+- レスポンシブグリッド（lg:grid-cols-2）
+
+### アクセシビリティ
+- Label と Input の関連付け
+- aria-label（計算機アイコン等）
+- エラーメッセージの表示
+
+### UX改善
+- 計算時の短いローディング（300ms）
+- 空状態のビジュアル表示
+- 段階的な情報開示
 
 ---
 
@@ -194,6 +248,8 @@
 2. `7be22d5` - feat: initialize Next.js project with TypeScript and Tailwind CSS
 3. `133c28c` - feat: setup shadcn/ui and project directory structure
 4. `430e016` - feat: add validation schemas and business logic for simulator
+5. `d7fcc27` - feat: implement simulator UI and page
+6. `5682726` - feat: ランディングページとレイアウトコンポーネントを実装 ✨
 
 ---
 
@@ -208,9 +264,9 @@
 
 ## 🚀 次のアクション
 
-**Phase 1-3: シミュレーション機能実装** を開始
+**Phase 1-5: エラーハンドリング** を実装
 
-1. SimulatorFormコンポーネント作成
-2. SimulatorResultコンポーネント作成
-3. シミュレーターページ実装
-4. スタイリング・レスポンシブ対応
+1. エラーページ（error.tsx）実装
+2. 404ページ（not-found.tsx）実装
+3. 品質チェック（モバイル、Lint、TypeScript、ビルド）
+4. MVP v0.5 完成 → Vercel デプロイ準備
