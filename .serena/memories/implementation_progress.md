@@ -23,23 +23,52 @@
 - [x] Import alias (@/*) 設定
 - [x] Git コミット完了
 
-#### インストールされたパッケージ
+#### shadcn/ui セットアップ
+- [x] shadcn/ui 初期化（New York スタイル）
+- [x] UIコンポーネント追加
+  - button
+  - input
+  - card
+  - form
+  - select
+  - label
+- [x] Git コミット完了
+
+#### 依存パッケージのインストール
+- [x] React Hook Form (v7.66.0)
+- [x] Zod (v4.1.12)
+- [x] @hookform/resolvers (v5.2.2)
+- [x] Radix UI コンポーネント（shadcn/ui依存）
+- [x] lucide-react (アイコンライブラリ)
+
+#### ディレクトリ構造整備
+- [x] `src/features/simulator/ui/` 作成
+- [x] `src/features/simulator/lib/` 作成
+- [x] `src/shared/ui/` 作成
+- [x] `src/shared/lib/` 作成
+- [x] `src/shared/config/` 作成
+- [x] `src/types/` 作成
+- [x] `src/entities/` 作成
+- [x] `src/app/simulator/` 作成
+- [x] 空ディレクトリ用 .gitkeep ファイル追加
+
+#### インストールされたパッケージ（最終版）
 ```json
 {
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@radix-ui/react-label": "^2.1.8",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-slot": "^1.2.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.553.0",
     "next": "16.0.3",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.0.3",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "react-dom": "19.2.0",
+    "react-hook-form": "^7.66.0",
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.1.12"
   }
 }
 ```
@@ -47,71 +76,95 @@
 #### 現在のディレクトリ構造
 ```
 furusato-dashboard/
-├── .serena/              # 設計ドキュメント
-│   └── memories/
-│       ├── product_design.md
-│       ├── tech_stack.md
-│       ├── frontend_architecture.md
-│       ├── development_roadmap.md
-│       └── ... (合計13ファイル)
+├── .serena/
+│   ├── memories/
+│   │   ├── product_design.md
+│   │   ├── tech_stack.md
+│   │   ├── frontend_architecture.md
+│   │   ├── development_roadmap.md
+│   │   ├── implementation_progress.md
+│   │   └── ... (合計14ファイル)
+│   └── project.yml
 ├── src/
-│   └── app/
-│       ├── favicon.ico
-│       ├── layout.tsx
-│       ├── page.tsx
-│       └── globals.css
+│   ├── app/
+│   │   ├── simulator/          # シミュレーターページ
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── globals.css
+│   │   └── favicon.ico
+│   ├── components/
+│   │   └── ui/                 # shadcn/ui コンポーネント
+│   │       ├── button.tsx
+│   │       ├── input.tsx
+│   │       ├── card.tsx
+│   │       ├── form.tsx
+│   │       ├── select.tsx
+│   │       └── label.tsx
+│   ├── features/
+│   │   └── simulator/
+│   │       ├── ui/             # シミュレーターUI
+│   │       └── lib/            # ビジネスロジック
+│   ├── shared/
+│   │   ├── ui/                 # 共通UIコンポーネント
+│   │   ├── lib/                # 共通ユーティリティ
+│   │   └── config/             # 定数・設定
+│   ├── entities/               # ドメインモデル
+│   ├── types/                  # 型定義
+│   └── lib/
+│       └── utils.ts            # shadcn/ui ユーティリティ
 ├── public/
+├── components.json             # shadcn/ui 設定
 ├── package.json
 ├── tsconfig.json
 ├── next.config.ts
-├── eslint.config.mjs
-└── README.md
+└── eslint.config.mjs
 ```
+
+#### Gitコミット履歴
+1. `d760410` - Add Serena project configuration and design documentation
+2. `7be22d5` - feat: initialize Next.js project with TypeScript and Tailwind CSS
+3. `133c28c` - feat: setup shadcn/ui and project directory structure
 
 ---
 
 ## 🚧 進行中の作業
 
-なし（次のステップ待ち）
+なし（Phase 1-1完了）
 
 ---
 
-## 📋 次のタスク（Phase 1-1 継続）
+## 📋 次のタスク（Phase 1-2: 定数・バリデーション準備）
 
-### 1. shadcn/ui セットアップ
-```bash
-pnpm dlx shadcn@latest init
-pnpm dlx shadcn@latest add button input card form select label
-```
-
-### 2. 必要なパッケージのインストール
-```bash
-# フォーム・バリデーション
-pnpm add react-hook-form @hookform/resolvers zod
-```
-
-### 3. ディレクトリ構造整備
-```bash
-# features/simulator
-mkdir -p src/features/simulator/ui
-mkdir -p src/features/simulator/lib
-
-# shared
-mkdir -p src/shared/ui
-mkdir -p src/shared/config
-mkdir -p src/shared/lib
-
-# types
-mkdir -p src/types
-```
-
-### 4. 基本ファイル作成
+### 1. 都道府県マスターデータ作成
 - [ ] `src/shared/config/prefectures.ts`
+  ```typescript
+  export const PREFECTURES = [
+    "北海道", "青森県", ..., "沖縄県"
+  ] as const;
+  ```
+
+### 2. シミュレーションZodスキーマ作成
 - [ ] `src/features/simulator/lib/simulatorSchema.ts`
+  ```typescript
+  import { z } from 'zod';
+  
+  export const simulatorSchema = z.object({
+    annualIncome: z.number().min(1_000_000).max(30_000_000),
+    hasSpouse: z.boolean(),
+    dependentsCount: z.number().min(0).max(10),
+    prefecture: z.string().optional(),
+  });
+  
+  export type SimulatorInput = z.infer<typeof simulatorSchema>;
+  ```
+
+### 3. シミュレーション計算ロジック実装
 - [ ] `src/features/simulator/lib/calculateLimit.ts`
-- [ ] `src/features/simulator/ui/SimulatorForm.tsx`
-- [ ] `src/features/simulator/ui/SimulatorResult.tsx`
-- [ ] `src/app/simulator/page.tsx`
+  - `estimateLimitYen()` 関数
+  - `calculateSafeLimit()` 関数
+
+### 4. 型定義ファイル作成
+- [ ] `src/types/index.ts`
 
 ---
 
@@ -119,13 +172,15 @@ mkdir -p src/types
 
 | サブフェーズ | ステータス | 推定時間 | 実績時間 |
 |------------|----------|---------|---------|
-| 1-1. プロジェクト基盤構築 | 🟡 進行中 | 2-3時間 | 0.5時間 |
+| 1-1. プロジェクト基盤構築 | 🟢 完了 | 2-3時間 | 1時間 |
 | 1-2. 定数・バリデーション | ⚪ 未着手 | 1時間 | - |
 | 1-3. シミュレーション機能 | ⚪ 未着手 | 3-4時間 | - |
 | 1-4. ランディングページ | ⚪ 未着手 | 2-3時間 | - |
 | 1-5. エラーハンドリング | ⚪ 未着手 | 1-2時間 | - |
 
 **凡例**: 🟢 完了 | 🟡 進行中 | ⚪ 未着手
+
+**進捗率**: Phase 1-1 完了（約15%）
 
 ---
 
@@ -149,12 +204,21 @@ mkdir -p src/types
 ### 技術的な決定事項
 - Tailwind CSS v4 を使用（最新版）
 - React 19 を使用（最新版）
+- Zod v4 を使用（最新版）
 - React Compiler は使用しない（MVPではシンプルに）
+- shadcn/ui は New York スタイル
+
+### shadcn/ui コンポーネント配置について
+- **現状**: `src/components/ui/` に配置（shadcn/ui標準）
+- **設計メモ**: `src/shared/ui/` に配置予定だった
+- **判断**: shadcn/ui標準に従い `src/components/ui/` を使用
+  - 理由: メンテナンス性、将来のアップデートの容易性
+  - 独自の共通コンポーネントは `src/shared/ui/` に配置
 
 ### 今後の検討事項
 - ESLint ルールのカスタマイズ（必要に応じて）
-- Prettier の導入（コードフォーマット統一）
-- Vitest のセットアップ（ユニットテスト用）
+- Prettier の導入検討（コードフォーマット統一）
+- Vitest のセットアップ（Phase 1-3でシミュレーションロジックのテスト用）
 
 ---
 
@@ -164,3 +228,14 @@ mkdir -p src/types
 - フロントエンドアーキテクチャ: `frontend_architecture.md`
 - 技術スタック: `tech_stack.md`, `technical_decisions.md`
 - ビジネスルール: `business_rules.md`
+
+---
+
+## 🚀 次のアクション
+
+**Phase 1-2: 定数・バリデーション準備** を開始
+
+1. 都道府県マスターデータ作成
+2. シミュレーションZodスキーマ作成
+3. シミュレーション計算ロジック実装
+4. 型定義ファイル作成
