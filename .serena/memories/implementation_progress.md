@@ -21,150 +21,92 @@
 - [x] App Router 構成
 - [x] src/ ディレクトリ構造
 - [x] Import alias (@/*) 設定
-- [x] Git コミット完了
 
 #### shadcn/ui セットアップ
 - [x] shadcn/ui 初期化（New York スタイル）
-- [x] UIコンポーネント追加
-  - button
-  - input
-  - card
-  - form
-  - select
-  - label
-- [x] Git コミット完了
+- [x] UIコンポーネント追加（button, input, card, form, select, label）
 
 #### 依存パッケージのインストール
 - [x] React Hook Form (v7.66.0)
 - [x] Zod (v4.1.12)
 - [x] @hookform/resolvers (v5.2.2)
-- [x] Radix UI コンポーネント（shadcn/ui依存）
-- [x] lucide-react (アイコンライブラリ)
 
 #### ディレクトリ構造整備
-- [x] `src/features/simulator/ui/` 作成
-- [x] `src/features/simulator/lib/` 作成
-- [x] `src/shared/ui/` 作成
-- [x] `src/shared/lib/` 作成
-- [x] `src/shared/config/` 作成
-- [x] `src/types/` 作成
-- [x] `src/entities/` 作成
-- [x] `src/app/simulator/` 作成
-- [x] 空ディレクトリ用 .gitkeep ファイル追加
+- [x] features/simulator/ui & lib/
+- [x] shared/ui, lib, config/
+- [x] types/
+- [x] entities/
+- [x] app/simulator/
 
-#### インストールされたパッケージ（最終版）
-```json
-{
-  "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
-    "@radix-ui/react-label": "^2.1.8",
-    "@radix-ui/react-select": "^2.2.6",
-    "@radix-ui/react-slot": "^1.2.4",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.553.0",
-    "next": "16.0.3",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "react-hook-form": "^7.66.0",
-    "tailwind-merge": "^3.4.0",
-    "zod": "^4.1.12"
-  }
-}
-```
+### Phase 1-2: 定数・バリデーション準備（完了）
 
-#### 現在のディレクトリ構造
-```
-furusato-dashboard/
-├── .serena/
-│   ├── memories/
-│   │   ├── product_design.md
-│   │   ├── tech_stack.md
-│   │   ├── frontend_architecture.md
-│   │   ├── development_roadmap.md
-│   │   ├── implementation_progress.md
-│   │   └── ... (合計14ファイル)
-│   └── project.yml
-├── src/
-│   ├── app/
-│   │   ├── simulator/          # シミュレーターページ
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
-│   │   ├── globals.css
-│   │   └── favicon.ico
-│   ├── components/
-│   │   └── ui/                 # shadcn/ui コンポーネント
-│   │       ├── button.tsx
-│   │       ├── input.tsx
-│   │       ├── card.tsx
-│   │       ├── form.tsx
-│   │       ├── select.tsx
-│   │       └── label.tsx
-│   ├── features/
-│   │   └── simulator/
-│   │       ├── ui/             # シミュレーターUI
-│   │       └── lib/            # ビジネスロジック
-│   ├── shared/
-│   │   ├── ui/                 # 共通UIコンポーネント
-│   │   ├── lib/                # 共通ユーティリティ
-│   │   └── config/             # 定数・設定
-│   ├── entities/               # ドメインモデル
-│   ├── types/                  # 型定義
-│   └── lib/
-│       └── utils.ts            # shadcn/ui ユーティリティ
-├── public/
-├── components.json             # shadcn/ui 設定
-├── package.json
-├── tsconfig.json
-├── next.config.ts
-└── eslint.config.mjs
-```
+#### 都道府県マスターデータ
+- [x] `src/shared/config/prefectures.ts` 作成
+  - 47都道府県の定義
+  - Prefecture型のエクスポート
 
-#### Gitコミット履歴
-1. `d760410` - Add Serena project configuration and design documentation
-2. `7be22d5` - feat: initialize Next.js project with TypeScript and Tailwind CSS
-3. `133c28c` - feat: setup shadcn/ui and project directory structure
+#### シミュレーションZodスキーマ
+- [x] `src/features/simulator/lib/simulatorSchema.ts` 作成
+  - annualIncome: 100万〜3000万円
+  - hasSpouse: boolean
+  - dependentsCount: 0〜10人
+  - prefecture: optional
+  - SimulatorInput型、SimulatorResult型の定義
+  - Zod v4対応（messageパラメータ使用）
+
+#### シミュレーション計算ロジック
+- [x] `src/features/simulator/lib/calculateLimit.ts` 作成
+  - `estimateLimitYen()`: 推定上限額計算
+    - 基本係数10%、配偶者-1%、扶養家族-0.5%/人
+    - 下限5%、上下限2,000〜500,000円
+  - `calculateSafeLimit()`: 安全ライン計算（80%）
+  - `simulateLimit()`: 完全な結果生成
+  - 前提条件・注意事項の生成
+
+#### 型定義ファイル
+- [x] `src/types/index.ts` 作成
+  - ApiResponse型
+  - Pagination型
+  - SortOrder型
+  - DateRange型
+  - LoadingState型
 
 ---
 
 ## 🚧 進行中の作業
 
-なし（Phase 1-1完了）
+なし（Phase 1-2完了）
 
 ---
 
-## 📋 次のタスク（Phase 1-2: 定数・バリデーション準備）
+## 📋 次のタスク（Phase 1-3: シミュレーション機能実装）
 
-### 1. 都道府県マスターデータ作成
-- [ ] `src/shared/config/prefectures.ts`
-  ```typescript
-  export const PREFECTURES = [
-    "北海道", "青森県", ..., "沖縄県"
-  ] as const;
-  ```
+### 1. SimulatorFormコンポーネント作成
+- [ ] `src/features/simulator/ui/SimulatorForm.tsx`
+  - React Hook Form実装
+  - Zodバリデーション統合
+  - 年収入力フィールド
+  - 配偶者有無選択
+  - 扶養家族数入力
+  - 都道府県選択（オプション）
+  - 送信ボタン
 
-### 2. シミュレーションZodスキーマ作成
-- [ ] `src/features/simulator/lib/simulatorSchema.ts`
-  ```typescript
-  import { z } from 'zod';
-  
-  export const simulatorSchema = z.object({
-    annualIncome: z.number().min(1_000_000).max(30_000_000),
-    hasSpouse: z.boolean(),
-    dependentsCount: z.number().min(0).max(10),
-    prefecture: z.string().optional(),
-  });
-  
-  export type SimulatorInput = z.infer<typeof simulatorSchema>;
-  ```
+### 2. SimulatorResultコンポーネント作成
+- [ ] `src/features/simulator/ui/SimulatorResult.tsx`
+  - 推定上限額表示
+  - 安全ライン表示
+  - 前提条件・注意事項表示
+  - レスポンシブデザイン
 
-### 3. シミュレーション計算ロジック実装
-- [ ] `src/features/simulator/lib/calculateLimit.ts`
-  - `estimateLimitYen()` 関数
-  - `calculateSafeLimit()` 関数
+### 3. シミュレーターページ実装
+- [ ] `src/app/simulator/page.tsx`
+  - ページレイアウト
+  - SimulatorFormとSimulatorResult統合
+  - メタデータ設定
 
-### 4. 型定義ファイル作成
-- [ ] `src/types/index.ts`
+### 4. スタイリング
+- [ ] レスポンシブ対応
+- [ ] アクセシビリティ対応
 
 ---
 
@@ -173,14 +115,14 @@ furusato-dashboard/
 | サブフェーズ | ステータス | 推定時間 | 実績時間 |
 |------------|----------|---------|---------|
 | 1-1. プロジェクト基盤構築 | 🟢 完了 | 2-3時間 | 1時間 |
-| 1-2. 定数・バリデーション | ⚪ 未着手 | 1時間 | - |
+| 1-2. 定数・バリデーション | 🟢 完了 | 1時間 | 0.5時間 |
 | 1-3. シミュレーション機能 | ⚪ 未着手 | 3-4時間 | - |
 | 1-4. ランディングページ | ⚪ 未着手 | 2-3時間 | - |
 | 1-5. エラーハンドリング | ⚪ 未着手 | 1-2時間 | - |
 
 **凡例**: 🟢 完了 | 🟡 進行中 | ⚪ 未着手
 
-**進捗率**: Phase 1-1 完了（約15%）
+**進捗率**: Phase 1-2 完了（約30%）
 
 ---
 
@@ -199,26 +141,59 @@ furusato-dashboard/
 
 ---
 
+## 📂 作成されたファイル
+
+### Phase 1-1
+- `src/components/ui/button.tsx`
+- `src/components/ui/input.tsx`
+- `src/components/ui/card.tsx`
+- `src/components/ui/form.tsx`
+- `src/components/ui/select.tsx`
+- `src/components/ui/label.tsx`
+- `src/lib/utils.ts`
+
+### Phase 1-2
+- `src/shared/config/prefectures.ts`
+- `src/features/simulator/lib/simulatorSchema.ts`
+- `src/features/simulator/lib/calculateLimit.ts`
+- `src/types/index.ts`
+
+---
+
+## 💡 学んだこと・技術メモ
+
+### Zod v4の変更点
+- エラーメッセージの指定方法が変更
+- `required_error`, `invalid_type_error` → `message` パラメータ
+- 各メソッド（`.min()`, `.max()`, `.int()` 等）でオプションオブジェクトとして `{ message: "..." }` を指定
+
+### shadcn/ui配置
+- `src/components/ui/` を使用（標準）
+- カスタム共通コンポーネントは `src/shared/ui/` に配置予定
+
+---
+
 ## 📝 メモ・課題
 
 ### 技術的な決定事項
-- Tailwind CSS v4 を使用（最新版）
-- React 19 を使用（最新版）
-- Zod v4 を使用（最新版）
-- React Compiler は使用しない（MVPではシンプルに）
-- shadcn/ui は New York スタイル
-
-### shadcn/ui コンポーネント配置について
-- **現状**: `src/components/ui/` に配置（shadcn/ui標準）
-- **設計メモ**: `src/shared/ui/` に配置予定だった
-- **判断**: shadcn/ui標準に従い `src/components/ui/` を使用
-  - 理由: メンテナンス性、将来のアップデートの容易性
-  - 独自の共通コンポーネントは `src/shared/ui/` に配置
+- Tailwind CSS v4 を使用
+- React 19 を使用
+- Zod v4 を使用（エラーメッセージAPIに注意）
+- React Compiler は不使用
 
 ### 今後の検討事項
-- ESLint ルールのカスタマイズ（必要に応じて）
-- Prettier の導入検討（コードフォーマット統一）
-- Vitest のセットアップ（Phase 1-3でシミュレーションロジックのテスト用）
+- Vitest セットアップ（計算ロジックのテスト）
+- Prettier 導入検討
+- ESLint ルールカスタマイズ
+
+---
+
+## ✅ Gitコミット履歴
+
+1. `d760410` - Add Serena project configuration and design documentation
+2. `7be22d5` - feat: initialize Next.js project with TypeScript and Tailwind CSS
+3. `133c28c` - feat: setup shadcn/ui and project directory structure
+4. `430e016` - feat: add validation schemas and business logic for simulator
 
 ---
 
@@ -233,9 +208,9 @@ furusato-dashboard/
 
 ## 🚀 次のアクション
 
-**Phase 1-2: 定数・バリデーション準備** を開始
+**Phase 1-3: シミュレーション機能実装** を開始
 
-1. 都道府県マスターデータ作成
-2. シミュレーションZodスキーマ作成
-3. シミュレーション計算ロジック実装
-4. 型定義ファイル作成
+1. SimulatorFormコンポーネント作成
+2. SimulatorResultコンポーネント作成
+3. シミュレーターページ実装
+4. スタイリング・レスポンシブ対応
