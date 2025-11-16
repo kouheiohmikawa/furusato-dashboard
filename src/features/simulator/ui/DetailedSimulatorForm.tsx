@@ -8,6 +8,7 @@ import {
   type DetailedSimulatorInput,
   DisabilityType,
 } from "../lib/detailedSimulatorSchema";
+import { PREFECTURES } from "@/shared/config/prefectures";
 import { simulateDetailedLimit } from "../lib/calculateDetailedLimit";
 import type { SimulatorResult } from "../lib/simulatorSchema";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,9 @@ export function DetailedSimulatorForm({ onResult }: DetailedSimulatorFormProps) 
   });
 
   const hasSpouse = watch("hasSpouse");
+  const selfDisability = watch("selfDisability");
+  const spouseDisability = watch("spouseDisability");
+  const prefecture = watch("prefecture");
 
   const onSubmit = (data: DetailedSimulatorInput) => {
     setIsCalculating(true);
@@ -162,6 +166,29 @@ export function DetailedSimulatorForm({ onResult }: DetailedSimulatorFormProps) 
                 </p>
               </div>
             )}
+
+            {/* 都道府県 */}
+            <div className="space-y-2">
+              <Label htmlFor="detailed-prefecture">都道府県</Label>
+              <Select
+                value={prefecture ?? ""}
+                onValueChange={(value) => setValue("prefecture", value as any)}
+              >
+                <SelectTrigger id="detailed-prefecture">
+                  <SelectValue placeholder="選択してください（任意）" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PREFECTURES.map((pref) => (
+                    <SelectItem key={pref} value={pref}>
+                      {pref}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                ※将来的に自治体ごとの税率の差を反映予定（現在は未使用）
+              </p>
+            </div>
           </div>
 
           {/* 扶養親族セクション */}
@@ -233,6 +260,158 @@ export function DetailedSimulatorForm({ onResult }: DetailedSimulatorFormProps) 
                   })}
                 />
                 <p className="text-xs text-muted-foreground">70歳以上・同居</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 障害者控除セクション */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold border-b pb-2">障害者控除</h3>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {/* 本人の障害者控除 */}
+              <div className="space-y-2">
+                <Label htmlFor="detailed-selfDisability">本人</Label>
+                <Select
+                  value={selfDisability ?? DisabilityType.NONE}
+                  onValueChange={(value) => setValue("selfDisability", value as any)}
+                >
+                  <SelectTrigger id="detailed-selfDisability">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={DisabilityType.NONE}>なし</SelectItem>
+                    <SelectItem value={DisabilityType.ORDINARY}>障害者（27万円）</SelectItem>
+                    <SelectItem value={DisabilityType.SPECIAL}>特別障害者（40万円）</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 配偶者の障害者控除（配偶者がいる場合のみ表示） */}
+              {hasSpouse && (
+                <div className="space-y-2">
+                  <Label htmlFor="detailed-spouseDisability">配偶者</Label>
+                  <Select
+                    value={spouseDisability ?? DisabilityType.NONE}
+                    onValueChange={(value) => setValue("spouseDisability", value as any)}
+                  >
+                    <SelectTrigger id="detailed-spouseDisability">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={DisabilityType.NONE}>なし</SelectItem>
+                      <SelectItem value={DisabilityType.ORDINARY}>障害者（27万円）</SelectItem>
+                      <SelectItem value={DisabilityType.SPECIAL}>特別障害者（40万円）</SelectItem>
+                      <SelectItem value={DisabilityType.SPECIAL_LIVING_TOGETHER}>同居特別障害者（75万円）</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* 障害者（扶養親族） */}
+              <div className="space-y-2">
+                <Label htmlFor="detailed-dependentOrdinaryDisabilityCount">
+                  障害者（扶養親族）
+                </Label>
+                <Input
+                  id="detailed-dependentOrdinaryDisabilityCount"
+                  type="number"
+                  placeholder="0"
+                  {...register("dependentOrdinaryDisabilityCount", {
+                    valueAsNumber: true,
+                  })}
+                />
+                <p className="text-xs text-muted-foreground">27万円/人</p>
+              </div>
+
+              {/* 特別障害者（扶養親族） */}
+              <div className="space-y-2">
+                <Label htmlFor="detailed-dependentSpecialDisabilityCount">
+                  特別障害者（扶養親族）
+                </Label>
+                <Input
+                  id="detailed-dependentSpecialDisabilityCount"
+                  type="number"
+                  placeholder="0"
+                  {...register("dependentSpecialDisabilityCount", {
+                    valueAsNumber: true,
+                  })}
+                />
+                <p className="text-xs text-muted-foreground">40万円/人</p>
+              </div>
+
+              {/* 同居特別障害者（扶養親族） */}
+              <div className="space-y-2">
+                <Label htmlFor="detailed-dependentSpecialLivingTogetherDisabilityCount">
+                  同居特別障害者（扶養親族）
+                </Label>
+                <Input
+                  id="detailed-dependentSpecialLivingTogetherDisabilityCount"
+                  type="number"
+                  placeholder="0"
+                  {...register("dependentSpecialLivingTogetherDisabilityCount", {
+                    valueAsNumber: true,
+                  })}
+                />
+                <p className="text-xs text-muted-foreground">75万円/人</p>
+              </div>
+            </div>
+          </div>
+
+          {/* その他の人的控除セクション */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold border-b pb-2">その他の人的控除</h3>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              {/* 寡婦控除 */}
+              <div className="space-y-2">
+                <Label htmlFor="detailed-isWidow">寡婦控除</Label>
+                <Select
+                  value={watch("isWidow") ? "true" : "false"}
+                  onValueChange={(value) => setValue("isWidow", value === "true")}
+                >
+                  <SelectTrigger id="detailed-isWidow">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="false">対象外</SelectItem>
+                    <SelectItem value="true">対象（27万円）</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* ひとり親控除 */}
+              <div className="space-y-2">
+                <Label htmlFor="detailed-isSingleParent">ひとり親控除</Label>
+                <Select
+                  value={watch("isSingleParent") ? "true" : "false"}
+                  onValueChange={(value) => setValue("isSingleParent", value === "true")}
+                >
+                  <SelectTrigger id="detailed-isSingleParent">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="false">対象外</SelectItem>
+                    <SelectItem value="true">対象（35万円）</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 勤労学生控除 */}
+              <div className="space-y-2">
+                <Label htmlFor="detailed-isWorkingStudent">勤労学生控除</Label>
+                <Select
+                  value={watch("isWorkingStudent") ? "true" : "false"}
+                  onValueChange={(value) => setValue("isWorkingStudent", value === "true")}
+                >
+                  <SelectTrigger id="detailed-isWorkingStudent">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="false">対象外</SelectItem>
+                    <SelectItem value="true">対象（27万円）</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
