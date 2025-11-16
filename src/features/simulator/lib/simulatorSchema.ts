@@ -6,7 +6,7 @@ import { PREFECTURES } from "@/shared/config/prefectures";
  */
 export const simulatorSchema = z.object({
   /**
-   * 年収（給与収入）
+   * 年収（給与収入・万円単位）
    * 範囲: 100万円 〜 3000万円
    */
   annualIncome: z
@@ -14,8 +14,8 @@ export const simulatorSchema = z.object({
       message: "年収は数値で入力してください",
     })
     .int({ message: "年収は整数で入力してください" })
-    .min(1_000_000, { message: "年収は100万円以上で入力してください" })
-    .max(30_000_000, { message: "年収は3000万円以下で入力してください" }),
+    .min(100, { message: "年収は100万円以上で入力してください" })
+    .max(3000, { message: "年収は3000万円以下で入力してください" }),
 
   /**
    * 配偶者の有無

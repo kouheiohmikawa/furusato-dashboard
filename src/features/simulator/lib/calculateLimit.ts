@@ -137,14 +137,17 @@ function getIncomeTaxRate(taxableIncome: number): { rate: number; deduction: num
 export function estimateLimitYen(input: SimulatorInput): number {
   const { annualIncome, hasSpouse, dependentsCount } = input;
 
+  // 万円単位から円単位に変換
+  const annualIncomeYen = annualIncome * 10000;
+
   // 1. 給与所得控除を計算
-  const employmentDeduction = calculateEmploymentIncomeDeduction(annualIncome);
+  const employmentDeduction = calculateEmploymentIncomeDeduction(annualIncomeYen);
 
   // 2. 給与所得を算出
-  const employmentIncome = annualIncome - employmentDeduction;
+  const employmentIncome = annualIncomeYen - employmentDeduction;
 
   // 3. 社会保険料控除を推定
-  const socialInsuranceDeduction = estimateSocialInsuranceDeduction(annualIncome);
+  const socialInsuranceDeduction = estimateSocialInsuranceDeduction(annualIncomeYen);
 
   // 4. 所得控除の合計を計算
   const basicDeduction = getBasicDeduction(employmentIncome);

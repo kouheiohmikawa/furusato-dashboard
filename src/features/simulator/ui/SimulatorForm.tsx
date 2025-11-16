@@ -73,25 +73,25 @@ export function SimulatorForm({ onResult }: SimulatorFormProps) {
           {/* 年収 */}
           <div className="space-y-2">
             <Label htmlFor="annualIncome">
-              年収（給与収入）<span className="text-red-500">*</span>
+              年収<span className="text-red-500">*</span>
             </Label>
             <div className="flex items-center gap-2">
               <Input
                 id="annualIncome"
                 type="number"
-                placeholder="5000000"
+                placeholder="500"
                 {...register("annualIncome", {
                   valueAsNumber: true,
                 })}
                 className={errors.annualIncome ? "border-red-500" : ""}
               />
-              <span className="text-sm text-muted-foreground whitespace-nowrap">円</span>
+              <span className="text-sm text-muted-foreground whitespace-nowrap">万円</span>
             </div>
             {errors.annualIncome && (
               <p className="text-sm text-red-500">{errors.annualIncome.message}</p>
             )}
             <p className="text-xs text-muted-foreground">
-              例: 年収500万円の場合は「5000000」と入力
+              例: 年収500万円の場合は「500」と入力
             </p>
           </div>
 
