@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SimulatorForm } from "@/features/simulator/ui/SimulatorForm";
 import { DetailedSimulatorForm } from "@/features/simulator/ui/DetailedSimulatorForm";
 import { SimulatorResult } from "@/features/simulator/ui/SimulatorResult";
+import { LimitTable } from "@/features/simulator/ui/LimitTable";
 import type { SimulatorResult as SimulatorResultType } from "@/features/simulator/lib/simulatorSchema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -111,6 +112,11 @@ export default function SimulatorPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* 早見表セクション */}
+      <div className="mt-12">
+        <LimitTable />
+      </div>
 
       {/* フッター情報 */}
       <div className="mt-12 p-6 rounded-lg bg-muted">
