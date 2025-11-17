@@ -129,7 +129,7 @@ export default async function DashboardPage() {
               </Card>
             </Link>
 
-            <Link href="/dashboard/donations/new">
+            <Link href="/dashboard/donations/add">
               <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer">
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
