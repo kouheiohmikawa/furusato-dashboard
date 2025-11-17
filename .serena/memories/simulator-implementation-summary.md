@@ -3,6 +3,20 @@
 ## 実装完了日
 2025-11-16
 
+## GitHubリポジトリ
+- **リポジトリ**: kouheiohmikawa/furusato-dashboard
+- **現在のブランチ**: feature/setup-project
+- **最新コミット**: 54512d8 (feat: modernize UI with mobile-first design)
+- **プッシュ状況**: GitHub同期済み（2025-11-16）
+
+## 実装されたコミット一覧
+1. `0369df2` - feat: improve simulator calculation accuracy with tax-based formula
+2. `b6c8b78` - refactor: change annual income input to 万円 unit for better UX
+3. `6098c6e` - feat: add detailed simulator with comprehensive tax deduction support
+4. `492fae6` - feat: add all missing fields to detailed simulator
+5. `a8dd1e8` - feat: add deduction limit reference table
+6. `54512d8` - feat: modernize UI with mobile-first design
+
 ## Phase 1 (MVP v0.5) 完了状況
 
 ### 実装された機能
@@ -90,10 +104,40 @@
   5. 所得控除
   6. 税額控除
 
-#### 4. ページ構成
+#### 4. 控除上限額早見表
+- **場所**: `/src/features/simulator`
+- **ファイル構成**:
+  - `ui/LimitTable.tsx` - 早見表UIコンポーネント
+  - `lib/generateLimitTable.ts` - データ生成ロジック
+- **データ範囲**:
+  - 年収: 300万円〜2,500万円（25万円刻み）= 89行
+  - 家族構成: 7パターン
+- **家族構成パターン**:
+  1. 独身または共働き
+  2. 夫婦（配偶者無収入）
+  3. 共働き+子1人（高校生）
+  4. 共働き+子1人（大学生）
+  5. 夫婦+子1人（高校生）
+  6. 共働き+子2人（大学生と高校生）
+  7. 夫婦+子2人（大学生と高校生）
+- **特徴**:
+  - 詳細版計算ロジックを使用（正確な金額）
+  - useMemoでパフォーマンス最適化
+  - 横スクロール対応（モバイル対応）
+  - ホバーエフェクトで見やすさ向上
+  - 社会保険料14.4%、その他控除なしを前提
+
+#### 5. ページ構成
 - **メインページ**: `/src/app/simulator/page.tsx`
 - **共通コンポーネント**: 
-  - `SimulatorResult.tsx` - 簡易版・詳細版で共通使用
+  - `SimulatorResult.tsx` - 簡易版・詳細版で共通使用（モダンUI）
+  - `LimitTable.tsx` - 控除上限額早見表
+- **レイアウト**:
+  - ヘッダー（グラデーションタイトル、アイコン）
+  - タブ（簡易版/詳細版、アイコン付き）
+  - フォーム + 結果表示（xl以上で2カラム、デスクトップでスティッキー）
+  - 早見表セクション
+  - フッター情報（アイコン付き説明）
 - **フッター情報**: 
   - 簡易版と詳細版の説明
   - 会員登録不要
@@ -107,6 +151,7 @@
 - **React**: 19.0.0
 - **Zod**: 4.x (バリデーション)
 - **React Hook Form**: 7.x (フォーム管理)
+- **lucide-react**: 0.553.0 (アイコンライブラリ)
 - **shadcn/ui**: UIコンポーネント（New York スタイル）
   - Button, Card, Input, Label, Select, Tabs
 
@@ -176,30 +221,97 @@
 - 障害者控除セクション追加（本人・配偶者・扶養親族）
 - その他の人的控除セクション追加（寡婦・ひとり親・勤労学生）
 
+### 5. 控除上限額早見表の追加
+- **commit**: `a8dd1e8` feat: add deduction limit reference table
+- **ファイル**:
+  - `lib/generateLimitTable.ts`: データ生成ロジック
+  - `ui/LimitTable.tsx`: 早見表UIコンポーネント
+- **データ範囲**: 年収300万円〜2,500万円（25万円刻み）= 89行
+- **家族構成**: 7パターン（独身、夫婦、共働き+子、夫婦+子 など）
+- **特徴**:
+  - useMemoでパフォーマンス最適化
+  - 横スクロール対応（モバイルフレンドリー）
+  - 詳細版計算ロジックを使用して正確な金額を表示
+  - 注意書きで前提条件を明記
+
+### 6. UIのモダン化とモバイル対応
+- **commit**: `54512d8` feat: modernize UI with mobile-first design
+- **実装日**: 2025-11-16
+- **改善内容**:
+
+#### デザイン改善
+- **lucide-react アイコン**: Calculator, Zap, Info, Shield, Sparkles, TrendingUp, AlertTriangle, Table2
+- **グラデーション**: 背景、テキスト、カードに多用
+- **シャドウ**: shadow-lg, shadow-xl で立体感を追加
+- **アニメーション**: fade-in, transition-colors, hover effects
+- **視覚階層**: より大きなフォント、適切なスペーシング
+
+#### SimulatorResult.tsx の改善
+- グラデーション背景の推定上限額カード（primary色）
+- emeraldカラーの安全ラインカード + プログレスバー
+- アイコン付きセクションヘッダー
+- amberカラーの注意事項セクション
+- アニメーション効果（animate-in fade-in-50）
+
+#### simulator/page.tsx の改善
+- グラデーションテキストのページタイトル
+- アイコン付きヘッダー
+- モダンなタブデザイン（アイコン + レスポンシブテキスト）
+- 改善されたプレースホルダー表示
+- アイコン付きフッター情報
+
+#### LimitTable.tsx の改善
+- グラデーション背景のテーブルヘッダー
+- ホバーエフェクト（hover:bg-primary/5）
+- レスポンシブパディング（p-3 sm:p-4）
+- モダンな注意書きカード
+- Table2 アイコン付きヘッダー
+
+#### モバイル対応
+- **モバイルファースト**: 縦スクロール中心の設計
+- **ブレークポイント**: xl（1280px）で2カラムレイアウトに切り替え
+- **タッチ最適化**: 大きなタップ領域、読みやすいフォントサイズ
+- **スティッキー**: デスクトップで結果カードを固定表示（xl:sticky xl:top-8）
+- **レスポンシブテキスト**: sm:hidden/inline でモバイル表示を最適化
+- **横スクロール**: 早見表は横スクロール対応
+
+#### パフォーマンス
+- transition-colorsで滑らかなホバー効果
+- useMemoでデータ生成をメモ化
+- sticky positioningでスクロール体験向上
+
+#### アクセシビリティ
+- 十分なカラーコントラスト
+- 大きなタッチターゲット（min-h-[400px] など）
+- 視覚的フィードバック（hover, active states）
+- セマンティックなアイコン使用
+
 ## ディレクトリ構造
 
 ```
 src/
 ├── app/
 │   └── simulator/
-│       └── page.tsx          # メインページ（タブUI）
+│       └── page.tsx                        # メインページ（タブUI + 早見表）
 ├── features/
 │   └── simulator/
 │       ├── ui/
 │       │   ├── SimulatorForm.tsx           # 簡易版フォーム
 │       │   ├── DetailedSimulatorForm.tsx   # 詳細版フォーム
-│       │   └── SimulatorResult.tsx         # 結果表示（共通）
+│       │   ├── SimulatorResult.tsx         # 結果表示（共通・モダンUI）
+│       │   └── LimitTable.tsx              # 早見表コンポーネント
 │       └── lib/
 │           ├── simulatorSchema.ts          # 簡易版スキーマ
 │           ├── detailedSimulatorSchema.ts  # 詳細版スキーマ
 │           ├── calculateLimit.ts           # 簡易版計算
-│           └── calculateDetailedLimit.ts   # 詳細版計算
+│           ├── calculateDetailedLimit.ts   # 詳細版計算
+│           └── generateLimitTable.ts       # 早見表データ生成
 ├── components/
 │   └── ui/
-│       └── tabs.tsx          # shadcn/ui Tabs コンポーネント
+│       └── tabs.tsx                        # shadcn/ui Tabs コンポーネント
 └── shared/
     └── config/
-        └── prefectures.ts    # 都道府県マスター（47都道府県）
+        └── prefectures.ts                  # 都道府県マスター（47都道府県）
 ```
 
 ## 今後の拡張可能性
@@ -219,7 +331,45 @@ src/
 - 入力値の保存（localStorage）
 - CSVエクスポート
 - PDF出力
-- グラフ表示
+- グラフ表示（控除額の推移、家族構成別比較など）
+- ダークモード切り替えUI（現在はシステム設定に従う）
+- お気に入り登録機能
+- 比較機能（複数パターンの並列表示）
+- 印刷最適化
+
+## 現在の実装状況サマリー
+
+### ✅ 完成済み機能
+1. **簡易版シミュレーター**: 年収、配偶者、扶養家族から計算
+2. **詳細版シミュレーター**: 全控除項目対応（障害者、ひとり親、住宅ローンなど）
+3. **控除上限額早見表**: 89行×7列の包括的な早見表
+4. **モダンUI**: グラデーション、アイコン、アニメーション、レスポンシブ対応
+5. **モバイル対応**: タッチ最適化、横スクロール、スティッキーレイアウト
+6. **計算精度**: 実際の税制に基づいた正確な計算
+
+### 🎯 Phase 1 (MVP v0.5) の達成状況
+- ✅ 基本的なシミュレーション機能
+- ✅ 簡易版・詳細版の2パターン
+- ✅ 早見表による素早い確認
+- ✅ モダンで使いやすいUI/UX
+- ✅ モバイルファーストの設計
+- ✅ TypeScriptによる型安全性
+- ✅ Zodによる堅牢なバリデーション
+
+### 📊 コード統計
+- **TypeScriptファイル**: 10+ファイル
+- **UIコンポーネント**: 5個（Form×2, Result, Table, Page）
+- **計算ロジック**: 2個（簡易版、詳細版）
+- **スキーマ**: 2個（簡易版、詳細版）
+- **総行数**: 2000+ 行
+
+### 🚀 次のステップ（Phase 2以降）
+- データベース設計と実装
+- ユーザー認証機能
+- 寄付記録管理
+- お気に入り自治体登録
+- 履歴機能
+- Vercelへのデプロイ
 
 ## 注意事項
 
