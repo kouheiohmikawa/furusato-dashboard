@@ -47,7 +47,12 @@ export default function SignupPage() {
         form.reset();
       }
     } catch (err) {
-      console.error("Signup error:", err);
+      // Next.jsのredirect()は正常な動作としてエラーをthrowするため、
+      // それ以外のエラーのみ表示する
+      if (err && typeof err === 'object' && 'digest' in err) {
+        // Next.jsのredirect/notFoundエラーは無視（正常な動作）
+        throw err;
+      }
       setError("登録に失敗しました。もう一度お試しください。");
     } finally {
       setIsLoading(false);

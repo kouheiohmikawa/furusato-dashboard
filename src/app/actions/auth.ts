@@ -12,6 +12,39 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 /**
+ * Supabaseのエラーメッセージを日本語に変換
+ */
+function translateAuthError(errorMessage: string): string {
+  const errorMap: Record<string, string> = {
+    "Invalid login credentials": "メールアドレスまたはパスワードが正しくありません",
+    "Email not confirmed": "メールアドレスが確認されていません。確認メールをご確認ください",
+    "User already registered": "このメールアドレスは既に登録されています",
+    "Password should be at least 6 characters": "パスワードは6文字以上で入力してください",
+    "Unable to validate email address: invalid format": "メールアドレスの形式が正しくありません",
+    "Email rate limit exceeded": "メール送信の制限を超えました。しばらく待ってから再度お試しください",
+    "For security purposes, you can only request this once every 60 seconds": "セキュリティのため、60秒に1回のみリクエスト可能です",
+    "User not found": "ユーザーが見つかりません",
+    "New password should be different from the old password": "新しいパスワードは現在のパスワードと異なるものを設定してください",
+    "Password is too weak": "パスワードが弱すぎます。より強力なパスワードを設定してください",
+  };
+
+  // 完全一致を試す
+  if (errorMap[errorMessage]) {
+    return errorMap[errorMessage];
+  }
+
+  // 部分一致を試す
+  for (const [key, value] of Object.entries(errorMap)) {
+    if (errorMessage.includes(key)) {
+      return value;
+    }
+  }
+
+  // マッピングが見つからない場合はデフォルトメッセージ
+  return "エラーが発生しました。もう一度お試しください";
+}
+
+/**
  * ログイン処理
  */
 export async function login(formData: FormData) {
@@ -26,7 +59,7 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: translateAuthError(error.message) };
   }
 
   revalidatePath("/", "layout");
@@ -51,7 +84,7 @@ export async function signup(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: translateAuthError(error.message) };
   }
 
   return {
@@ -83,7 +116,7 @@ export async function resetPassword(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: translateAuthError(error.message) };
   }
 
   return {
@@ -105,7 +138,7 @@ export async function updatePassword(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: translateAuthError(error.message) };
   }
 
   revalidatePath("/", "layout");

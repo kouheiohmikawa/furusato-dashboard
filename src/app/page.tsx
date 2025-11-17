@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, Calculator, ClipboardList, Bell, BarChart3, Save, Sparkles } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -8,10 +10,15 @@ export default function HomePage() {
       {/* ヒーローセクション */}
       <section className="container mx-auto px-4 py-24 text-center lg:py-32">
         <div className="mx-auto max-w-3xl space-y-6">
+          <div className="inline-block rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+            完全無料で使える
+          </div>
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
             ふるさと納税を
             <br />
-            <span className="text-primary">もっとシンプルに</span>
+            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              もっとシンプルに
+            </span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl">
             控除額のシミュレーションから寄付の管理まで。
@@ -20,13 +27,21 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Button asChild size="lg" className="text-lg">
-              <Link href="/simulator">シミュレーションを始める</Link>
+              <Link href="/simulator">
+                <Calculator className="mr-2 h-5 w-5" />
+                シミュレーションを始める
+              </Link>
             </Button>
-            {/* 将来の機能用（コメントアウト） */}
-            {/* <Button asChild variant="outline" size="lg" className="text-lg">
-              <Link href="/signup">無料で始める</Link>
-            </Button> */}
+            <Button asChild variant="outline" size="lg" className="text-lg">
+              <Link href="/signup">
+                <Sparkles className="mr-2 h-5 w-5" />
+                無料で始める
+              </Link>
+            </Button>
           </div>
+          <p className="text-sm text-muted-foreground">
+            会員登録不要ですぐにシミュレーションできます
+          </p>
         </div>
       </section>
 
@@ -42,23 +57,15 @@ export default function HomePage() {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {/* 機能1: シミュレーター */}
-            <Card>
+            <Card className="relative overflow-hidden">
+              <div className="absolute right-4 top-4">
+                <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100">
+                  登録不要
+                </Badge>
+              </div>
               <CardHeader>
-                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-primary"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                    />
-                  </svg>
+                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10">
+                  <Calculator className="h-6 w-6 text-primary" />
                 </div>
                 <CardTitle>かんたんシミュレーション</CardTitle>
                 <CardDescription>
@@ -69,23 +76,13 @@ export default function HomePage() {
             </Card>
 
             {/* 機能2: 一元管理 */}
-            <Card>
+            <Card className="relative overflow-hidden">
+              <div className="absolute right-4 top-4">
+                <Badge variant="default">会員登録必要</Badge>
+              </div>
               <CardHeader>
-                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-primary"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                    />
-                  </svg>
+                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10">
+                  <ClipboardList className="h-6 w-6 text-primary" />
                 </div>
                 <CardTitle>複数ポータル一元管理</CardTitle>
                 <CardDescription>
@@ -96,23 +93,13 @@ export default function HomePage() {
             </Card>
 
             {/* 機能3: 手続き管理 */}
-            <Card>
+            <Card className="relative overflow-hidden">
+              <div className="absolute right-4 top-4">
+                <Badge variant="default">会員登録必要</Badge>
+              </div>
               <CardHeader>
-                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-primary"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10">
+                  <Bell className="h-6 w-6 text-primary" />
                 </div>
                 <CardTitle>手続き漏れ防止</CardTitle>
                 <CardDescription>
@@ -121,6 +108,94 @@ export default function HomePage() {
                 </CardDescription>
               </CardHeader>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* 会員登録のメリットセクション */}
+      <section className="container mx-auto px-4 py-24">
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-12 text-center">
+            <div className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+              会員登録でさらに便利に
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              無料アカウントでできること
+            </h2>
+            <p className="mt-3 text-lg text-muted-foreground">
+              メールアドレスだけで簡単登録。すべての機能が無料で使えます
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="border-2">
+              <CardHeader>
+                <div className="mb-2 flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10">
+                    <Save className="h-5 w-5 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">シミュレーション結果を保存</CardTitle>
+                </div>
+                <CardDescription className="text-base">
+                  計算した控除上限額を保存して、いつでも確認。
+                  過去の結果と比較して、最適な寄付額を見つけられます。
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-2">
+              <CardHeader>
+                <div className="mb-2 flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10">
+                    <ClipboardList className="h-5 w-5 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">寄付記録を一元管理</CardTitle>
+                </div>
+                <CardDescription className="text-base">
+                  すべての寄付をひとつの場所で管理。
+                  自治体名、金額、返礼品、受領番号などを記録できます。
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-2">
+              <CardHeader>
+                <div className="mb-2 flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10">
+                    <BarChart3 className="h-5 w-5 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">年度別の統計表示</CardTitle>
+                </div>
+                <CardDescription className="text-base">
+                  年度ごとの寄付総額や件数を自動集計。
+                  控除上限額と比較して、残り枠を一目で確認できます。
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-2">
+              <CardHeader>
+                <div className="mb-2 flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10">
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">手続きステータス管理</CardTitle>
+                </div>
+                <CardDescription className="text-base">
+                  ワンストップ特例や確定申告の進捗を記録。
+                  手続き漏れを防いで、確実に控除を受けられます。
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+
+          <div className="mt-12 text-center">
+            <Button asChild size="lg" className="text-lg">
+              <Link href="/signup">
+                <Sparkles className="mr-2 h-5 w-5" />
+                無料でアカウントを作成する
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

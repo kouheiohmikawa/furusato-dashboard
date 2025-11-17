@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export function Header() {
   return (
@@ -28,16 +29,14 @@ export function Header() {
         </Link>
 
         {/* ナビゲーション */}
-        <nav className="flex items-center space-x-4">
+        <nav className="flex items-center space-x-2 sm:space-x-4">
           <Link
             href="/simulator"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
             シミュレーター
           </Link>
-
-          {/* 将来の機能用（コメントアウト） */}
-          {/* <Link
+          <Link
             href="/login"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
@@ -45,7 +44,7 @@ export function Header() {
           </Link>
           <Button asChild size="sm">
             <Link href="/signup">無料で始める</Link>
-          </Button> */}
+          </Button>
         </nav>
       </div>
     </header>
