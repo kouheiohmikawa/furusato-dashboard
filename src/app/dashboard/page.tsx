@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Heart, History, User, LogOut } from "lucide-react";
 import { logout } from "@/app/actions/auth";
+import { DonationStats } from "@/components/donations/DonationStats";
 import Link from "next/link";
-import type { Profile } from "@/types/database.types";
+import type { Profile, Donation } from "@/types/database.types";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -24,6 +25,13 @@ export default async function DashboardPage() {
     .select("*")
     .eq("id", user.id)
     .maybeSingle()) as { data: Profile | null };
+
+  // 寄付記録を取得
+  const { data: donations } = (await supabase
+    .from("donations")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("donation_date", { ascending: false })) as { data: Donation[] | null };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
@@ -108,6 +116,14 @@ export default async function DashboardPage() {
             </Card>
           </Link>
         </div>
+
+        {/* 寄付統計 */}
+        {donations && donations.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-6">寄付統計</h2>
+            <DonationStats donations={donations} />
+          </div>
+        )}
 
         {/* クイックアクション */}
         <div className="mt-12">
