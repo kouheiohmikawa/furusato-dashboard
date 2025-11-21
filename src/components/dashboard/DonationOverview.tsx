@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, AlertCircle, CheckCircle2, Calendar, PieChart } from "lucide-react";
+import { TrendingUp, AlertCircle, CheckCircle2, Calendar, PieChart, ChevronDown, ChevronUp } from "lucide-react";
 import type { Donation } from "@/types/database.types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
+import { PieChart as RechartsChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 type DonationOverviewProps = {
   donations: Donation[];
@@ -24,6 +24,7 @@ type PortalStats = {
 export function DonationOverview({ donations, estimatedLimit }: DonationOverviewProps) {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+  const [showDetails, setShowDetails] = useState(false);
 
   // 利用可能な年度を取得
   const availableYears = useMemo(() => {
@@ -69,6 +70,19 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
   const percentage = estimatedLimit && estimatedLimit > 0 ? (yearStats.total / estimatedLimit) * 100 : 0;
   const remaining = estimatedLimit ? Math.max(0, estimatedLimit - yearStats.total) : 0;
 
+  // 円グラフ用のデータ
+  const chartData = useMemo(() => {
+    if (!estimatedLimit || estimatedLimit === 0) return [];
+
+    const used = yearStats.total;
+    const remainingAmount = Math.max(0, estimatedLimit - used);
+
+    return [
+      { name: "寄付済み", value: used, color: "hsl(var(--primary))" },
+      { name: "残り", value: remainingAmount, color: "hsl(var(--muted))" },
+    ];
+  }, [yearStats.total, estimatedLimit]);
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("ja-JP", {
       style: "currency",
@@ -99,7 +113,7 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* 年度選択 */}
       <div className="flex items-center gap-4">
         <Calendar className="h-5 w-5 text-muted-foreground" />
@@ -117,18 +131,18 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
         </Select>
       </div>
 
-      {/* メインカード - 上限額との比較 */}
-      <Card className="border-2 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
-        <CardHeader>
+      {/* メインカード - 円グラフでコンパクトに */}
+      <Card className="border-2">
+        <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div>
-              <CardTitle className="text-2xl">
+              <CardTitle className="text-lg">
                 {selectedYear}年の寄付状況
               </CardTitle>
-              <CardDescription className="mt-2">
+              <CardDescription className="mt-1">
                 {estimatedLimit
-                  ? "控除上限額と現在の寄付額を比較"
-                  : "控除上限額を計算して、寄付の目安を確認しましょう"}
+                  ? `${yearStats.count}件の寄付を登録済み`
+                  : "控除上限額を計算しましょう"}
               </CardDescription>
             </div>
             {estimatedLimit && (
@@ -153,66 +167,93 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
             )}
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent>
           {estimatedLimit ? (
-            <>
-              {/* 進捗バー */}
-              <div className="space-y-2">
-                <div className="flex items-end justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">現在の寄付総額</p>
-                    <p className="text-4xl font-bold text-primary">
-                      {formatCurrency(yearStats.total)}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-muted-foreground">推定上限額</p>
-                    <p className="text-2xl font-semibold">
-                      {formatCurrency(estimatedLimit)}
-                    </p>
-                  </div>
-                </div>
-                <Progress value={Math.min(percentage, 100)} className="h-3" />
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    {percentage.toFixed(1)}% 使用
-                  </span>
-                  <span className="font-medium text-primary">
-                    残り {formatCurrency(remaining)}
-                  </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* 円グラフ */}
+              <div className="flex flex-col items-center justify-center">
+                <ResponsiveContainer width="100%" height={200}>
+                  <RechartsChart>
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={2}
+                      dataKey="value"
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value: number) => formatCurrency(value)}
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--popover))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "var(--radius)",
+                      }}
+                    />
+                  </RechartsChart>
+                </ResponsiveContainer>
+                <div className="text-center mt-2">
+                  <p className="text-2xl font-bold text-primary">
+                    {percentage.toFixed(1)}%
+                  </p>
+                  <p className="text-sm text-muted-foreground">使用率</p>
                 </div>
               </div>
-            </>
+
+              {/* 統計情報 */}
+              <div className="flex flex-col justify-center space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">現在の寄付総額</p>
+                  <p className="text-2xl font-bold text-primary">
+                    {formatCurrency(yearStats.total)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">推定上限額</p>
+                  <p className="text-xl font-semibold">
+                    {formatCurrency(estimatedLimit)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">残り枠</p>
+                  <p className="text-xl font-semibold text-green-600">
+                    {formatCurrency(remaining)}
+                  </p>
+                </div>
+              </div>
+            </div>
           ) : (
             <>
               {/* 上限額未設定の場合 */}
               <div className="space-y-4 py-4">
                 <div className="flex items-center justify-center">
                   <div className="rounded-full bg-amber-100 dark:bg-amber-900/20 p-3">
-                    <AlertCircle className="h-8 w-8 text-amber-600 dark:text-amber-500" />
+                    <AlertCircle className="h-6 w-6 text-amber-600 dark:text-amber-500" />
                   </div>
                 </div>
                 <div className="text-center space-y-2">
-                  <h3 className="font-semibold text-lg">控除上限額がまだ計算されていません</h3>
+                  <h3 className="font-semibold">控除上限額を計算しましょう</h3>
                   <p className="text-sm text-muted-foreground">
-                    シミュレーターで年収や家族構成を入力して、<br />
-                    あなたの控除上限額を計算しましょう
+                    シミュレーターで年収や家族構成を入力
                   </p>
                 </div>
                 {yearStats.total > 0 && (
-                  <div className="flex items-center justify-center pt-2">
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground mb-1">現在の寄付総額</p>
-                      <p className="text-3xl font-bold text-primary">
-                        {formatCurrency(yearStats.total)}
-                      </p>
-                    </div>
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground mb-1">現在の寄付総額</p>
+                    <p className="text-2xl font-bold text-primary">
+                      {formatCurrency(yearStats.total)}
+                    </p>
                   </div>
                 )}
-                <div className="flex justify-center pt-2">
+                <div className="flex justify-center">
                   <Link href="/simulator">
-                    <Button size="lg" className="gap-2">
-                      <TrendingUp className="h-5 w-5" />
+                    <Button className="gap-2">
+                      <TrendingUp className="h-4 w-4" />
                       控除額を計算する
                     </Button>
                   </Link>
@@ -220,66 +261,60 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
               </div>
             </>
           )}
-
-          {/* 統計 - 上限額が設定されている場合のみ */}
-          {estimatedLimit && (
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">寄付件数</p>
-                <p className="text-2xl font-bold">{yearStats.count}件</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">平均寄付額</p>
-                <p className="text-2xl font-bold">
-                  {yearStats.count > 0
-                    ? formatCurrency(Math.round(yearStats.total / yearStats.count))
-                    : "¥0"}
-                </p>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
 
-      {/* ポータル別内訳 */}
+      {/* 詳細統計（折りたたみ可能） */}
       {portalStats.length > 0 && (
-        <Card className="border-2">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <PieChart className="h-5 w-5 text-primary" />
-              支払い方法別の内訳
-            </CardTitle>
+        <Card className="border">
+          <CardHeader
+            className="pb-3 cursor-pointer hover:bg-accent/50 transition-colors"
+            onClick={() => setShowDetails(!showDetails)}
+          >
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <PieChart className="h-4 w-4 text-primary" />
+                支払い方法別の内訳
+              </CardTitle>
+              {showDetails ? (
+                <ChevronUp className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              )}
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {portalStats.map((stat, index) => (
-                <div
-                  key={stat.portal}
-                  className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                      {index + 1}
+          {showDetails && (
+            <CardContent>
+              <div className="space-y-2">
+                {portalStats.map((stat, index) => (
+                  <div
+                    key={stat.portal}
+                    className="flex items-center justify-between p-2 rounded-lg border bg-card"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{stat.portal}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {stat.count}件
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">{stat.portal}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {stat.count}件
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-primary">
+                        {formatCurrency(stat.total)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {((stat.total / yearStats.total) * 100).toFixed(1)}%
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-primary">
-                      {formatCurrency(stat.total)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {((stat.total / yearStats.total) * 100).toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
+                ))}
+              </div>
+            </CardContent>
+          )}
         </Card>
       )}
     </div>

@@ -34,7 +34,7 @@
 - [x] 年度別寄付集計
 - [x] シミュレーション履歴保存・一覧機能
 
-### UI/UX改善（2025-01-17完了）🎨
+### UI/UX改善（2025-01-17～01-18完了）🎨
 
 #### 1. トップページ改善
 **ファイル**: `src/app/page.tsx`, `src/components/layout/Header.tsx`
@@ -74,6 +74,25 @@
 - **エラーハンドリングの最適化**
   - エラー時のみローディング状態を解除
   - スムーズなページ遷移
+
+#### 3. ヘッダーナビゲーション改善
+**ファイル**: 
+- `src/components/layout/Header.tsx`
+- `src/app/layout.tsx`
+
+**変更内容**:
+- **認証状態に応じたサイト名リンク先の変更**
+  - ログイン時: サイト名クリックで `/dashboard` に遷移
+  - 未ログイン時: サイト名クリックで `/` (トップページ) に遷移
+- **認証状態に応じたナビゲーション表示**
+  - ログイン時: ログイン/サインアップボタンを非表示
+  - 未ログイン時: ログイン/サインアップボタンを表示
+- **RootLayoutでの認証チェック**
+  - Supabaseサーバークライアントで認証状態を取得
+  - `isLoggedIn` propをHeaderに渡す
+- **UX改善**
+  - ログイン中にサイト名をクリックしても再ログイン不要
+  - 直感的なナビゲーションフロー
 
 #### 3. ダッシュボード大幅改善
 **ファイル**: 
@@ -163,16 +182,20 @@
 
 ## ✅ 最新のGitコミット
 
-**コミットハッシュ**: `5e35f5d`  
-**日付**: 2025-01-17  
-**メッセージ**: feat: improve UI/UX for landing page, authentication, and dashboard
+**コミットハッシュ**: `751a34b`  
+**日付**: 2025-01-18  
+**メッセージ**: feat: improve header navigation based on authentication state
 
 **変更内容**:
-- 14ファイル変更
-- 1,081行追加、200行削除
-- 新規ファイル5つ作成
+- 3ファイル変更
+- Header componentに認証状態に応じたナビゲーション実装
+- RootLayoutで認証チェック追加
+- ログイン時のUX改善
 
 **プッシュ済み**: ✅ origin/feature/setup-project
+
+### 過去のコミット
+- `5e35f5d` (2025-01-17): feat: improve UI/UX for landing page, authentication, and dashboard
 
 ---
 

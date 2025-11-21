@@ -67,89 +67,91 @@ export default async function DashboardPage() {
           <UserMenu user={user} profile={profile} />
         </div>
 
-        {/* 寄付概要 - 最重要セクション */}
-        <DonationOverview donations={donations || []} estimatedLimit={estimatedLimit} />
+        {/* グリッドレイアウト - 全て1画面に */}
+        <div className="grid gap-4 lg:grid-cols-3">
+          {/* 左カラム - 寄付概要（2列分） */}
+          <div className="lg:col-span-2">
+            <DonationOverview donations={donations || []} estimatedLimit={estimatedLimit} />
+          </div>
 
-        {/* クイックアクション - 大きく目立たせる */}
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          <Link href="/simulator">
-            <Card className="border-2 bg-gradient-to-br from-primary/10 via-primary/5 to-background hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-                      <Calculator className="h-6 w-6" />
+          {/* 右カラム - クイックアクション */}
+          <div className="space-y-4">
+            <Link href="/simulator">
+              <Card className="border-2 bg-gradient-to-br from-primary/10 via-primary/5 to-background hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+                        <Calculator className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base">シミュレーター</CardTitle>
+                        <CardDescription className="text-xs mt-0.5">
+                          上限額を確認
+                        </CardDescription>
+                      </div>
                     </div>
-                    <div>
-                      <CardTitle className="text-xl">控除額シミュレーター</CardTitle>
-                      <CardDescription className="mt-1">
-                        今年の上限額を確認
-                      </CardDescription>
-                    </div>
+                    <ArrowRight className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <ArrowRight className="h-5 w-5 text-primary group-hover:translate-x-1 transition-transform" />
-                </div>
-              </CardHeader>
-            </Card>
-          </Link>
+                </CardHeader>
+              </Card>
+            </Link>
 
-          <Link href="/dashboard/donations/add">
-            <Card className="border-2 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-background hover:border-emerald-500 transition-all hover:shadow-lg cursor-pointer group">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
-                      <Plus className="h-6 w-6" />
+            <Link href="/dashboard/donations/add">
+              <Card className="border-2 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-background hover:border-emerald-500 transition-all hover:shadow-lg cursor-pointer group">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
+                        <Plus className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base">寄付を登録</CardTitle>
+                        <CardDescription className="text-xs mt-0.5">
+                          記録を追加
+                        </CardDescription>
+                      </div>
                     </div>
-                    <div>
-                      <CardTitle className="text-xl">寄付を登録</CardTitle>
-                      <CardDescription className="mt-1">
-                        新しい寄付記録を追加
-                      </CardDescription>
+                    <ArrowRight className="h-4 w-4 text-emerald-500 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </CardHeader>
+              </Card>
+            </Link>
+
+            <Link href="/dashboard/donations">
+              <Card className="border hover:border-primary/50 transition-colors cursor-pointer group">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Heart className="h-4 w-4 text-primary" />
+                      <CardTitle className="text-sm">寄付記録一覧</CardTitle>
                     </div>
+                    <ArrowRight className="h-3 w-3 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <ArrowRight className="h-5 w-5 text-emerald-500 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </CardHeader>
-            </Card>
-          </Link>
-        </div>
+                  <CardDescription className="text-xs">
+                    すべての寄付を確認
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
 
-        {/* サブメニュー */}
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          <Link href="/dashboard/donations">
-            <Card className="border hover:border-primary/50 transition-colors cursor-pointer group">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Heart className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base">寄付記録一覧</CardTitle>
+            <Link href="/dashboard/history">
+              <Card className="border hover:border-primary/50 transition-colors cursor-pointer group">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-primary" />
+                      <CardTitle className="text-sm">履歴</CardTitle>
+                    </div>
+                    <ArrowRight className="h-3 w-3 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-                </div>
-                <CardDescription className="text-sm">
-                  すべての寄付を確認・編集
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/dashboard/history">
-            <Card className="border hover:border-primary/50 transition-colors cursor-pointer group">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base">シミュレーション履歴</CardTitle>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-                </div>
-                <CardDescription className="text-sm">
-                  過去の計算結果を確認
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
+                  <CardDescription className="text-xs">
+                    過去の計算結果
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
