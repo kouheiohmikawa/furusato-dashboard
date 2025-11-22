@@ -25,7 +25,8 @@ export async function createDonation(formData: FormData) {
     return { error: "ログインが必要です" };
   }
 
-  const municipalityName = formData.get("municipalityName") as string;
+  const prefecture = formData.get("prefecture") as string;
+  const municipality = formData.get("municipality") as string;
   const donationDate = formData.get("donationDate") as string;
   const amount = formData.get("amount") as string;
   const donationType = formData.get("donationType") as string;
@@ -35,8 +36,12 @@ export async function createDonation(formData: FormData) {
   const notes = formData.get("notes") as string;
 
   // バリデーション
-  if (!municipalityName || municipalityName.trim().length === 0) {
-    return { error: "自治体名を入力してください" };
+  if (!prefecture || prefecture.trim().length === 0) {
+    return { error: "都道府県を選択してください" };
+  }
+
+  if (!municipality || municipality.trim().length === 0) {
+    return { error: "市区町村を入力してください" };
   }
 
   if (!donationDate) {
@@ -50,7 +55,9 @@ export async function createDonation(formData: FormData) {
   // 寄付記録を登録
   const newDonation: DonationInsert = {
     user_id: user.id,
-    municipality_name: municipalityName.trim(),
+    prefecture: prefecture.trim(),
+    municipality: municipality.trim(),
+    municipality_name: `${prefecture.trim()}${municipality.trim()}`, // 後方互換性のため
     donation_date: donationDate,
     amount: Number(amount),
     donation_type: donationType || null,
@@ -89,7 +96,8 @@ export async function updateDonation(id: string, formData: FormData) {
     return { error: "ログインが必要です" };
   }
 
-  const municipalityName = formData.get("municipalityName") as string;
+  const prefecture = formData.get("prefecture") as string;
+  const municipality = formData.get("municipality") as string;
   const donationDate = formData.get("donationDate") as string;
   const amount = formData.get("amount") as string;
   const donationType = formData.get("donationType") as string;
@@ -99,8 +107,12 @@ export async function updateDonation(id: string, formData: FormData) {
   const notes = formData.get("notes") as string;
 
   // バリデーション
-  if (!municipalityName || municipalityName.trim().length === 0) {
-    return { error: "自治体名を入力してください" };
+  if (!prefecture || prefecture.trim().length === 0) {
+    return { error: "都道府県を選択してください" };
+  }
+
+  if (!municipality || municipality.trim().length === 0) {
+    return { error: "市区町村を入力してください" };
   }
 
   if (!donationDate) {
@@ -113,7 +125,9 @@ export async function updateDonation(id: string, formData: FormData) {
 
   // 寄付記録を更新（自分の記録のみ）
   const updateData: DonationUpdate = {
-    municipality_name: municipalityName.trim(),
+    prefecture: prefecture.trim(),
+    municipality: municipality.trim(),
+    municipality_name: `${prefecture.trim()}${municipality.trim()}`, // 後方互換性のため
     donation_date: donationDate,
     amount: Number(amount),
     donation_type: donationType || null,

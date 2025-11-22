@@ -16,6 +16,7 @@ import {
 import { AlertCircle, CheckCircle2, Save } from "lucide-react";
 import { updateDonation } from "@/app/actions/donations";
 import { DONATION_TYPES, PAYMENT_METHODS, PORTAL_SITES } from "@/lib/constants/donations";
+import { PREFECTURES } from "@/shared/config/prefectures";
 import type { Donation } from "@/types/database.types";
 
 type DonationEditFormProps = {
@@ -27,6 +28,7 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [prefecture, setPrefecture] = useState(donation.prefecture || "");
   const [donationType, setDonationType] = useState(donation.donation_type || "");
   const [paymentMethod, setPaymentMethod] = useState(donation.payment_method || "");
   const [portalSite, setPortalSite] = useState(donation.portal_site || "");
@@ -91,21 +93,46 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
       )}
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* 自治体名 */}
-        <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="municipalityName" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            自治体名 <span className="text-red-500 ml-1">*</span>
+        {/* 都道府県 */}
+        <div className="space-y-2">
+          <Label htmlFor="prefecture" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            都道府県 <span className="text-red-500 ml-1">*</span>
+          </Label>
+          <Select
+            name="prefecture"
+            value={prefecture || undefined}
+            onValueChange={setPrefecture}
+            disabled={isLoading}
+            required
+          >
+            <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+              <SelectValue placeholder="選択してください" />
+            </SelectTrigger>
+            <SelectContent>
+              {PREFECTURES.map((pref) => (
+                <SelectItem key={pref} value={pref}>
+                  {pref}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* 市区町村 */}
+        <div className="space-y-2">
+          <Label htmlFor="municipality" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            市区町村 <span className="text-red-500 ml-1">*</span>
           </Label>
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
             </div>
             <Input
-              id="municipalityName"
-              name="municipalityName"
+              id="municipality"
+              name="municipality"
               type="text"
-              placeholder="例: 北海道札幌市"
-              defaultValue={donation.municipality_name}
+              placeholder="例: 札幌市、渋谷区"
+              defaultValue={donation.municipality || ""}
               required
               maxLength={100}
               disabled={isLoading}
@@ -113,7 +140,7 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
             />
           </div>
           <p className="text-xs text-muted-foreground pl-1">
-            寄付先の自治体名を入力してください
+            寄付先の市区町村名を入力してください
           </p>
         </div>
 
