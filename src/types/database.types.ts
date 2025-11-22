@@ -46,7 +46,9 @@ export interface Database {
         Row: {
           id: string;
           user_id: string;
-          municipality_name: string;
+          municipality_name: string | null;
+          prefecture: string | null;
+          municipality: string | null;
           amount: number;
           donation_date: string;
           donation_type: string | null;
@@ -60,7 +62,9 @@ export interface Database {
         Insert: {
           id?: string;
           user_id: string;
-          municipality_name: string;
+          municipality_name?: string | null;
+          prefecture?: string | null;
+          municipality?: string | null;
           amount: number;
           donation_date: string;
           donation_type?: string | null;
@@ -74,7 +78,9 @@ export interface Database {
         Update: {
           id?: string;
           user_id?: string;
-          municipality_name?: string;
+          municipality_name?: string | null;
+          prefecture?: string | null;
+          municipality?: string | null;
           amount?: number;
           donation_date?: string;
           donation_type?: string | null;

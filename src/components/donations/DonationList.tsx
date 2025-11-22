@@ -56,7 +56,9 @@ export function DonationList({ donations }: DonationListProps) {
       // 検索クエリでフィルタリング
       const matchesSearch =
         searchQuery === "" ||
-        donation.municipality_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        donation.prefecture?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        donation.municipality?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        donation.municipality_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         donation.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         donation.receipt_number?.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -231,7 +233,9 @@ export function DonationList({ donations }: DonationListProps) {
                       </div>
                       <div>
                         <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                          {donation.municipality_name}
+                          {donation.prefecture && donation.municipality
+                            ? `${donation.prefecture}${donation.municipality}`
+                            : donation.municipality_name}
                         </h3>
                         <div className="flex items-center gap-2 mt-1.5 text-sm text-muted-foreground">
                           <Calendar className="h-3.5 w-3.5" />
@@ -298,7 +302,9 @@ export function DonationList({ donations }: DonationListProps) {
                           <AlertDialogHeader>
                             <AlertDialogTitle>寄付記録を削除しますか？</AlertDialogTitle>
                             <AlertDialogDescription>
-                              この操作は取り消せません。「{donation.municipality_name}」への寄付記録が完全に削除されます。
+                              この操作は取り消せません。「{donation.prefecture && donation.municipality
+                                ? `${donation.prefecture}${donation.municipality}`
+                                : donation.municipality_name}」への寄付記録が完全に削除されます。
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
