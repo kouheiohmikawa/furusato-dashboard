@@ -62,89 +62,116 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {/* エラーメッセージ */}
       {error && (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 flex items-start gap-2">
-          <AlertCircle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
-          <p className="text-sm text-destructive">{error}</p>
+        <div className="rounded-xl border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-900 p-4 flex items-start gap-3 animate-in fade-in-50 duration-300">
+          <div className="p-1 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 shrink-0">
+            <AlertCircle className="h-4 w-4" />
+          </div>
+          <p className="text-sm font-medium text-red-800 dark:text-red-200 mt-0.5">{error}</p>
         </div>
       )}
 
       {/* 成功メッセージ */}
       {success && (
-        <div className="rounded-lg border border-emerald-500/50 bg-emerald-500/10 p-3 flex items-start gap-2">
-          <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
-          <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
-            {success}
-          </p>
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-900 p-4 flex items-start gap-3 animate-in fade-in-50 duration-300">
+          <div className="p-1 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 shrink-0">
+            <CheckCircle2 className="h-4 w-4" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
+              更新完了
+            </p>
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">
+              {success}
+            </p>
+          </div>
         </div>
       )}
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* 自治体名 */}
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="municipalityName">
-            自治体名 <span className="text-destructive">*</span>
+          <Label htmlFor="municipalityName" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            自治体名 <span className="text-red-500 ml-1">*</span>
           </Label>
-          <Input
-            id="municipalityName"
-            name="municipalityName"
-            type="text"
-            placeholder="例: 北海道札幌市"
-            defaultValue={donation.municipality_name}
-            required
-            maxLength={100}
-            disabled={isLoading}
-          />
-          <p className="text-xs text-muted-foreground">
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+            </div>
+            <Input
+              id="municipalityName"
+              name="municipalityName"
+              type="text"
+              placeholder="例: 北海道札幌市"
+              defaultValue={donation.municipality_name}
+              required
+              maxLength={100}
+              disabled={isLoading}
+              className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground pl-1">
             寄付先の自治体名を入力してください
           </p>
         </div>
 
         {/* 寄付日 */}
         <div className="space-y-2">
-          <Label htmlFor="donationDate">
-            寄付日 <span className="text-destructive">*</span>
+          <Label htmlFor="donationDate" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            寄付日 <span className="text-red-500 ml-1">*</span>
           </Label>
-          <Input
-            id="donationDate"
-            name="donationDate"
-            type="date"
-            defaultValue={donation.donation_date}
-            required
-            disabled={isLoading}
-          />
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></svg>
+            </div>
+            <Input
+              id="donationDate"
+              name="donationDate"
+              type="date"
+              defaultValue={donation.donation_date}
+              required
+              disabled={isLoading}
+              className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+            />
+          </div>
         </div>
 
         {/* 寄付金額 */}
         <div className="space-y-2">
-          <Label htmlFor="amount">
-            寄付金額（円） <span className="text-destructive">*</span>
+          <Label htmlFor="amount" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            寄付金額（円） <span className="text-red-500 ml-1">*</span>
           </Label>
-          <Input
-            id="amount"
-            name="amount"
-            type="number"
-            placeholder="例: 10000"
-            defaultValue={donation.amount}
-            required
-            min="1"
-            step="1"
-            disabled={isLoading}
-          />
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <span className="text-sm font-bold">¥</span>
+            </div>
+            <Input
+              id="amount"
+              name="amount"
+              type="number"
+              placeholder="例: 10000"
+              defaultValue={donation.amount}
+              required
+              min="1"
+              step="1"
+              disabled={isLoading}
+              className="pl-8 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+            />
+          </div>
         </div>
 
         {/* 寄付の種類 */}
         <div className="space-y-2">
-          <Label htmlFor="donationType">寄付の種類</Label>
+          <Label htmlFor="donationType" className="text-sm font-medium text-slate-700 dark:text-slate-300">寄付の種類</Label>
           <Select
             name="donationType"
             value={donationType || undefined}
             onValueChange={setDonationType}
             disabled={isLoading}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
               <SelectValue placeholder="選択してください（任意）" />
             </SelectTrigger>
             <SelectContent>
@@ -159,14 +186,14 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
 
         {/* 支払い方法 */}
         <div className="space-y-2">
-          <Label htmlFor="paymentMethod">支払い方法</Label>
+          <Label htmlFor="paymentMethod" className="text-sm font-medium text-slate-700 dark:text-slate-300">支払い方法</Label>
           <Select
             name="paymentMethod"
             value={paymentMethod || undefined}
             onValueChange={setPaymentMethod}
             disabled={isLoading}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
               <SelectValue placeholder="選択してください（任意）" />
             </SelectTrigger>
             <SelectContent>
@@ -181,14 +208,14 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
 
         {/* ポータルサイト */}
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="portalSite">ポータルサイト</Label>
+          <Label htmlFor="portalSite" className="text-sm font-medium text-slate-700 dark:text-slate-300">ポータルサイト</Label>
           <Select
             name="portalSite"
             value={portalSite || undefined}
             onValueChange={setPortalSite}
             disabled={isLoading}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
               <SelectValue placeholder="選択してください（任意）" />
             </SelectTrigger>
             <SelectContent>
@@ -199,31 +226,37 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
               ))}
             </SelectContent>
           </Select>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground pl-1">
             寄付したポータルサイトを選択してください（任意）
           </p>
         </div>
 
         {/* 受領番号 */}
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="receiptNumber">受領番号</Label>
-          <Input
-            id="receiptNumber"
-            name="receiptNumber"
-            type="text"
-            placeholder="例: 2025-001234"
-            defaultValue={donation.receipt_number || ""}
-            maxLength={50}
-            disabled={isLoading}
-          />
-          <p className="text-xs text-muted-foreground">
+          <Label htmlFor="receiptNumber" className="text-sm font-medium text-slate-700 dark:text-slate-300">受領番号</Label>
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
+            </div>
+            <Input
+              id="receiptNumber"
+              name="receiptNumber"
+              type="text"
+              placeholder="例: 2025-001234"
+              defaultValue={donation.receipt_number || ""}
+              maxLength={50}
+              disabled={isLoading}
+              className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground pl-1">
             受領証明書に記載されている番号（任意）
           </p>
         </div>
 
         {/* メモ */}
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="notes">メモ</Label>
+          <Label htmlFor="notes" className="text-sm font-medium text-slate-700 dark:text-slate-300">メモ</Label>
           <Textarea
             id="notes"
             name="notes"
@@ -232,25 +265,25 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
             rows={4}
             maxLength={500}
             disabled={isLoading}
+            className="bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
           />
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground pl-1">
             任意で追加情報を入力できます（500文字以内）
           </p>
         </div>
       </div>
 
       {/* 更新ボタン */}
-      <div className="pt-4 border-t">
+      <div className="pt-6 border-t border-slate-100 dark:border-slate-800/50">
         <Button
           type="submit"
-          className="w-full"
-          size="lg"
+          className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
           disabled={isLoading}
         >
           {isLoading ? (
             <>
               <span className="mr-2">更新中...</span>
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
             </>
           ) : (
             <>
