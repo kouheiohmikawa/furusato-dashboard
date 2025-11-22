@@ -281,7 +281,7 @@ export function DonationOverview({ donations, estimatedLimit, limitSource = "non
                   </div>
 
                   {/* 推定上限額 */}
-                  <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50/80 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 transition-all hover:shadow-md">
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50/80 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 transition-all hover:shadow-md group">
                     <div className="flex items-center gap-4">
                       <div className="p-2.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 shrink-0">
                         <TrendingUp className="h-5 w-5" />
@@ -299,33 +299,38 @@ export function DonationOverview({ donations, estimatedLimit, limitSource = "non
                               シミュレーション
                             </Badge>
                           )}
-                          <Link href="/dashboard/profile" className="text-[10px] text-blue-600 hover:underline whitespace-nowrap">
-                            変更
-                          </Link>
                         </div>
                       </div>
                     </div>
-                    <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight text-right ml-4">
-                      {formatCurrency(estimatedLimit)}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight text-right ml-2">
+                        {formatCurrency(estimatedLimit)}
+                      </p>
+                      <Link href="/dashboard/profile">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-muted-foreground hover:text-blue-600 transition-colors">
+                          <Settings className="h-4 w-4" />
+                          <span className="sr-only">設定を変更</span>
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
 
                   {/* 残り枠/超過額 */}
                   <div className={`flex items-center justify-between p-4 rounded-xl border transition-all hover:shadow-md ${percentage >= 100
-                      ? "bg-red-50/50 dark:bg-red-950/20 border-red-100 dark:border-red-900"
-                      : "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900"
+                    ? "bg-red-50/50 dark:bg-red-950/20 border-red-100 dark:border-red-900"
+                    : "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900"
                     }`}>
                     <div className="flex items-center gap-4">
                       <div className={`p-2.5 rounded-lg shrink-0 ${percentage >= 100
-                          ? "bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400"
-                          : "bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400"
+                        ? "bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400"
+                        : "bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400"
                         }`}>
                         {percentage >= 100 ? <AlertCircle className="h-5 w-5" /> : <CheckCircle2 className="h-5 w-5" />}
                       </div>
                       <div>
                         <p className={`text-xs font-semibold uppercase tracking-wider ${percentage >= 100
-                            ? "text-red-600/80 dark:text-red-400/80"
-                            : "text-emerald-600/80 dark:text-emerald-400/80"
+                          ? "text-red-600/80 dark:text-red-400/80"
+                          : "text-emerald-600/80 dark:text-emerald-400/80"
                           }`}>
                           {percentage >= 100 ? "超過額" : "残り枠"}
                         </p>
@@ -335,8 +340,8 @@ export function DonationOverview({ donations, estimatedLimit, limitSource = "non
                       </div>
                     </div>
                     <p className={`text-xl sm:text-2xl font-bold tracking-tight text-right ml-4 ${percentage >= 100
-                        ? "text-red-700 dark:text-red-400"
-                        : "text-emerald-700 dark:text-emerald-400"
+                      ? "text-red-700 dark:text-red-400"
+                      : "text-emerald-700 dark:text-emerald-400"
                       }`}>
                       {percentage >= 100 ? "+" : ""}{formatCurrency(Math.abs(remaining))}
                     </p>
