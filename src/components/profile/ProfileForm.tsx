@@ -214,9 +214,9 @@ export function ProfileForm({
             -1万
           </Button>
           <div className="relative flex-1">
+            {/* 表示用（カンマ区切り） */}
             <Input
-              id="manualLimit"
-              name="manualLimit"
+              id="manualLimitDisplay"
               type="text"
               placeholder="直接入力も可能"
               value={manualLimit ? parseInt(manualLimit).toLocaleString() : ""}
@@ -228,6 +228,13 @@ export function ProfileForm({
               }}
               disabled={isLoading}
               className="pr-12 text-right"
+            />
+            {/* 送信用（カンマなし） */}
+            <input
+              type="hidden"
+              id="manualLimit"
+              name="manualLimit"
+              value={manualLimit || ""}
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
               円
