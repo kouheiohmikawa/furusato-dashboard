@@ -75,7 +75,7 @@ export async function signup(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -83,8 +83,20 @@ export async function signup(formData: FormData) {
     },
   });
 
+  // デバッグログ（開発環境のみ）
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Signup response:', { data, error });
+  }
+
   if (error) {
     return { error: translateAuthError(error.message) };
+  }
+
+  // Supabaseは既存ユーザーの場合、errorではなくdata.user.identitiesが空配列になる
+  if (data?.user && data.user.identities && data.user.identities.length === 0) {
+    return {
+      error: "このメールアドレスは既に登録されています。ログインしてください。"
+    };
   }
 
   return {
