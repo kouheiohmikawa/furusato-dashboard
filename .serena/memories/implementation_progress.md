@@ -128,6 +128,110 @@
   - ログイン中にサイト名をクリックしても再ログイン不要
   - 直感的なナビゲーションフロー
 
+#### 5. ダッシュボードグラフの可視性改善（2025-01-22）📊
+**ファイル**: `src/components/dashboard/DonationOverview.tsx`
+
+**変更内容**:
+- **円グラフの大型化とセンターラベル追加**
+  - 高さを200px→280pxに拡大
+  - 円の中心に使用率パーセンテージを大きく表示
+  - 「使用率」の補足テキストを追加
+  
+- **状態別カラーコーディング**
+  - 0-79%: 青色（通常）
+  - 80-99%: 黄色（上限接近）
+  - 100%以上: 赤色（上限超過）
+  - グラフの色が寄付状況に応じて動的に変化
+  
+- **統計カードのグラデーション強化**
+  - 現在の寄付総額: 青のグラデーション
+  - 推定上限額: スレートグレーのグラデーション
+  - 残り枠/超過額: 状態に応じたグラデーション（緑/黄/赤）
+  
+- **凡例の追加**
+  - 円グラフの下に「寄付済み」「残り枠」の凡例を表示
+  - 視覚的な理解を促進
+
+**コミット**: `e173f9e`
+
+#### 6. 手動上限額設定機能（2025-01-22）⚙️
+**ファイル**: 
+- `src/types/database.types.ts` (manual_limit追加)
+- `src/components/profile/ProfileForm.tsx`
+- `src/app/dashboard/profile/page.tsx`
+- `src/app/actions/profile.ts`
+- `src/app/dashboard/page.tsx`
+- `src/components/dashboard/DonationOverview.tsx`
+
+**変更内容**:
+- **データベーススキーマ追加**
+  - `profiles.manual_limit`カラム追加（INTEGER）
+  - シミュレーション結果を上書きできる手動設定機能
+  
+- **プロフィール編集画面の強化**
+  - プリセットボタン: 3万円、5万円、8万円、10万円、15万円、20万円
+  - レンジスライダー: 0-30万円、1万円刻み
+  - 増減ボタン: +1万円/-1万円
+  - 直接入力: カンマ区切り表示
+  - クリアボタン: 手動設定を解除
+  
+- **表示/送信の分離（重要なバグフィックス）**
+  - 表示用input: カンマ区切りで表示（例: 100,000）
+  - 送信用hidden input: 生の数値（例: 100000）
+  - parseInt()がカンマで停止する問題を解決
+  
+- **優先度ロジックの実装**
+  - 優先順位: manual_limit > simulation > none
+  - ダッシュボードに上限額のソースをバッジ表示
+    - 「手動設定」（設定アイコン付き）
+    - 「シミュレーション結果」（グラフアイコン付き）
+  - 「変更」ボタンでプロフィール設定へ誘導
+
+**コミット**: `f9319cc`, `10b9b4b`, `31ad0bf`
+
+**必要なSQL**:
+```sql
+ALTER TABLE profiles ADD COLUMN manual_limit INTEGER;
+```
+
+#### 7. ポータルサイトトラッキング機能（2025-01-22）🌐
+**ファイル**:
+- `src/types/database.types.ts` (portal_site追加)
+- `src/lib/constants/donations.ts` (PORTAL_SITES追加)
+- `src/components/donations/DonationForm.tsx`
+- `src/components/donations/DonationEditForm.tsx`
+- `src/app/actions/donations.ts`
+- `src/components/dashboard/DonationOverview.tsx`
+
+**変更内容**:
+- **データベーススキーマ追加**
+  - `donations.portal_site`カラム追加（VARCHAR(100)）
+  - どのポータルサイトで寄付したかを記録
+  
+- **ポータルサイト定数**
+  - 9つの主要ポータルサイトをリスト化
+  - ふるさとチョイス、楽天ふるさと納税、さとふる、ふるなび
+  - ANAのふるさと納税、au PAY ふるさと納税、JALふるさと納税
+  - ふるさとプレミアム、その他
+  
+- **フォームの改善**
+  - 寄付登録フォームにポータルサイト選択を追加（任意）
+  - 寄付編集フォームにも同様に追加
+  - Selectコンポーネントで選択可能
+  
+- **ダッシュボード統計の変更**
+  - 「支払い方法別の内訳」→「ポータルサイト別の内訳」に変更
+  - 各ポータルサイトごとの寄付額・件数・割合を表示
+  - どのポータルを使っているか一目で把握可能
+
+**コミット**: `0900c6e`
+
+**必要なSQL**:
+```sql
+ALTER TABLE donations ADD COLUMN portal_site VARCHAR(100);
+COMMENT ON COLUMN donations.portal_site IS 'ポータルサイト名（ふるさとチョイス、楽天など）';
+```
+
 #### 3. ダッシュボード大幅改善
 **ファイル**: 
 - `src/app/dashboard/page.tsx`
@@ -211,25 +315,32 @@
 - 認証エラーの日本語化 ✅
 - ダッシュボードの情報階層最適化 ✅
 - シミュレーション結果との連携 ✅
+- ダッシュボードグラフの可視性改善 ✅
+- 手動上限額設定機能 ✅
+- ポータルサイトトラッキング機能 ✅
 
 ---
 
 ## ✅ 最新のGitコミット
 
-**コミットハッシュ**: `1cbc7af`  
-**日付**: 2025-01-18  
-**メッセージ**: feat: redesign dashboard with compact donut chart layout
+**コミットハッシュ**: `0900c6e`  
+**日付**: 2025-01-22  
+**メッセージ**: feat: add portal site tracking to donation records
 
 **変更内容**:
-- 5ファイル変更
-- recharts導入（円グラフライブラリ）
-- DonationOverviewを円グラフでコンパクト化
-- ダッシュボードを3カラムグリッドに変更
-- スクロール不要で全機能アクセス可能に
+- 6ファイル変更
+- ポータルサイトトラッキング機能追加
+- ダッシュボード統計を支払い方法別→ポータルサイト別に変更
+- 寄付フォーム・編集フォームにポータルサイト選択追加
 
 **プッシュ済み**: ✅ origin/feature/setup-project
 
 ### 過去のコミット
+- `31ad0bf` (2025-01-22): fix: manual limit input showing wrong value
+- `10b9b4b` (2025-01-22): feat: improve manual limit input UX with presets and slider
+- `f9319cc` (2025-01-22): feat: add manual donation limit setting
+- `e173f9e` (2025-01-22): feat: enhance dashboard chart visibility and statistics
+- `1cbc7af` (2025-01-18): feat: redesign dashboard with compact donut chart layout
 - `751a34b` (2025-01-18): feat: improve header navigation based on authentication state
 - `5e35f5d` (2025-01-17): feat: improve UI/UX for landing page, authentication, and dashboard
 
@@ -330,6 +441,8 @@ src/
 **総ファイル数**: 70+ ファイル  
 **総行数**: 10,000+ 行  
 **コンポーネント数**: 30+ コンポーネント  
-**完了タスク数**: 38/38（Phase 2の20タスク + UI/UX改善）
+**完了タスク数**: 41/41（Phase 2の20タスク + UI/UX改善21件）
 
 **ビルド状況**: ✅ エラー0、警告0、17ルート生成成功
+
+**最終更新**: 2025-01-22
