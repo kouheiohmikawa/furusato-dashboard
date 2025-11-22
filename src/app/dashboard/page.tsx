@@ -2,9 +2,10 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calculator, Heart, Plus, TrendingUp, ArrowRight, Home } from "lucide-react";
+import { Calculator, Heart, Plus, TrendingUp, ArrowRight, LogOut } from "lucide-react";
 import { DonationOverview } from "@/components/dashboard/DonationOverview";
 import { UserMenu } from "@/components/dashboard/UserMenu";
+import { logout } from "@/app/actions/auth";
 import Link from "next/link";
 import type { Profile, Donation, SimulationHistory } from "@/types/database.types";
 
@@ -141,13 +142,12 @@ export default async function DashboardPage() {
                       <ArrowRight className="ml-auto h-3 w-3 text-muted-foreground opacity-50" />
                     </Button>
                   </Link>
-                  <Link href="/">
-                    <Button variant="ghost" className="w-full justify-start h-10 font-normal">
-                      <Home className="mr-2 h-4 w-4 text-slate-500" />
-                      トップページへ戻る
-                      <ArrowRight className="ml-auto h-3 w-3 text-muted-foreground opacity-50" />
+                  <form action={logout} className="w-full">
+                    <Button type="submit" variant="ghost" className="w-full justify-start h-10 font-normal text-destructive hover:text-destructive hover:bg-destructive/10">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      ログアウト
                     </Button>
-                  </Link>
+                  </form>
                 </div>
               </div>
             </div>
