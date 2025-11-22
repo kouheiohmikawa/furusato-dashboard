@@ -27,10 +27,10 @@ export default async function StatisticsPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
-            統計・分析
+            詳しいデータ
           </h1>
           <p className="text-muted-foreground text-sm mt-2">
-            寄付データを様々な角度から分析
+            グラフで寄付の内訳を確認
           </p>
         </div>
 
