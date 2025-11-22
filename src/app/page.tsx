@@ -35,25 +35,26 @@ export default function HomePage() {
             複数のポータルサイトをまたいだ寄付状況を、ひとつのダッシュボードで一元管理。
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Button asChild size="lg" className="w-full sm:w-auto h-12 px-8 text-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/25 transition-all hover:scale-105 active:scale-95">
+          <div className="flex flex-col items-center justify-center gap-6 pt-6">
+            <Button asChild size="lg" className="w-full sm:w-auto h-14 px-10 text-xl rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl shadow-blue-500/30 transition-all hover:scale-105 active:scale-95">
               <Link href="/simulator">
-                <Calculator className="mr-2 h-5 w-5" />
+                <Calculator className="mr-2 h-6 w-6" />
                 シミュレーションを始める
               </Link>
             </Button>
 
-            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto h-12 px-8 text-lg border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              <Link href="/signup">
-                <Sparkles className="mr-2 h-5 w-5" />
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <Link href="/login" className="hover:text-primary underline-offset-4 hover:underline transition-colors">
+                ログイン
+              </Link>
+              <span className="text-slate-300 dark:text-slate-700">|</span>
+              <Link href="/signup" className="hover:text-primary underline-offset-4 hover:underline transition-colors">
                 新規登録
               </Link>
-            </Button>
+            </div>
           </div>
 
-          <p className="text-sm text-muted-foreground pt-2">
-            ※ シミュレーション機能は会員登録不要ですぐに使えます
-          </p>
+
         </div>
       </section>
 
