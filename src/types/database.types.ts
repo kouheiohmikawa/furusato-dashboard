@@ -51,6 +51,7 @@ export interface Database {
           donation_date: string;
           donation_type: string | null;
           payment_method: string | null;
+          portal_site: string | null;
           receipt_number: string | null;
           notes: string | null;
           created_at: string;
@@ -64,6 +65,7 @@ export interface Database {
           donation_date: string;
           donation_type?: string | null;
           payment_method?: string | null;
+          portal_site?: string | null;
           receipt_number?: string | null;
           notes?: string | null;
           created_at?: string;
@@ -77,6 +79,7 @@ export interface Database {
           donation_date?: string;
           donation_type?: string | null;
           payment_method?: string | null;
+          portal_site?: string | null;
           receipt_number?: string | null;
           notes?: string | null;
           created_at?: string;
