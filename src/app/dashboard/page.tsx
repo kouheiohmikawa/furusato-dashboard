@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calculator, Heart, Plus, TrendingUp, ArrowRight, LogOut } from "lucide-react";
+import { Calculator, Heart, Plus, TrendingUp, ArrowRight, LogOut, BarChart3 } from "lucide-react";
 import { DonationOverview } from "@/components/dashboard/DonationOverview";
 import { UserMenu } from "@/components/dashboard/UserMenu";
 import { logout } from "@/app/actions/auth";
@@ -139,6 +139,13 @@ export default async function DashboardPage() {
                     <Button variant="ghost" className="w-full justify-start h-10 font-normal">
                       <TrendingUp className="mr-2 h-4 w-4 text-amber-500" />
                       シミュレーション履歴
+                      <ArrowRight className="ml-auto h-3 w-3 text-muted-foreground opacity-50" />
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/statistics">
+                    <Button variant="ghost" className="w-full justify-start h-10 font-normal">
+                      <BarChart3 className="mr-2 h-4 w-4 text-purple-500" />
+                      統計・分析
                       <ArrowRight className="ml-auto h-3 w-3 text-muted-foreground opacity-50" />
                     </Button>
                   </Link>
