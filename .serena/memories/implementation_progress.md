@@ -323,7 +323,7 @@ COMMENT ON COLUMN donations.portal_site IS 'ポータルサイト名（ふるさ
 
 ## ✅ 最新のGitコミット（2025-11-23）
 
-**コミットハッシュ**: `pending`  
+**コミットハッシュ**: `33e14aa`  
 **日付**: 2025-11-23  
 **メッセージ**: feat: implement middleware authentication and security enhancements
 
@@ -334,10 +334,10 @@ COMMENT ON COLUMN donations.portal_site IS 'ポータルサイト名（ふるさ
 - ログイン後のリダイレクト機能
 - AuthProviderによる認証状態のリアルタイム同期
 
-**プッシュ済み**: 🔄 準備中
+**プッシュ済み**: ✅ origin/feature/middleware-auth-security
 
-### 最近のコミット（2025-11-22）
-- `pending`: feat: redesign profile ui and complete db migrations
+### 最近のコミット（2025-11-23）
+- `33e14aa`: feat: implement middleware authentication and security enhancements
 - `f5fc7f9`: refactor: use user-friendly wording for statistics page
 - `1338bec`: feat: add comprehensive donation statistics and analysis page
 
