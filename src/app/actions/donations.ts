@@ -30,6 +30,7 @@ export async function createDonation(formData: FormData) {
   const amount = formData.get("amount") as string;
   const donationType = formData.get("donationType") as string;
   const paymentMethod = formData.get("paymentMethod") as string;
+  const portalSite = formData.get("portalSite") as string;
   const receiptNumber = formData.get("receiptNumber") as string;
   const notes = formData.get("notes") as string;
 
@@ -54,6 +55,7 @@ export async function createDonation(formData: FormData) {
     amount: Number(amount),
     donation_type: donationType || null,
     payment_method: paymentMethod || null,
+    portal_site: portalSite || null,
     receipt_number: receiptNumber?.trim() || null,
     notes: notes?.trim() || null,
   };
@@ -92,6 +94,7 @@ export async function updateDonation(id: string, formData: FormData) {
   const amount = formData.get("amount") as string;
   const donationType = formData.get("donationType") as string;
   const paymentMethod = formData.get("paymentMethod") as string;
+  const portalSite = formData.get("portalSite") as string;
   const receiptNumber = formData.get("receiptNumber") as string;
   const notes = formData.get("notes") as string;
 
@@ -115,6 +118,7 @@ export async function updateDonation(id: string, formData: FormData) {
     amount: Number(amount),
     donation_type: donationType || null,
     payment_method: paymentMethod || null,
+    portal_site: portalSite || null,
     receipt_number: receiptNumber?.trim() || null,
     notes: notes?.trim() || null,
   };

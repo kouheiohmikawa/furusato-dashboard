@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { AlertCircle, CheckCircle2, Save } from "lucide-react";
 import { updateDonation } from "@/app/actions/donations";
-import { DONATION_TYPES, PAYMENT_METHODS } from "@/lib/constants/donations";
+import { DONATION_TYPES, PAYMENT_METHODS, PORTAL_SITES } from "@/lib/constants/donations";
 import type { Donation } from "@/types/database.types";
 
 type DonationEditFormProps = {
@@ -29,6 +29,7 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [donationType, setDonationType] = useState(donation.donation_type || "");
   const [paymentMethod, setPaymentMethod] = useState(donation.payment_method || "");
+  const [portalSite, setPortalSite] = useState(donation.portal_site || "");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -176,6 +177,31 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {/* ポータルサイト */}
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="portalSite">ポータルサイト</Label>
+          <Select
+            name="portalSite"
+            value={portalSite || undefined}
+            onValueChange={setPortalSite}
+            disabled={isLoading}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="選択してください（任意）" />
+            </SelectTrigger>
+            <SelectContent>
+              {PORTAL_SITES.map((site) => (
+                <SelectItem key={site} value={site}>
+                  {site}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            寄付したポータルサイトを選択してください（任意）
+          </p>
         </div>
 
         {/* 受領番号 */}

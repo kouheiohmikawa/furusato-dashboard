@@ -24,3 +24,20 @@ export const PAYMENT_METHODS = [
 ] as const;
 
 export type PaymentMethod = typeof PAYMENT_METHODS[number];
+
+/**
+ * ポータルサイト
+ */
+export const PORTAL_SITES = [
+  "ふるさとチョイス",
+  "楽天ふるさと納税",
+  "さとふる",
+  "ふるなび",
+  "ANAのふるさと納税",
+  "au PAY ふるさと納税",
+  "JALふるさと納税",
+  "ふるさとプレミアム",
+  "その他",
+] as const;
+
+export type PortalSite = typeof PORTAL_SITES[number];

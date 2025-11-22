@@ -54,7 +54,7 @@ export function DonationOverview({ donations, estimatedLimit, limitSource = "non
     const statsMap = new Map<string, PortalStats>();
 
     yearDonations.forEach((donation) => {
-      const portal = donation.payment_method || "未設定";
+      const portal = donation.portal_site || "未設定";
       const existing = statsMap.get(portal) || { portal, count: 0, total: 0 };
 
       statsMap.set(portal, {
@@ -377,7 +377,7 @@ export function DonationOverview({ donations, estimatedLimit, limitSource = "non
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
                 <PieChart className="h-4 w-4 text-primary" />
-                支払い方法別の内訳
+                ポータルサイト別の内訳
               </CardTitle>
               {showDetails ? (
                 <ChevronUp className="h-4 w-4 text-muted-foreground" />
