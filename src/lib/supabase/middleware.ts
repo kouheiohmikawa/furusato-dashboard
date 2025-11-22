@@ -43,5 +43,58 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return supabaseResponse;
+  // ---------------------------------------------------------
+  // 1. ルート保護 (アクセス制御)
+  // ---------------------------------------------------------
+  const url = request.nextUrl.clone();
+  const path = url.pathname;
+
+  // 公開ルート（認証不要で常にアクセス可能）
+  const publicPaths = ["/", "/auth/callback", "/auth/reset-password"];
+  const isPublic = publicPaths.some((p) => path.startsWith(p));
+
+  // 保護されたルート（ログインが必要）
+  const protectedPaths = ["/dashboard"];
+  const isProtected = protectedPaths.some((p) => path.startsWith(p));
+
+  // 認証ルート（ログイン済みならアクセス不要）
+  const authPaths = ["/login", "/signup", "/reset-password"];
+  const isAuthPath = authPaths.some((p) => path.startsWith(p));
+
+  // 未ログインで保護されたルートにアクセスした場合 -> ログインページへ
+  if (!user && isProtected && !isPublic) {
+    url.pathname = "/login";
+    // 元のURLを保存（ログイン後に戻れるように）
+    url.searchParams.set("redirect", path);
+    return NextResponse.redirect(url);
+  }
+
+  // ログイン済みで認証ルートにアクセスした場合 -> ダッシュボードへ
+  if (user && isAuthPath) {
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  // ---------------------------------------------------------
+  // 2. セキュリティヘッダーの付与
+  // ---------------------------------------------------------
+  // supabaseResponseから既存ヘッダーを継承
+  const finalResponse = NextResponse.next({
+    request,
+    headers: supabaseResponse.headers,
+  });
+
+  // セキュリティヘッダーを追加
+  finalResponse.headers.set("X-Frame-Options", "DENY");
+  finalResponse.headers.set("X-Content-Type-Options", "nosniff");
+  finalResponse.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  finalResponse.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+
+  // Supabaseのクッキーをコピー（セッション情報を保持）
+  // IMPORTANT: options（HttpOnly, Secure, SameSiteなど）も含めてコピー
+  supabaseResponse.cookies.getAll().forEach(({ name, value, ...options }) => {
+    finalResponse.cookies.set(name, value, options);
+  });
+
+  return finalResponse;
 }

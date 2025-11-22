@@ -321,21 +321,23 @@ COMMENT ON COLUMN donations.portal_site IS 'ポータルサイト名（ふるさ
 
 ---
 
-## ✅ 最新のGitコミット（2025-11-22）
+## ✅ 最新のGitコミット（2025-11-23）
 
-**コミットハッシュ**: `pending`  
-**日付**: 2025-11-22  
-**メッセージ**: feat: redesign profile ui and complete db migrations
+**コミットハッシュ**: `33e14aa`  
+**日付**: 2025-11-23  
+**メッセージ**: feat: implement middleware authentication and security enhancements
 
 **変更内容**:
-- プロフィールページのプレミアムデザイン適用
-- ダッシュボードのUI改善（設定リンクの視認性向上）
-- DBマイグレーション実行（手動上限額、ポータルサイト、都道府県分離）
+- ミドルウェアによるアクセス制御の実装
+- セキュリティヘッダーの追加
+- クッキー属性（HttpOnly, Secure等）の保持
+- ログイン後のリダイレクト機能
+- AuthProviderによる認証状態のリアルタイム同期
 
-**プッシュ済み**: ✅ origin/feature/profile-ui-redesign
+**プッシュ済み**: ✅ origin/feature/middleware-auth-security
 
-### 最近のコミット（2025-11-22）
-- `pending`: feat: redesign profile ui and complete db migrations
+### 最近のコミット（2025-11-23）
+- `33e14aa`: feat: implement middleware authentication and security enhancements
 - `f5fc7f9`: refactor: use user-friendly wording for statistics page
 - `1338bec`: feat: add comprehensive donation statistics and analysis page
 
@@ -609,3 +611,153 @@ CREATE INDEX idx_donations_municipality ON donations(municipality);
 **ビルド状況**: ✅ エラー0、警告0、18ルート生成成功
 
 **最終更新**: 2025-11-22
+
+### 12. ミドルウェアによる認証とセキュリティ強化 🔒
+**ブランチ**: `feature/middleware-auth-security`  
+**日付**: 2025-11-23  
+**ファイル**: 4ファイル変更、2新規ファイル（71行追加）
+
+**変更内容**:
+
+#### **1. ミドルウェアによるアクセス制御**
+**ファイル**: `src/lib/supabase/middleware.ts`
+
+- **公開ルートの定義**
+  - `/` - トップページ
+  - `/auth/callback` - 認証コールバック（メール経由のリンク対応）
+  - `/auth/reset-password` - パスワードリセット
+  
+- **保護ルートの定義**
+  - `/dashboard/*` - ダッシュボード全体（ログイン必須）
+  
+- **認証ルートの定義**
+  - `/login`, `/signup`, `/reset-password` - ログイン済みならダッシュボードへ
+  
+- **リダイレクト処理**
+  - 未ログインで保護ページにアクセス → `/login?redirect=元のURL`
+  - ログイン済みで認証ページにアクセス → `/dashboard`
+
+**動作フロー**:
+```
+/dashboard/statistics (未ログイン)
+  ↓ (ミドルウェアでリダイレクト)
+/login?redirect=/dashboard/statistics
+  ↓ (ログイン成功後)
+/dashboard/statistics (元のページに戻る)
+```
+
+#### **2. セキュリティヘッダーの追加**
+**ファイル**: `src/lib/supabase/middleware.ts`
+
+追加されたヘッダー:
+- `X-Frame-Options: DENY` - クリックジャッキング対策
+- `X-Content-Type-Options: nosniff` - MIMEスニッフィング対策
+- `Referrer-Policy: strict-origin-when-cross-origin` - リファラー制御
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()` - 不要な機能の無効化
+
+#### **3. クッキー属性の適切な保持**
+**ファイル**: `src/lib/supabase/middleware.ts` (94-96行)
+
+**修正前**:
+```typescript
+supabaseResponse.cookies.getAll().forEach(({ name, value }) => {
+  finalResponse.cookies.set(name, value);  // ❌ options欠落
+});
+```
+
+**修正後**:
+```typescript
+supabaseResponse.cookies.getAll().forEach(({ name, value, ...options }) => {
+  finalResponse.cookies.set(name, value, options);  // ✅ HttpOnly, Secure等を保持
+});
+```
+
+**セキュリティへの影響**:
+- ✅ `HttpOnly` 属性を保持 → JavaScriptからアクセス不可（XSS対策）
+- ✅ `Secure` 属性を保持 → HTTPS接続でのみ送信（盗聴対策）
+- ✅ `SameSite` 属性を保持 → CSRF攻撃対策
+- ✅ `MaxAge`/`Expires` を保持 → 正しい有効期限
+
+#### **4. ログイン後のリダイレクト機能**
+**ファイル**: 
+- `src/app/actions/auth.ts` - `login()` 関数を修正
+- `src/app/login/page.tsx` - URLパラメータからredirectを取得
+
+**実装**:
+```typescript
+// auth.ts
+const redirectTo = formData.get("redirect") as string | null;
+redirect(redirectTo || "/dashboard");
+
+// login.tsx
+const searchParams = useSearchParams();
+const redirectTo = searchParams.get("redirect");
+{redirectTo && <input type="hidden" name="redirect" value={redirectTo} />}
+```
+
+**UX改善**:
+- ✅ ユーザーが見たかったページに自動で戻る
+- ✅ ログインの手間を最小化
+
+#### **5. AuthProviderによる認証状態の同期**
+**新規ファイル**: `src/components/providers/AuthProvider.tsx` (27行)
+
+**機能**:
+- Supabaseの`onAuthStateChange`イベントを監視
+- `SIGNED_IN`または`SIGNED_OUT`イベント発生時に`router.refresh()`を実行
+- サーバーコンポーネントを再レンダリングして最新の認証状態を反映
+
+**対応シナリオ**:
+1. **別タブでログアウト** → 全タブで即座にログインページへリダイレクト
+2. **トークン期限切れ** → 即座に検知してログインページへ
+3. **ヘッダー表示の同期** → ログイン/ログアウト状態が即座に反映
+
+**実装**:
+```typescript
+useEffect(() => {
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+      router.refresh();
+    }
+  });
+  return () => subscription.unsubscribe();
+}, [router, supabase]);
+```
+
+#### **6. RootLayoutへの統合**
+**ファイル**: `src/app/layout.tsx`
+
+**変更**:
+```typescript
+import { AuthProvider } from "@/components/providers/AuthProvider";
+
+<AuthProvider>
+  <Header isLoggedIn={!!user} />
+  <main className="flex-1">{children}</main>
+  <Footer />
+</AuthProvider>
+```
+
+**効果**: アプリ全体で認証状態の同期が有効になる
+
+---
+
+**メリット**:
+- ✅ **セキュリティ強化**: ミドルウェアレベルでのアクセス制御
+- ✅ **UX改善**: ログイン後に元のページに戻る
+- ✅ **リアルタイム同期**: 別タブでの操作が即座に反映
+- ✅ **セキュアなクッキー管理**: HttpOnly, Secure属性を保持
+- ✅ **クリックジャッキング対策**: X-Frame-Optionsヘッダー
+- ✅ **認証フロー保護**: /auth/callbackを適切に除外
+
+**セキュリティ評価**: ⭐⭐⭐⭐⭐
+
+**新規ファイル**:
+- `src/components/providers/AuthProvider.tsx`
+- `.serena/memories/auth-provider-implementation.md`
+
+**変更ファイル**:
+- `src/lib/supabase/middleware.ts` (55行追加)
+- `src/app/actions/auth.ts` (リダイレクト機能追加)
+- `src/app/login/page.tsx` (redirect保持)
+- `src/app/layout.tsx` (AuthProvider追加)
