@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, AlertCircle, CheckCircle2, Calendar, PieChart, ChevronDown, ChevronUp } from "lucide-react";
+import { TrendingUp, AlertCircle, CheckCircle2, Calendar, PieChart, ChevronDown, ChevronUp, Settings } from "lucide-react";
 import type { Donation } from "@/types/database.types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import { PieChart as RechartsChart, Pie, Cell, ResponsiveContainer, Tooltip, Lab
 type DonationOverviewProps = {
   donations: Donation[];
   estimatedLimit?: number;
+  limitSource?: "manual" | "simulation" | "none";
 };
 
 type PortalStats = {
@@ -21,7 +22,7 @@ type PortalStats = {
   total: number;
 };
 
-export function DonationOverview({ donations, estimatedLimit }: DonationOverviewProps) {
+export function DonationOverview({ donations, estimatedLimit, limitSource = "none" }: DonationOverviewProps) {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [showDetails, setShowDetails] = useState(false);
@@ -150,7 +151,7 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
       <Card className="border-2">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
-            <div>
+            <div className="flex-1">
               <CardTitle className="text-lg">
                 {selectedYear}年の寄付状況
               </CardTitle>
@@ -159,6 +160,28 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
                   ? `${yearStats.count}件の寄付を登録済み`
                   : "控除上限額を計算しましょう"}
               </CardDescription>
+              {estimatedLimit && limitSource !== "none" && (
+                <div className="mt-2 flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    {limitSource === "manual" ? (
+                      <>
+                        <Settings className="h-3 w-3 mr-1" />
+                        手動設定
+                      </>
+                    ) : (
+                      <>
+                        <TrendingUp className="h-3 w-3 mr-1" />
+                        シミュレーション結果
+                      </>
+                    )}
+                  </Badge>
+                  <Link href="/dashboard/profile">
+                    <Button variant="ghost" size="sm" className="h-6 text-xs">
+                      変更
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
             {estimatedLimit && (
               <>

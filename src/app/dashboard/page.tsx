@@ -42,10 +42,19 @@ export default async function DashboardPage() {
     .limit(1)
     .maybeSingle()) as { data: SimulationHistory | null };
 
-  // 推定上限額を取得（シミュレーション結果から）
-  const estimatedLimit = latestSimulation
-    ? (latestSimulation.result_data as { estimatedLimit?: number })?.estimatedLimit
-    : undefined;
+  // 推定上限額を取得（優先順位: 1.手動設定 > 2.シミュレーション結果）
+  const estimatedLimit =
+    profile?.manual_limit ?? // 手動設定を最優先
+    (latestSimulation
+      ? (latestSimulation.result_data as { estimatedLimit?: number })?.estimatedLimit
+      : undefined);
+
+  // 上限額の設定元を判定
+  const limitSource = profile?.manual_limit
+    ? "manual" as const
+    : latestSimulation
+      ? "simulation" as const
+      : "none" as const;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
@@ -71,7 +80,11 @@ export default async function DashboardPage() {
         <div className="grid gap-4 lg:grid-cols-3">
           {/* 左カラム - 寄付概要（2列分） */}
           <div className="lg:col-span-2">
-            <DonationOverview donations={donations || []} estimatedLimit={estimatedLimit} />
+            <DonationOverview
+              donations={donations || []}
+              estimatedLimit={estimatedLimit}
+              limitSource={limitSource}
+            />
           </div>
 
           {/* 右カラム - クイックアクション */}
