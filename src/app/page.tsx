@@ -43,14 +43,19 @@ export default function HomePage() {
               </Link>
             </Button>
 
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <Link href="/login" className="hover:text-primary underline-offset-4 hover:underline transition-colors">
-                ログイン
-              </Link>
-              <span className="text-slate-300 dark:text-slate-700">|</span>
-              <Link href="/signup" className="hover:text-primary underline-offset-4 hover:underline transition-colors">
-                新規登録
-              </Link>
+            <div className="flex items-center gap-4">
+              <Button asChild variant="ghost" className="text-muted-foreground hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                <Link href="/login">
+                  ログイン
+                </Link>
+              </Button>
+              <span className="text-slate-200 dark:text-slate-800 h-6 w-px bg-slate-200 dark:bg-slate-800" />
+              <Button asChild variant="outline" className="border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700">
+                <Link href="/signup">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  新規登録
+                </Link>
+              </Button>
             </div>
           </div>
 
