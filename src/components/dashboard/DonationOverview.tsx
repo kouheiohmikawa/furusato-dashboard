@@ -4,15 +4,16 @@ import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, AlertCircle, CheckCircle2, Calendar, PieChart, ChevronDown, ChevronUp } from "lucide-react";
+import { TrendingUp, AlertCircle, CheckCircle2, Calendar, PieChart, ChevronDown, ChevronUp, Settings } from "lucide-react";
 import type { Donation } from "@/types/database.types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
-import { PieChart as RechartsChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { PieChart as RechartsChart, Pie, Cell, ResponsiveContainer, Tooltip, Label } from "recharts";
 
 type DonationOverviewProps = {
   donations: Donation[];
   estimatedLimit?: number;
+  limitSource?: "manual" | "simulation" | "none";
 };
 
 type PortalStats = {
@@ -21,7 +22,7 @@ type PortalStats = {
   total: number;
 };
 
-export function DonationOverview({ donations, estimatedLimit }: DonationOverviewProps) {
+export function DonationOverview({ donations, estimatedLimit, limitSource = "none" }: DonationOverviewProps) {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [showDetails, setShowDetails] = useState(false);
@@ -76,12 +77,27 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
 
     const used = yearStats.total;
     const remainingAmount = Math.max(0, estimatedLimit - used);
+    const isOverLimit = used > estimatedLimit;
+
+    // 上限超過時は赤色、通常時はプライマリカラー
+    const usedColor = isOverLimit
+      ? "#ef4444" // 赤色（上限超過）
+      : percentage >= 80
+        ? "#f59e0b" // 黄色（上限接近）
+        : "#3b82f6"; // 青色（通常）
+
+    if (isOverLimit) {
+      // 上限超過時は全体を赤で表示
+      return [
+        { name: "寄付済み（超過）", value: used, color: usedColor },
+      ];
+    }
 
     return [
-      { name: "寄付済み", value: used, color: "hsl(var(--primary))" },
-      { name: "残り", value: remainingAmount, color: "hsl(var(--muted))" },
+      { name: "寄付済み", value: used, color: usedColor },
+      { name: "残り枠", value: remainingAmount, color: "#e5e7eb" }, // 明るいグレー
     ];
-  }, [yearStats.total, estimatedLimit]);
+  }, [yearStats.total, estimatedLimit, percentage]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("ja-JP", {
@@ -135,7 +151,7 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
       <Card className="border-2">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
-            <div>
+            <div className="flex-1">
               <CardTitle className="text-lg">
                 {selectedYear}年の寄付状況
               </CardTitle>
@@ -144,6 +160,28 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
                   ? `${yearStats.count}件の寄付を登録済み`
                   : "控除上限額を計算しましょう"}
               </CardDescription>
+              {estimatedLimit && limitSource !== "none" && (
+                <div className="mt-2 flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    {limitSource === "manual" ? (
+                      <>
+                        <Settings className="h-3 w-3 mr-1" />
+                        手動設定
+                      </>
+                    ) : (
+                      <>
+                        <TrendingUp className="h-3 w-3 mr-1" />
+                        シミュレーション結果
+                      </>
+                    )}
+                  </Badge>
+                  <Link href="/dashboard/profile">
+                    <Button variant="ghost" size="sm" className="h-6 text-xs">
+                      変更
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
             {estimatedLimit && (
               <>
@@ -172,20 +210,57 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* 円グラフ */}
               <div className="flex flex-col items-center justify-center">
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer width="100%" height={280}>
                   <RechartsChart>
                     <Pie
                       data={chartData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      paddingAngle={2}
+                      innerRadius={70}
+                      outerRadius={110}
+                      paddingAngle={chartData.length > 1 ? 5 : 0}
                       dataKey="value"
+                      animationBegin={0}
+                      animationDuration={800}
+                      animationEasing="ease-out"
                     >
                       {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={entry.color}
+                          stroke={entry.color}
+                          strokeWidth={2}
+                        />
                       ))}
+                      <Label
+                        content={({ viewBox }) => {
+                          if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                            return (
+                              <text
+                                x={viewBox.cx}
+                                y={viewBox.cy}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                              >
+                                <tspan
+                                  x={viewBox.cx}
+                                  y={(viewBox.cy || 0) - 10}
+                                  className="fill-foreground text-4xl font-bold"
+                                >
+                                  {percentage.toFixed(1)}%
+                                </tspan>
+                                <tspan
+                                  x={viewBox.cx}
+                                  y={(viewBox.cy || 0) + 20}
+                                  className="fill-muted-foreground text-sm"
+                                >
+                                  使用率
+                                </tspan>
+                              </text>
+                            );
+                          }
+                        }}
+                      />
                     </Pie>
                     <Tooltip
                       formatter={(value: number) => formatCurrency(value)}
@@ -197,32 +272,60 @@ export function DonationOverview({ donations, estimatedLimit }: DonationOverview
                     />
                   </RechartsChart>
                 </ResponsiveContainer>
-                <div className="text-center mt-2">
-                  <p className="text-2xl font-bold text-primary">
-                    {percentage.toFixed(1)}%
-                  </p>
-                  <p className="text-sm text-muted-foreground">使用率</p>
+                {/* 凡例 */}
+                <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
+                  {chartData.map((entry, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: entry.color }}
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {entry.name}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               {/* 統計情報 */}
-              <div className="flex flex-col justify-center space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">現在の寄付総額</p>
-                  <p className="text-2xl font-bold text-primary">
+              <div className="flex flex-col justify-center space-y-5">
+                <div className="p-4 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800">
+                  <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">現在の寄付総額</p>
+                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                     {formatCurrency(yearStats.total)}
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">推定上限額</p>
-                  <p className="text-xl font-semibold">
+                <div className="p-4 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-950/30 dark:to-slate-900/20 border border-slate-200 dark:border-slate-800">
+                  <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">推定上限額</p>
+                  <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">
                     {formatCurrency(estimatedLimit)}
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">残り枠</p>
-                  <p className="text-xl font-semibold text-green-600">
-                    {formatCurrency(remaining)}
+                <div className={`p-4 rounded-lg border ${
+                  percentage >= 100
+                    ? "bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-950/30 dark:to-red-900/20 border-red-200 dark:border-red-800"
+                    : percentage >= 80
+                      ? "bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/30 dark:to-amber-900/20 border-amber-200 dark:border-amber-800"
+                      : "bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/30 dark:to-green-900/20 border-green-200 dark:border-green-800"
+                }`}>
+                  <p className={`text-xs font-medium mb-1 ${
+                    percentage >= 100
+                      ? "text-red-700 dark:text-red-300"
+                      : percentage >= 80
+                        ? "text-amber-700 dark:text-amber-300"
+                        : "text-green-700 dark:text-green-300"
+                  }`}>
+                    {percentage >= 100 ? "超過額" : "残り枠"}
+                  </p>
+                  <p className={`text-2xl font-bold ${
+                    percentage >= 100
+                      ? "text-red-600 dark:text-red-400"
+                      : percentage >= 80
+                        ? "text-amber-600 dark:text-amber-400"
+                        : "text-green-600 dark:text-green-400"
+                  }`}>
+                    {percentage >= 100 ? "+" : ""}{formatCurrency(Math.abs(remaining))}
                   </p>
                 </div>
               </div>

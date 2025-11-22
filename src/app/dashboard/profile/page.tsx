@@ -64,6 +64,7 @@ export default async function ProfilePage() {
               email={user.email || ""}
               displayName={profile?.display_name || ""}
               prefecture={profile?.prefecture || ""}
+              manualLimit={profile?.manual_limit}
             />
           </CardContent>
         </Card>

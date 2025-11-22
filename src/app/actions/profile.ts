@@ -27,6 +27,7 @@ export async function updateProfile(formData: FormData) {
 
   const displayName = formData.get("displayName") as string;
   const prefecture = formData.get("prefecture") as string;
+  const manualLimitStr = formData.get("manualLimit") as string;
 
   // バリデーション
   if (!displayName || displayName.trim().length === 0) {
@@ -37,6 +38,16 @@ export async function updateProfile(formData: FormData) {
     return { error: "表示名は50文字以内で入力してください" };
   }
 
+  // manual_limitの変換とバリデーション
+  let manualLimit: number | null = null;
+  if (manualLimitStr && manualLimitStr.trim() !== "") {
+    const parsedLimit = parseInt(manualLimitStr, 10);
+    if (isNaN(parsedLimit) || parsedLimit < 0) {
+      return { error: "上限額は0以上の整数で入力してください" };
+    }
+    manualLimit = parsedLimit;
+  }
+
   // プロフィール更新
   const { error } = await supabase
     // @ts-ignore - Supabase type inference issue in build mode
@@ -45,6 +56,7 @@ export async function updateProfile(formData: FormData) {
     .update({
       display_name: displayName.trim(),
       prefecture: prefecture || null,
+      manual_limit: manualLimit,
     })
     .eq("id", user.id);
 

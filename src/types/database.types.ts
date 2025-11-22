@@ -21,6 +21,7 @@ export interface Database {
           id: string;
           display_name: string | null;
           prefecture: string | null;
+          manual_limit: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -28,6 +29,7 @@ export interface Database {
           id: string;
           display_name?: string | null;
           prefecture?: string | null;
+          manual_limit?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -35,6 +37,7 @@ export interface Database {
           id?: string;
           display_name?: string | null;
           prefecture?: string | null;
+          manual_limit?: number | null;
           created_at?: string;
           updated_at?: string;
         };

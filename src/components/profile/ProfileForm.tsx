@@ -20,15 +20,22 @@ type ProfileFormProps = {
   email: string;
   displayName: string;
   prefecture: string;
+  manualLimit?: number | null;
 };
 
-export function ProfileForm({ email, displayName: initialDisplayName, prefecture: initialPrefecture }: ProfileFormProps) {
+export function ProfileForm({
+  email,
+  displayName: initialDisplayName,
+  prefecture: initialPrefecture,
+  manualLimit: initialManualLimit
+}: ProfileFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [prefecture, setPrefecture] = useState(initialPrefecture);
+  const [manualLimit, setManualLimit] = useState(initialManualLimit?.toString() || "");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -137,6 +144,119 @@ export function ProfileForm({ email, displayName: initialDisplayName, prefecture
         </Select>
         <p className="text-xs text-muted-foreground">
           お住まいの都道府県を選択してください（任意）
+        </p>
+      </div>
+
+      {/* 手動上限額設定 */}
+      <div className="space-y-3">
+        <Label htmlFor="manualLimit">
+          控除上限額（手動設定）
+        </Label>
+
+        {/* プリセットボタン */}
+        <div className="flex flex-wrap gap-2">
+          {[30000, 50000, 80000, 100000, 150000, 200000].map((preset) => (
+            <Button
+              key={preset}
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setManualLimit(preset.toString())}
+              disabled={isLoading}
+              className="text-xs"
+            >
+              {(preset / 10000).toFixed(0)}万円
+            </Button>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setManualLimit("")}
+            disabled={isLoading}
+            className="text-xs"
+          >
+            クリア
+          </Button>
+        </div>
+
+        {/* スライダー */}
+        <div className="space-y-2">
+          <input
+            type="range"
+            min="0"
+            max="300000"
+            step="10000"
+            value={manualLimit || "0"}
+            onChange={(e) => setManualLimit(e.target.value === "0" ? "" : e.target.value)}
+            disabled={isLoading}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+          />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>0円</span>
+            <span>15万円</span>
+            <span>30万円</span>
+          </div>
+        </div>
+
+        {/* 数値入力と増減ボタン */}
+        <div className="flex gap-2 items-center">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const current = parseInt(manualLimit || "0");
+              setManualLimit(Math.max(0, current - 10000).toString());
+            }}
+            disabled={isLoading || !manualLimit || parseInt(manualLimit) <= 0}
+          >
+            -1万
+          </Button>
+          <div className="relative flex-1">
+            {/* 表示用（カンマ区切り） */}
+            <Input
+              id="manualLimitDisplay"
+              type="text"
+              placeholder="直接入力も可能"
+              value={manualLimit ? parseInt(manualLimit).toLocaleString() : ""}
+              onChange={(e) => {
+                const value = e.target.value.replace(/,/g, "");
+                if (value === "" || /^\d+$/.test(value)) {
+                  setManualLimit(value);
+                }
+              }}
+              disabled={isLoading}
+              className="pr-12 text-right"
+            />
+            {/* 送信用（カンマなし） */}
+            <input
+              type="hidden"
+              id="manualLimit"
+              name="manualLimit"
+              value={manualLimit || ""}
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+              円
+            </span>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const current = parseInt(manualLimit || "0");
+              setManualLimit((current + 10000).toString());
+            }}
+            disabled={isLoading}
+          >
+            +1万
+          </Button>
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          シミュレーション結果を上書きして、手動で上限額を設定できます。<br />
+          クリアボタンまたは空欄にするとシミュレーション結果が使用されます。
         </p>
       </div>
 
