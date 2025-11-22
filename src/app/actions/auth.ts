@@ -10,6 +10,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import {
+  loginSchema,
+  signupSchema,
+  resetPasswordRequestSchema,
+  updatePasswordSchema,
+} from "@/lib/validations/auth";
+import { getFormValue } from "@/lib/sanitize";
 
 /**
  * Supabaseのエラーメッセージを日本語に変換
@@ -48,112 +55,203 @@ function translateAuthError(errorMessage: string): string {
  * ログイン処理
  */
 export async function login(formData: FormData) {
-  const supabase = await createClient();
+  try {
+    // 入力値のバリデーション
+    const validationResult = loginSchema.safeParse({
+      email: getFormValue(formData, "email"),
+      password: formData.get("password") as string, // パスワードはサニタイズ不要
+      redirect: getFormValue(formData, "redirect", false) || undefined,
+    });
 
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const redirectTo = formData.get("redirect") as string | null;
+    if (!validationResult.success) {
+      const firstError = validationResult.error.issues[0];
+      return { error: firstError.message };
+    }
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+    const { email, password, redirect: redirectTo } = validationResult.data;
 
-  if (error) {
-    return { error: translateAuthError(error.message) };
+    const supabase = await createClient();
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      return { error: translateAuthError(error.message) };
+    }
+
+    revalidatePath("/", "layout");
+    // リダイレクト先が指定されている場合はそこへ、なければダッシュボードへ
+    redirect(redirectTo || "/dashboard");
+  } catch (error) {
+    // Next.jsのredirect()は正常動作でエラーをthrowするため、それは再スロー
+    if (error && typeof error === 'object' && 'digest' in error) {
+      throw error;
+    }
+
+    // その他のエラーはログに記録して返す
+    console.error("[Login Error]", error);
+    return {
+      error: "ログインに失敗しました。もう一度お試しください。",
+    };
   }
-
-  revalidatePath("/", "layout");
-  // リダイレクト先が指定されている場合はそこへ、なければダッシュボードへ
-  redirect(redirectTo || "/dashboard");
 }
 
 /**
  * 新規登録処理
  */
 export async function signup(formData: FormData) {
-  const supabase = await createClient();
+  try {
+    // 入力値のバリデーション
+    const validationResult = signupSchema.safeParse({
+      email: getFormValue(formData, "email"),
+      password: formData.get("password") as string,
+    });
 
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+    if (!validationResult.success) {
+      const firstError = validationResult.error.issues[0];
+      return { error: firstError.message };
+    }
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001"}/auth/callback`,
-    },
-  });
+    const { email, password } = validationResult.data;
 
-  // デバッグログ（開発環境のみ）
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Signup response:', { data, error });
-  }
+    const supabase = await createClient();
 
-  if (error) {
-    return { error: translateAuthError(error.message) };
-  }
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001"}/auth/callback`,
+      },
+    });
 
-  // Supabaseは既存ユーザーの場合、errorではなくdata.user.identitiesが空配列になる
-  if (data?.user && data.user.identities && data.user.identities.length === 0) {
+    // デバッグログ（開発環境のみ）
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Signup response:', { data, error });
+    }
+
+    if (error) {
+      return { error: translateAuthError(error.message) };
+    }
+
+    // Supabaseは既存ユーザーの場合、errorではなくdata.user.identitiesが空配列になる
+    if (data?.user && data.user.identities && data.user.identities.length === 0) {
+      return {
+        error: "このメールアドレスは既に登録されています。ログインしてください。"
+      };
+    }
+
     return {
-      error: "このメールアドレスは既に登録されています。ログインしてください。"
+      success: true,
+      message: "確認メールを送信しました。メールボックスをご確認ください。"
+    };
+  } catch (error) {
+    console.error("[Signup Error]", error);
+    return {
+      error: "新規登録に失敗しました。もう一度お試しください。",
     };
   }
-
-  return {
-    success: true,
-    message: "確認メールを送信しました。メールボックスをご確認ください。"
-  };
 }
 
 /**
  * ログアウト処理
  */
 export async function logout() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  revalidatePath("/", "layout");
-  redirect("/login");
+  try {
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+    revalidatePath("/", "layout");
+    redirect("/login");
+  } catch (error) {
+    // Next.jsのredirect()は正常動作でエラーをthrowするため、それは再スロー
+    if (error && typeof error === 'object' && 'digest' in error) {
+      throw error;
+    }
+
+    console.error("[Logout Error]", error);
+    // ログアウトエラーは致命的ではないため、リダイレクトを続行
+    redirect("/login");
+  }
 }
 
 /**
  * パスワードリセットメール送信
  */
 export async function resetPassword(formData: FormData) {
-  const supabase = await createClient();
+  try {
+    // 入力値のバリデーション
+    const validationResult = resetPasswordRequestSchema.safeParse({
+      email: getFormValue(formData, "email"),
+    });
 
-  const email = formData.get("email") as string;
+    if (!validationResult.success) {
+      const firstError = validationResult.error.issues[0];
+      return { error: firstError.message };
+    }
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001"}/auth/reset-password`,
-  });
+    const { email } = validationResult.data;
 
-  if (error) {
-    return { error: translateAuthError(error.message) };
+    const supabase = await createClient();
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001"}/auth/reset-password`,
+    });
+
+    if (error) {
+      return { error: translateAuthError(error.message) };
+    }
+
+    return {
+      success: true,
+      message: "パスワードリセット用のメールを送信しました。",
+    };
+  } catch (error) {
+    console.error("[Reset Password Error]", error);
+    return {
+      error: "パスワードリセットに失敗しました。もう一度お試しください。",
+    };
   }
-
-  return {
-    success: true,
-    message: "パスワードリセット用のメールを送信しました。",
-  };
 }
 
 /**
  * パスワード更新処理
  */
 export async function updatePassword(formData: FormData) {
-  const supabase = await createClient();
-  const password = formData.get("password") as string;
+  try {
+    // 入力値のバリデーション
+    const validationResult = updatePasswordSchema.safeParse({
+      password: formData.get("password") as string,
+    });
 
-  const { error } = await supabase.auth.updateUser({
-    password,
-  });
+    if (!validationResult.success) {
+      const firstError = validationResult.error.issues[0];
+      return { error: firstError.message };
+    }
 
-  if (error) {
-    return { error: translateAuthError(error.message) };
+    const { password } = validationResult.data;
+
+    const supabase = await createClient();
+
+    const { error } = await supabase.auth.updateUser({
+      password,
+    });
+
+    if (error) {
+      return { error: translateAuthError(error.message) };
+    }
+
+    revalidatePath("/", "layout");
+    redirect("/dashboard");
+  } catch (error) {
+    // Next.jsのredirect()は正常動作でエラーをthrowするため、それは再スロー
+    if (error && typeof error === 'object' && 'digest' in error) {
+      throw error;
+    }
+
+    console.error("[Update Password Error]", error);
+    return {
+      error: "パスワード更新に失敗しました。もう一度お試しください。",
+    };
   }
-
-  revalidatePath("/", "layout");
-  redirect("/dashboard");
 }
