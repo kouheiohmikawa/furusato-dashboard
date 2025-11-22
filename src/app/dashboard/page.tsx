@@ -57,29 +57,24 @@ export default async function DashboardPage() {
       : "none" as const;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
-      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
-        {/* ヘッダー */}
-        <div className="mb-6 sm:mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <Home className="h-4 w-4 mr-2" />
-                トップ
-              </Button>
-            </Link>
-            <div className="h-6 w-px bg-border" />
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Header */}
+        <div className="mb-8 flex items-center justify-between">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 dark:from-slate-100 dark:to-slate-400 bg-clip-text text-transparent">
               ダッシュボード
             </h1>
+            <p className="text-muted-foreground text-sm">
+              ふるさと納税の状況を一元管理
+            </p>
           </div>
           <UserMenu user={user} profile={profile} />
         </div>
 
-        {/* グリッドレイアウト - 全て1画面に */}
-        <div className="grid gap-4 lg:grid-cols-3">
-          {/* 左カラム - 寄付概要（2列分） */}
-          <div className="lg:col-span-2">
+        <div className="grid gap-8 lg:grid-cols-12">
+          {/* Main Content - Donation Overview (8 columns) */}
+          <div className="lg:col-span-8 space-y-8">
             <DonationOverview
               donations={donations || []}
               estimatedLimit={estimatedLimit}
@@ -87,83 +82,75 @@ export default async function DashboardPage() {
             />
           </div>
 
-          {/* 右カラム - クイックアクション */}
-          <div className="space-y-4">
-            <Link href="/simulator">
-              <Card className="border-2 bg-gradient-to-br from-primary/10 via-primary/5 to-background hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+          {/* Sidebar - Quick Actions (4 columns) */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="rounded-xl border bg-card/50 backdrop-blur-sm p-4 shadow-sm">
+              <h2 className="font-semibold mb-4 flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wider">
+                クイックアクション
+              </h2>
+              <div className="grid gap-3">
+                <Link href="/simulator">
+                  <div className="group relative overflow-hidden rounded-lg border bg-gradient-to-br from-blue-500 to-blue-600 p-4 text-white shadow-md transition-all hover:shadow-lg hover:scale-[1.02]">
+                    <div className="relative z-10 flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-lg">シミュレーター</p>
+                        <p className="text-blue-100 text-xs mt-0.5">控除上限額を計算</p>
+                      </div>
+                      <div className="rounded-full bg-white/20 p-2 backdrop-blur-md">
                         <Calculator className="h-5 w-5" />
                       </div>
-                      <div>
-                        <CardTitle className="text-base">シミュレーター</CardTitle>
-                        <CardDescription className="text-xs mt-0.5">
-                          上限額を確認
-                        </CardDescription>
-                      </div>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" />
+                    <div className="absolute -right-4 -bottom-4 h-24 w-24 rounded-full bg-white/10 blur-2xl group-hover:bg-white/20 transition-colors" />
                   </div>
-                </CardHeader>
-              </Card>
-            </Link>
+                </Link>
 
-            <Link href="/dashboard/donations/add">
-              <Card className="border-2 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-background hover:border-emerald-500 transition-all hover:shadow-lg cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
+                <Link href="/dashboard/donations/add">
+                  <div className="group relative overflow-hidden rounded-lg border bg-gradient-to-br from-emerald-500 to-emerald-600 p-4 text-white shadow-md transition-all hover:shadow-lg hover:scale-[1.02]">
+                    <div className="relative z-10 flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-lg">寄付を登録</p>
+                        <p className="text-emerald-100 text-xs mt-0.5">新しい寄付を記録</p>
+                      </div>
+                      <div className="rounded-full bg-white/20 p-2 backdrop-blur-md">
                         <Plus className="h-5 w-5" />
                       </div>
-                      <div>
-                        <CardTitle className="text-base">寄付を登録</CardTitle>
-                        <CardDescription className="text-xs mt-0.5">
-                          記録を追加
-                        </CardDescription>
-                      </div>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-emerald-500 group-hover:translate-x-1 transition-transform" />
+                    <div className="absolute -right-4 -bottom-4 h-24 w-24 rounded-full bg-white/10 blur-2xl group-hover:bg-white/20 transition-colors" />
                   </div>
-                </CardHeader>
-              </Card>
-            </Link>
+                </Link>
+              </div>
+            </div>
 
-            <Link href="/dashboard/donations">
-              <Card className="border hover:border-primary/50 transition-colors cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Heart className="h-4 w-4 text-primary" />
-                      <CardTitle className="text-sm">寄付記録一覧</CardTitle>
-                    </div>
-                    <ArrowRight className="h-3 w-3 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-                  </div>
-                  <CardDescription className="text-xs">
-                    すべての寄付を確認
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-
-            <Link href="/dashboard/history">
-              <Card className="border hover:border-primary/50 transition-colors cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-primary" />
-                      <CardTitle className="text-sm">履歴</CardTitle>
-                    </div>
-                    <ArrowRight className="h-3 w-3 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-                  </div>
-                  <CardDescription className="text-xs">
-                    過去の計算結果
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+              <div className="p-4">
+                <h2 className="font-semibold mb-4 flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wider">
+                  メニュー
+                </h2>
+                <div className="space-y-1">
+                  <Link href="/dashboard/donations">
+                    <Button variant="ghost" className="w-full justify-start h-10 font-normal">
+                      <Heart className="mr-2 h-4 w-4 text-rose-500" />
+                      寄付記録一覧
+                      <ArrowRight className="ml-auto h-3 w-3 text-muted-foreground opacity-50" />
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/history">
+                    <Button variant="ghost" className="w-full justify-start h-10 font-normal">
+                      <TrendingUp className="mr-2 h-4 w-4 text-amber-500" />
+                      シミュレーション履歴
+                      <ArrowRight className="ml-auto h-3 w-3 text-muted-foreground opacity-50" />
+                    </Button>
+                  </Link>
+                  <Link href="/">
+                    <Button variant="ghost" className="w-full justify-start h-10 font-normal">
+                      <Home className="mr-2 h-4 w-4 text-slate-500" />
+                      トップページへ戻る
+                      <ArrowRight className="ml-auto h-3 w-3 text-muted-foreground opacity-50" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

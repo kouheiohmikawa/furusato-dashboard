@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, AlertCircle, CheckCircle2, Calendar, PieChart, ChevronDown, ChevronUp, Settings } from "lucide-react";
+import { TrendingUp, AlertCircle, CheckCircle2, Calendar, PieChart, ChevronDown, ChevronUp, Settings, ArrowRight, Heart, Calculator } from "lucide-react";
 import type { Donation } from "@/types/database.types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
@@ -25,7 +25,6 @@ type PortalStats = {
 export function DonationOverview({ donations, estimatedLimit, limitSource = "none" }: DonationOverviewProps) {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
-  const [showDetails, setShowDetails] = useState(false);
 
   // 利用可能な年度を取得
   const availableYears = useMemo(() => {
@@ -95,7 +94,7 @@ export function DonationOverview({ donations, estimatedLimit, limitSource = "non
 
     return [
       { name: "寄付済み", value: used, color: usedColor },
-      { name: "残り枠", value: remainingAmount, color: "#e5e7eb" }, // 明るいグレー
+      { name: "残り枠", value: remainingAmount, color: "#e2e8f0" }, // 明るいグレー
     ];
   }, [yearStats.total, estimatedLimit, percentage]);
 
@@ -108,20 +107,25 @@ export function DonationOverview({ donations, estimatedLimit, limitSource = "non
 
   if (donations.length === 0) {
     return (
-      <Card className="border-2">
+      <Card className="border-dashed border-2 bg-slate-50/50 dark:bg-slate-900/20">
         <CardContent className="pt-12 pb-12">
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <div className="p-4 rounded-full bg-muted">
-                <PieChart className="h-8 w-8 text-muted-foreground" />
+              <div className="p-4 rounded-full bg-white dark:bg-slate-800 shadow-sm">
+                <PieChart className="h-8 w-8 text-slate-400" />
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2">まだ寄付記録がありません</h3>
+              <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-slate-100">まだ寄付記録がありません</h3>
               <p className="text-sm text-muted-foreground">
                 寄付記録を登録して、ふるさと納税を一元管理しましょう
               </p>
             </div>
+            <Link href="/dashboard/donations/add">
+              <Button className="mt-4">
+                最初の寄付を登録
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>
@@ -129,297 +133,276 @@ export function DonationOverview({ donations, estimatedLimit, limitSource = "non
   }
 
   return (
-    <div className="space-y-4">
-      {/* 年度選択 */}
-      <div className="flex items-center gap-4">
-        <Calendar className="h-5 w-5 text-muted-foreground" />
-        <Select value={selectedYear} onValueChange={setSelectedYear}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {availableYears.map((year) => (
-              <SelectItem key={year} value={year.toString()}>
-                {year}年
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <div className="space-y-8">
+      {/* 年度選択とサマリーヘッダー */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight">
+            {selectedYear}年の状況
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            {estimatedLimit
+              ? `上限額まであと ${formatCurrency(remaining)}`
+              : "まずは控除上限額を計算しましょう"}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <Select value={selectedYear} onValueChange={setSelectedYear}>
+            <SelectTrigger className="w-[140px] bg-white dark:bg-slate-950">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {availableYears.map((year) => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}年
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* メインカード - 円グラフでコンパクトに */}
-      <Card className="border-2">
-        <CardHeader className="pb-3">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <CardTitle className="text-lg">
-                {selectedYear}年の寄付状況
-              </CardTitle>
-              <CardDescription className="mt-1">
-                {estimatedLimit
-                  ? `${yearStats.count}件の寄付を登録済み`
-                  : "控除上限額を計算しましょう"}
-              </CardDescription>
-              {estimatedLimit && limitSource !== "none" && (
-                <div className="mt-2 flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">
-                    {limitSource === "manual" ? (
-                      <>
-                        <Settings className="h-3 w-3 mr-1" />
-                        手動設定
-                      </>
-                    ) : (
-                      <>
-                        <TrendingUp className="h-3 w-3 mr-1" />
-                        シミュレーション結果
-                      </>
-                    )}
-                  </Badge>
-                  <Link href="/dashboard/profile">
-                    <Button variant="ghost" size="sm" className="h-6 text-xs">
-                      変更
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </div>
-            {estimatedLimit && (
-              <>
-                {percentage >= 100 ? (
-                  <Badge variant="destructive" className="gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    上限超過
-                  </Badge>
-                ) : percentage >= 80 ? (
-                  <Badge className="bg-amber-500 hover:bg-amber-600 gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    上限接近
-                  </Badge>
-                ) : (
-                  <Badge className="bg-green-600 hover:bg-green-700 gap-1">
-                    <CheckCircle2 className="h-3 w-3" />
-                    余裕あり
-                  </Badge>
-                )}
-              </>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
+      {/* メインカード */}
+      <Card className="border-none shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl overflow-hidden ring-1 ring-slate-900/5">
+        <CardContent className="p-6 sm:p-8">
           {estimatedLimit ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 円グラフ */}
-              <div className="flex flex-col items-center justify-center">
-                <ResponsiveContainer width="100%" height={280}>
-                  <RechartsChart>
-                    <Pie
-                      data={chartData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={70}
-                      outerRadius={110}
-                      paddingAngle={chartData.length > 1 ? 5 : 0}
-                      dataKey="value"
-                      animationBegin={0}
-                      animationDuration={800}
-                      animationEasing="ease-out"
-                    >
-                      {chartData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={entry.color}
-                          stroke={entry.color}
-                          strokeWidth={2}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              {/* 左側: 円グラフ (5 columns) */}
+              <div className="lg:col-span-5 flex flex-col items-center justify-center relative">
+                {/* ステータスバッジ */}
+                <div className="absolute top-0 left-0 z-10">
+                  {percentage >= 100 ? (
+                    <Badge variant="destructive" className="gap-1.5 py-1.5 px-3 text-sm shadow-sm">
+                      <AlertCircle className="h-4 w-4" />
+                      上限超過
+                    </Badge>
+                  ) : percentage >= 80 ? (
+                    <Badge className="bg-amber-500 hover:bg-amber-600 gap-1.5 py-1.5 px-3 text-sm shadow-sm">
+                      <AlertCircle className="h-4 w-4" />
+                      上限接近
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-emerald-500 hover:bg-emerald-600 gap-1.5 py-1.5 px-3 text-sm shadow-sm">
+                      <CheckCircle2 className="h-4 w-4" />
+                      余裕あり
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="w-full aspect-square max-w-[320px] relative">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsChart>
+                      <Pie
+                        data={chartData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius="65%"
+                        outerRadius="90%"
+                        paddingAngle={chartData.length > 1 ? 4 : 0}
+                        dataKey="value"
+                        stroke="none"
+                        cornerRadius={6}
+                      >
+                        {chartData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={entry.color}
+                          />
+                        ))}
+                        <Label
+                          content={({ viewBox }) => {
+                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                              return (
+                                <text
+                                  x={viewBox.cx}
+                                  y={viewBox.cy}
+                                  textAnchor="middle"
+                                  dominantBaseline="middle"
+                                >
+                                  <tspan
+                                    x={viewBox.cx}
+                                    y={(viewBox.cy || 0) - 8}
+                                    className="fill-slate-900 dark:fill-slate-100 text-5xl font-bold tracking-tighter"
+                                  >
+                                    {percentage.toFixed(0)}
+                                    <tspan className="text-2xl font-normal text-muted-foreground">%</tspan>
+                                  </tspan>
+                                  <tspan
+                                    x={viewBox.cx}
+                                    y={(viewBox.cy || 0) + 24}
+                                    className="fill-muted-foreground text-sm font-medium"
+                                  >
+                                    使用率
+                                  </tspan>
+                                </text>
+                              );
+                            }
+                          }}
                         />
-                      ))}
-                      <Label
-                        content={({ viewBox }) => {
-                          if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                            return (
-                              <text
-                                x={viewBox.cx}
-                                y={viewBox.cy}
-                                textAnchor="middle"
-                                dominantBaseline="middle"
-                              >
-                                <tspan
-                                  x={viewBox.cx}
-                                  y={(viewBox.cy || 0) - 10}
-                                  className="fill-foreground text-4xl font-bold"
-                                >
-                                  {percentage.toFixed(1)}%
-                                </tspan>
-                                <tspan
-                                  x={viewBox.cx}
-                                  y={(viewBox.cy || 0) + 20}
-                                  className="fill-muted-foreground text-sm"
-                                >
-                                  使用率
-                                </tspan>
-                              </text>
-                            );
-                          }
+                      </Pie>
+                      <Tooltip
+                        formatter={(value: number) => formatCurrency(value)}
+                        contentStyle={{
+                          backgroundColor: "rgba(255, 255, 255, 0.95)",
+                          border: "none",
+                          borderRadius: "12px",
+                          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+                          padding: "12px",
+                          fontSize: "14px",
+                          fontWeight: 500
                         }}
                       />
-                    </Pie>
-                    <Tooltip
-                      formatter={(value: number) => formatCurrency(value)}
-                      contentStyle={{
-                        backgroundColor: "hsl(var(--popover))",
-                        border: "1px solid hsl(var(--border))",
-                        borderRadius: "var(--radius)",
-                      }}
-                    />
-                  </RechartsChart>
-                </ResponsiveContainer>
-                {/* 凡例 */}
-                <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
-                  {chartData.map((entry, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: entry.color }}
-                      />
-                      <span className="text-sm text-muted-foreground">
-                        {entry.name}
-                      </span>
-                    </div>
-                  ))}
+                    </RechartsChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
 
-              {/* 統計情報 */}
-              <div className="flex flex-col justify-center space-y-5">
-                <div className="p-4 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800">
-                  <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">現在の寄付総額</p>
-                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                    {formatCurrency(yearStats.total)}
-                  </p>
-                </div>
-                <div className="p-4 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-950/30 dark:to-slate-900/20 border border-slate-200 dark:border-slate-800">
-                  <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">推定上限額</p>
-                  <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">
-                    {formatCurrency(estimatedLimit)}
-                  </p>
-                </div>
-                <div className={`p-4 rounded-lg border ${
-                  percentage >= 100
-                    ? "bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-950/30 dark:to-red-900/20 border-red-200 dark:border-red-800"
-                    : percentage >= 80
-                      ? "bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/30 dark:to-amber-900/20 border-amber-200 dark:border-amber-800"
-                      : "bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/30 dark:to-green-900/20 border-green-200 dark:border-green-800"
-                }`}>
-                  <p className={`text-xs font-medium mb-1 ${
-                    percentage >= 100
-                      ? "text-red-700 dark:text-red-300"
-                      : percentage >= 80
-                        ? "text-amber-700 dark:text-amber-300"
-                        : "text-green-700 dark:text-green-300"
-                  }`}>
-                    {percentage >= 100 ? "超過額" : "残り枠"}
-                  </p>
-                  <p className={`text-2xl font-bold ${
-                    percentage >= 100
-                      ? "text-red-600 dark:text-red-400"
-                      : percentage >= 80
-                        ? "text-amber-600 dark:text-amber-400"
-                        : "text-green-600 dark:text-green-400"
-                  }`}>
-                    {percentage >= 100 ? "+" : ""}{formatCurrency(Math.abs(remaining))}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* 上限額未設定の場合 */}
-              <div className="space-y-4 py-4">
-                <div className="flex items-center justify-center">
-                  <div className="rounded-full bg-amber-100 dark:bg-amber-900/20 p-3">
-                    <AlertCircle className="h-6 w-6 text-amber-600 dark:text-amber-500" />
-                  </div>
-                </div>
-                <div className="text-center space-y-2">
-                  <h3 className="font-semibold">控除上限額を計算しましょう</h3>
-                  <p className="text-sm text-muted-foreground">
-                    シミュレーターで年収や家族構成を入力
-                  </p>
-                </div>
-                {yearStats.total > 0 && (
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground mb-1">現在の寄付総額</p>
-                    <p className="text-2xl font-bold text-primary">
-                      {formatCurrency(yearStats.total)}
-                    </p>
-                  </div>
-                )}
-                <div className="flex justify-center">
-                  <Link href="/simulator">
-                    <Button className="gap-2">
-                      <TrendingUp className="h-4 w-4" />
-                      控除額を計算する
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* 詳細統計（折りたたみ可能） */}
-      {portalStats.length > 0 && (
-        <Card className="border">
-          <CardHeader
-            className="pb-3 cursor-pointer hover:bg-accent/50 transition-colors"
-            onClick={() => setShowDetails(!showDetails)}
-          >
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base flex items-center gap-2">
-                <PieChart className="h-4 w-4 text-primary" />
-                ポータルサイト別の内訳
-              </CardTitle>
-              {showDetails ? (
-                <ChevronUp className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              )}
-            </div>
-          </CardHeader>
-          {showDetails && (
-            <CardContent>
-              <div className="space-y-2">
-                {portalStats.map((stat, index) => (
-                  <div
-                    key={stat.portal}
-                    className="flex items-center justify-between p-2 rounded-lg border bg-card"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                        {index + 1}
+              {/* 右側: 統計情報 (7 columns) */}
+              <div className="lg:col-span-7 space-y-4">
+                {/* 3つの主要指標 - リスト形式に変更して横幅を確保 */}
+                <div className="flex flex-col gap-3">
+                  {/* 寄付総額 */}
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900 transition-all hover:shadow-md">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2.5 rounded-lg bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 shrink-0">
+                        <Heart className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium">{stat.portal}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {stat.count}件
+                        <p className="text-xs font-semibold text-blue-600/80 dark:text-blue-400/80 uppercase tracking-wider">寄付総額</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {yearStats.count}件の寄付
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-primary">
-                        {formatCurrency(stat.total)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {((stat.total / yearStats.total) * 100).toFixed(1)}%
-                      </p>
+                    <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight text-right ml-4">
+                      {formatCurrency(yearStats.total)}
+                    </p>
+                  </div>
+
+                  {/* 推定上限額 */}
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50/80 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 transition-all hover:shadow-md">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 shrink-0">
+                        <TrendingUp className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-slate-600/80 dark:text-slate-400/80 uppercase tracking-wider">推定上限額</p>
+                        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                          {limitSource === "manual" ? (
+                            <Badge variant="secondary" className="h-5 text-[10px] px-1.5 bg-slate-200/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                              <Settings className="h-3 w-3 mr-1" />
+                              手動設定
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="h-5 text-[10px] px-1.5 bg-slate-200/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                              シミュレーション
+                            </Badge>
+                          )}
+                          <Link href="/dashboard/profile" className="text-[10px] text-blue-600 hover:underline whitespace-nowrap">
+                            変更
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight text-right ml-4">
+                      {formatCurrency(estimatedLimit)}
+                    </p>
+                  </div>
+
+                  {/* 残り枠/超過額 */}
+                  <div className={`flex items-center justify-between p-4 rounded-xl border transition-all hover:shadow-md ${percentage >= 100
+                      ? "bg-red-50/50 dark:bg-red-950/20 border-red-100 dark:border-red-900"
+                      : "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900"
+                    }`}>
+                    <div className="flex items-center gap-4">
+                      <div className={`p-2.5 rounded-lg shrink-0 ${percentage >= 100
+                          ? "bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400"
+                          : "bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400"
+                        }`}>
+                        {percentage >= 100 ? <AlertCircle className="h-5 w-5" /> : <CheckCircle2 className="h-5 w-5" />}
+                      </div>
+                      <div>
+                        <p className={`text-xs font-semibold uppercase tracking-wider ${percentage >= 100
+                            ? "text-red-600/80 dark:text-red-400/80"
+                            : "text-emerald-600/80 dark:text-emerald-400/80"
+                          }`}>
+                          {percentage >= 100 ? "超過額" : "残り枠"}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {percentage >= 100 ? "上限を超えています" : "まだ寄付できます"}
+                        </p>
+                      </div>
+                    </div>
+                    <p className={`text-xl sm:text-2xl font-bold tracking-tight text-right ml-4 ${percentage >= 100
+                        ? "text-red-700 dark:text-red-400"
+                        : "text-emerald-700 dark:text-emerald-400"
+                      }`}>
+                      {percentage >= 100 ? "+" : ""}{formatCurrency(Math.abs(remaining))}
+                    </p>
+                  </div>
+                </div>
+
+                {/* ポータルサイト内訳（トップ3） */}
+                {portalStats.length > 0 && (
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-sm font-medium text-muted-foreground">利用したポータルサイト</h3>
+                      <Link href="/dashboard/donations" className="text-xs text-blue-600 hover:underline flex items-center">
+                        すべて見る <ChevronDown className="h-3 w-3 ml-0.5 -rotate-90" />
+                      </Link>
+                    </div>
+                    <div className="space-y-3">
+                      {portalStats.slice(0, 3).map((stat, index) => (
+                        <div key={stat.portal} className="relative">
+                          <div className="flex items-center justify-between text-sm mb-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-slate-700 dark:text-slate-300">{stat.portal}</span>
+                              <span className="text-xs text-muted-foreground">({stat.count}件)</span>
+                            </div>
+                            <span className="font-medium">{formatCurrency(stat.total)}</span>
+                          </div>
+                          <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-blue-500 rounded-full"
+                              style={{ width: `${(stat.total / yearStats.total) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
+                )}
               </div>
-            </CardContent>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center space-y-6">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 blur-xl animate-pulse" />
+                <div className="relative p-6 rounded-full bg-white dark:bg-slate-800 shadow-xl ring-1 ring-slate-900/5">
+                  <Calculator className="h-12 w-12 text-blue-600 dark:text-blue-400" />
+                </div>
+              </div>
+              <div className="max-w-md space-y-2">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+                  まずは控除上限額を知りましょう
+                </h3>
+                <p className="text-muted-foreground">
+                  年収や家族構成を入力するだけで、あなたのふるさと納税の上限額（目安）がすぐに分かります。
+                </p>
+              </div>
+              <Link href="/simulator">
+                <Button size="lg" className="rounded-full px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/25">
+                  シミュレーションを始める
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           )}
-        </Card>
-      )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
+
+
