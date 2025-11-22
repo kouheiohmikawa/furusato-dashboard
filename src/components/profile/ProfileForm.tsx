@@ -148,30 +148,108 @@ export function ProfileForm({
       </div>
 
       {/* 手動上限額設定 */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Label htmlFor="manualLimit">
           控除上限額（手動設定）
         </Label>
-        <div className="relative">
-          <Input
-            id="manualLimit"
-            name="manualLimit"
-            type="number"
-            placeholder="例: 80000"
-            value={manualLimit}
-            onChange={(e) => setManualLimit(e.target.value)}
-            min="0"
-            step="1000"
+
+        {/* プリセットボタン */}
+        <div className="flex flex-wrap gap-2">
+          {[30000, 50000, 80000, 100000, 150000, 200000].map((preset) => (
+            <Button
+              key={preset}
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setManualLimit(preset.toString())}
+              disabled={isLoading}
+              className="text-xs"
+            >
+              {(preset / 10000).toFixed(0)}万円
+            </Button>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setManualLimit("")}
             disabled={isLoading}
-            className="pr-12"
-          />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-            円
-          </span>
+            className="text-xs"
+          >
+            クリア
+          </Button>
         </div>
+
+        {/* スライダー */}
+        <div className="space-y-2">
+          <input
+            type="range"
+            min="0"
+            max="300000"
+            step="10000"
+            value={manualLimit || "0"}
+            onChange={(e) => setManualLimit(e.target.value === "0" ? "" : e.target.value)}
+            disabled={isLoading}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+          />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>0円</span>
+            <span>15万円</span>
+            <span>30万円</span>
+          </div>
+        </div>
+
+        {/* 数値入力と増減ボタン */}
+        <div className="flex gap-2 items-center">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const current = parseInt(manualLimit || "0");
+              setManualLimit(Math.max(0, current - 10000).toString());
+            }}
+            disabled={isLoading || !manualLimit || parseInt(manualLimit) <= 0}
+          >
+            -1万
+          </Button>
+          <div className="relative flex-1">
+            <Input
+              id="manualLimit"
+              name="manualLimit"
+              type="text"
+              placeholder="直接入力も可能"
+              value={manualLimit ? parseInt(manualLimit).toLocaleString() : ""}
+              onChange={(e) => {
+                const value = e.target.value.replace(/,/g, "");
+                if (value === "" || /^\d+$/.test(value)) {
+                  setManualLimit(value);
+                }
+              }}
+              disabled={isLoading}
+              className="pr-12 text-right"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+              円
+            </span>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const current = parseInt(manualLimit || "0");
+              setManualLimit((current + 10000).toString());
+            }}
+            disabled={isLoading}
+          >
+            +1万
+          </Button>
+        </div>
+
         <p className="text-xs text-muted-foreground">
           シミュレーション結果を上書きして、手動で上限額を設定できます。<br />
-          空欄の場合はシミュレーション結果が使用されます。
+          クリアボタンまたは空欄にするとシミュレーション結果が使用されます。
         </p>
       </div>
 
