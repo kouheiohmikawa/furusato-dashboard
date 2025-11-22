@@ -75,7 +75,41 @@
   - エラー時のみローディング状態を解除
   - スムーズなページ遷移
 
-#### 3. ヘッダーナビゲーション改善
+#### 3. ダッシュボードのコンパクト化（円グラフ導入）
+**ファイル**: 
+- `src/components/dashboard/DonationOverview.tsx`
+- `src/app/dashboard/page.tsx`
+- `package.json` (recharts追加)
+
+**変更内容**:
+- **rechartsライブラリの導入**
+  - 円グラフ（ドーナツチャート）で寄付状況を可視化
+  - インタラクティブなツールチップ
+  
+- **DonationOverviewのコンパクト化**
+  - プログレスバーから円グラフに変更
+  - 縦幅を約50%削減
+  - 使用率を円の中心に大きく表示
+  - 統計情報（総額、上限額、残り枠）を2列レイアウトで並列表示
+  - 支払い方法別内訳を折りたたみ可能に（ChevronUp/Down）
+  
+- **ダッシュボードページのグリッドレイアウト最適化**
+  - 3カラムグリッド（2:1の比率）を採用
+  - 左側（2列分）: 寄付概要コンポーネント
+  - 右側（1列分）: 全てのアクションボタンを縦に配置
+    - シミュレーター
+    - 寄付を登録
+    - 寄付記録一覧
+    - シミュレーション履歴
+  - ボタンサイズを縮小してコンパクトに
+  
+- **UX改善の成果**
+  - スクロール不要で全機能にアクセス可能
+  - 重要な情報が一目で把握可能
+  - 円グラフによる直感的な進捗確認
+  - 詳細情報は必要時のみ展開可能
+
+#### 4. ヘッダーナビゲーション改善
 **ファイル**: 
 - `src/components/layout/Header.tsx`
 - `src/app/layout.tsx`
@@ -182,19 +216,21 @@
 
 ## ✅ 最新のGitコミット
 
-**コミットハッシュ**: `751a34b`  
+**コミットハッシュ**: `1cbc7af`  
 **日付**: 2025-01-18  
-**メッセージ**: feat: improve header navigation based on authentication state
+**メッセージ**: feat: redesign dashboard with compact donut chart layout
 
 **変更内容**:
-- 3ファイル変更
-- Header componentに認証状態に応じたナビゲーション実装
-- RootLayoutで認証チェック追加
-- ログイン時のUX改善
+- 5ファイル変更
+- recharts導入（円グラフライブラリ）
+- DonationOverviewを円グラフでコンパクト化
+- ダッシュボードを3カラムグリッドに変更
+- スクロール不要で全機能アクセス可能に
 
 **プッシュ済み**: ✅ origin/feature/setup-project
 
 ### 過去のコミット
+- `751a34b` (2025-01-18): feat: improve header navigation based on authentication state
 - `5e35f5d` (2025-01-17): feat: improve UI/UX for landing page, authentication, and dashboard
 
 ---
