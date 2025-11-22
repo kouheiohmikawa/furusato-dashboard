@@ -61,9 +61,11 @@ export function SimulatorForm({ onResult }: SimulatorFormProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>控除額シミュレーション</CardTitle>
+    <Card className="border-none shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl ring-1 ring-slate-900/5">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+          控除額シミュレーション
+        </CardTitle>
         <CardDescription>
           年収や家族構成を入力して、ふるさと納税の控除上限額の目安を計算します
         </CardDescription>
@@ -72,10 +74,13 @@ export function SimulatorForm({ onResult }: SimulatorFormProps) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* 年収 */}
           <div className="space-y-2">
-            <Label htmlFor="annualIncome">
-              年収<span className="text-red-500">*</span>
+            <Label htmlFor="annualIncome" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              年収<span className="text-red-500 ml-1">*</span>
             </Label>
-            <div className="flex items-center gap-2">
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <span className="text-sm font-bold">¥</span>
+              </div>
               <Input
                 id="annualIncome"
                 type="number"
@@ -83,28 +88,37 @@ export function SimulatorForm({ onResult }: SimulatorFormProps) {
                 {...register("annualIncome", {
                   valueAsNumber: true,
                 })}
-                className={errors.annualIncome ? "border-red-500" : ""}
+                className={`pl-8 pr-12 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all ${errors.annualIncome ? "border-red-500 focus:ring-red-500/20" : ""
+                  }`}
               />
-              <span className="text-sm text-muted-foreground whitespace-nowrap">万円</span>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium pointer-events-none">
+                万円
+              </div>
             </div>
             {errors.annualIncome && (
-              <p className="text-sm text-red-500">{errors.annualIncome.message}</p>
+              <p className="text-sm text-red-500 flex items-center gap-1 mt-1">
+                <span className="inline-block w-1 h-1 rounded-full bg-red-500" />
+                {errors.annualIncome.message}
+              </p>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground pl-1">
               例: 年収500万円の場合は「500」と入力
             </p>
           </div>
 
           {/* 配偶者の有無 */}
           <div className="space-y-2">
-            <Label htmlFor="hasSpouse">
-              配偶者<span className="text-red-500">*</span>
+            <Label htmlFor="hasSpouse" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              配偶者<span className="text-red-500 ml-1">*</span>
             </Label>
             <Select
               value={hasSpouse ? "true" : "false"}
               onValueChange={(value) => setValue("hasSpouse", value === "true")}
             >
-              <SelectTrigger id="hasSpouse">
+              <SelectTrigger
+                id="hasSpouse"
+                className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              >
                 <SelectValue placeholder="選択してください" />
               </SelectTrigger>
               <SelectContent>
@@ -113,16 +127,19 @@ export function SimulatorForm({ onResult }: SimulatorFormProps) {
               </SelectContent>
             </Select>
             {errors.hasSpouse && (
-              <p className="text-sm text-red-500">{errors.hasSpouse.message}</p>
+              <p className="text-sm text-red-500 flex items-center gap-1 mt-1">
+                <span className="inline-block w-1 h-1 rounded-full bg-red-500" />
+                {errors.hasSpouse.message}
+              </p>
             )}
           </div>
 
           {/* 扶養家族の人数 */}
           <div className="space-y-2">
-            <Label htmlFor="dependentsCount">
-              扶養家族の人数<span className="text-red-500">*</span>
+            <Label htmlFor="dependentsCount" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              扶養家族の人数<span className="text-red-500 ml-1">*</span>
             </Label>
-            <div className="flex items-center gap-2">
+            <div className="relative">
               <Input
                 id="dependentsCount"
                 type="number"
@@ -132,27 +149,38 @@ export function SimulatorForm({ onResult }: SimulatorFormProps) {
                 {...register("dependentsCount", {
                   valueAsNumber: true,
                 })}
-                className={errors.dependentsCount ? "border-red-500" : ""}
+                className={`pr-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all ${errors.dependentsCount ? "border-red-500 focus:ring-red-500/20" : ""
+                  }`}
               />
-              <span className="text-sm text-muted-foreground whitespace-nowrap">人</span>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium pointer-events-none">
+                人
+              </div>
             </div>
             {errors.dependentsCount && (
-              <p className="text-sm text-red-500">{errors.dependentsCount.message}</p>
+              <p className="text-sm text-red-500 flex items-center gap-1 mt-1">
+                <span className="inline-block w-1 h-1 rounded-full bg-red-500" />
+                {errors.dependentsCount.message}
+              </p>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground pl-1">
               配偶者以外の扶養家族（子供など）
             </p>
           </div>
 
           {/* 都道府県（オプション） */}
           <div className="space-y-2">
-            <Label htmlFor="prefecture">都道府県（任意）</Label>
+            <Label htmlFor="prefecture" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              都道府県（任意）
+            </Label>
             <Select
               onValueChange={(value) =>
                 setValue("prefecture", value as SimulatorInput["prefecture"])
               }
             >
-              <SelectTrigger id="prefecture">
+              <SelectTrigger
+                id="prefecture"
+                className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              >
                 <SelectValue placeholder="選択してください" />
               </SelectTrigger>
               <SelectContent>
@@ -163,14 +191,25 @@ export function SimulatorForm({ onResult }: SimulatorFormProps) {
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground pl-1">
               現在は計算に影響しませんが、将来の機能拡張で使用予定です
             </p>
           </div>
 
           {/* 送信ボタン */}
-          <Button type="submit" className="w-full" disabled={isCalculating}>
-            {isCalculating ? "計算中..." : "控除額を計算する"}
+          <Button
+            type="submit"
+            className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            disabled={isCalculating}
+          >
+            {isCalculating ? (
+              <>
+                <span className="mr-2">計算中...</span>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              </>
+            ) : (
+              "控除額を計算する"
+            )}
           </Button>
         </form>
       </CardContent>

@@ -64,171 +64,201 @@ export function SimulatorResult({ result, inputData, simulationType }: Simulator
   }
 
   return (
-    <Card className="border-2 border-primary/20 shadow-xl bg-gradient-to-br from-background to-primary/5 animate-in fade-in-50 duration-500">
-      <CardHeader className="space-y-2">
-        <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <Sparkles className="h-5 w-5 text-primary" />
+    <Card className="border-none shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl ring-1 ring-slate-900/5 animate-in fade-in-50 duration-500">
+      <CardHeader className="space-y-2 pb-6">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20">
+            <Sparkles className="h-6 w-6 text-white" />
           </div>
-          <CardTitle className="text-2xl">シミュレーション結果</CardTitle>
+          <div>
+            <CardTitle className="text-2xl font-bold text-slate-900 dark:text-slate-100">シミュレーション結果</CardTitle>
+            <CardDescription className="text-base mt-1">
+              あなたの控除上限額の目安が計算されました
+            </CardDescription>
+          </div>
         </div>
-        <CardDescription className="text-base">
-          ふるさと納税の控除上限額の目安が計算されました
-        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-8">
         {/* 推定上限額 - メインの結果 */}
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary via-primary to-primary/80 p-6 shadow-lg">
-          <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
-          <div className="absolute bottom-0 left-0 -mb-4 -ml-4 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
-          <div className="relative space-y-3">
-            <div className="flex items-center gap-2 text-primary-foreground/80">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-blue-950 dark:via-slate-900 dark:to-slate-950 p-8 shadow-2xl ring-1 ring-white/10">
+          <div className="absolute top-0 right-0 -mt-12 -mr-12 h-48 w-48 rounded-full bg-blue-500/20 blur-3xl" />
+          <div className="absolute bottom-0 left-0 -mb-12 -ml-12 h-48 w-48 rounded-full bg-indigo-500/20 blur-3xl" />
+          <div className="relative space-y-4 text-center sm:text-left">
+            <div className="flex items-center justify-center sm:justify-start gap-2 text-blue-200/80">
               <TrendingUp className="h-5 w-5" />
-              <p className="text-sm font-medium">推定上限額</p>
+              <p className="text-sm font-medium tracking-wide uppercase">推定上限額</p>
             </div>
-            <p className="text-5xl md:text-6xl font-bold text-primary-foreground tracking-tight">
-              ¥{formatCurrency(result.estimatedLimit)}
-            </p>
-            <p className="text-sm text-primary-foreground/90 flex items-start gap-2">
-              <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
-              <span>この金額までの寄付で、自己負担2,000円で済みます</span>
-            </p>
+            <div className="flex flex-col sm:flex-row items-baseline justify-center sm:justify-start gap-1">
+              <span className="text-4xl sm:text-6xl font-bold text-white tracking-tight drop-shadow-sm">
+                ¥{formatCurrency(result.estimatedLimit)}
+              </span>
+              <span className="text-lg text-slate-400 font-medium">まで</span>
+            </div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 backdrop-blur-sm">
+              <Info className="h-3.5 w-3.5 text-blue-200" />
+              <span className="text-xs text-blue-100 font-medium">自己負担2,000円で寄付できる上限額</span>
+            </div>
           </div>
         </div>
 
         {/* 安全ライン - 推奨値 */}
-        <div className="rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/20 dark:to-emerald-900/20 p-5 border-2 border-emerald-200 dark:border-emerald-800 shadow-md">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">
+        <div className="rounded-2xl bg-gradient-to-br from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/20 dark:to-teal-950/20 p-6 border border-emerald-100 dark:border-emerald-900/50 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400">
+                <Shield className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-emerald-800 dark:text-emerald-200">
                   安全ライン（推奨）
                 </p>
+                <p className="text-xs text-emerald-600/80 dark:text-emerald-400/80 mt-0.5">
+                  計算誤差を考慮した安全な金額
+                </p>
               </div>
-              <p className="text-3xl font-bold text-emerald-700 dark:text-emerald-300">
-                ¥{formatCurrency(result.safeLimit)}
-              </p>
             </div>
+            <p className="text-2xl sm:text-3xl font-bold text-emerald-700 dark:text-emerald-300 tabular-nums">
+              ¥{formatCurrency(result.safeLimit)}
+            </p>
+          </div>
 
-            {/* プログレスバー */}
-            <div className="space-y-2">
-              <div className="h-2 bg-emerald-200 dark:bg-emerald-900 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-1000 ease-out"
-                  style={{ width: `${safeLimitRatio}%` }}
-                />
-              </div>
-              <p className="text-xs text-emerald-700 dark:text-emerald-300 flex items-start gap-1.5">
-                <Info className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
-                <span>
-                  余裕を持った金額です。上限を超えるリスクを避けたい方におすすめです
-                </span>
-              </p>
+          {/* プログレスバー */}
+          <div className="space-y-2">
+            <div className="h-2.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(16,185,129,0.3)]"
+                style={{ width: `${safeLimitRatio}%` }}
+              />
             </div>
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 text-right font-medium">
+              推定額の約{safeLimitRatio.toFixed(0)}%
+            </p>
           </div>
         </div>
 
-        {/* 前提条件 */}
-        <div className="rounded-lg bg-muted/50 p-4 space-y-3 border border-border/50">
-          <div className="flex items-center gap-2">
-            <Info className="h-4 w-4 text-muted-foreground" />
-            <h4 className="text-sm font-semibold">計算の前提条件</h4>
+        <div className="grid gap-6 sm:grid-cols-2">
+          {/* 前提条件 */}
+          <div className="rounded-xl bg-slate-50/80 dark:bg-slate-900/50 p-5 border border-slate-200/60 dark:border-slate-800">
+            <div className="flex items-center gap-2 mb-3">
+              <Info className="h-4 w-4 text-slate-500" />
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300">計算の前提条件</h4>
+            </div>
+            <ul className="space-y-2.5">
+              {result.assumptions.map((assumption, index) => (
+                <li key={index} className="flex items-start gap-2.5 text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                  <span className="block w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 shrink-0" />
+                  <span>{assumption}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            {result.assumptions.map((assumption, index) => (
-              <li key={index} className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
-                <span>{assumption}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
 
-        {/* 注意事項 */}
-        <div className="rounded-xl border-l-4 border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 p-4 space-y-3 shadow-sm">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-            <h4 className="text-sm font-semibold text-amber-900 dark:text-amber-100">
-              注意事項
-            </h4>
+          {/* 注意事項 */}
+          <div className="rounded-xl bg-amber-50/80 dark:bg-amber-950/20 p-5 border border-amber-200/60 dark:border-amber-900/50">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500" />
+              <h4 className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                注意事項
+              </h4>
+            </div>
+            <ul className="space-y-2.5">
+              {result.warnings.map((warning, index) => (
+                <li key={index} className="flex items-start gap-2.5 text-sm text-amber-700 dark:text-amber-300 leading-snug">
+                  <span className="block w-1.5 h-1.5 rounded-full bg-amber-400/60 mt-1.5 shrink-0" />
+                  <span>{warning}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="space-y-2 text-sm text-amber-800 dark:text-amber-200">
-            {result.warnings.map((warning, index) => (
-              <li key={index} className="flex items-start gap-2">
-                <span className="text-amber-600 dark:text-amber-400 mt-1">•</span>
-                <span>{warning}</span>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* アクション - 保存ボタン */}
-        <div className="pt-4 border-t border-border/50 space-y-4">
+        <div className="pt-6 border-t border-slate-200 dark:border-slate-800 space-y-4">
           {/* 成功メッセージ */}
           {saveStatus === "success" && (
-            <div className="rounded-lg border border-emerald-500/50 bg-emerald-500/10 p-3 flex items-start gap-2 animate-in fade-in-50 duration-300">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
-                {saveMessage}
-              </p>
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-900 p-4 flex items-start gap-3 animate-in fade-in-50 duration-300">
+              <div className="p-1 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 shrink-0">
+                <CheckCircle2 className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
+                  保存しました
+                </p>
+                <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">
+                  {saveMessage}
+                </p>
+              </div>
             </div>
           )}
 
           {/* エラーメッセージ */}
           {saveStatus === "error" && (
-            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 flex items-start gap-2">
-              <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-destructive">{saveMessage}</p>
+            <div className="rounded-xl border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-900 p-4 flex items-start gap-3">
+              <div className="p-1 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 shrink-0">
+                <AlertTriangle className="h-4 w-4" />
+              </div>
+              <p className="text-sm font-medium text-red-800 dark:text-red-200 mt-0.5">{saveMessage}</p>
             </div>
           )}
 
           {/* 認証必要メッセージ */}
           {saveStatus === "auth_required" && (
-            <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-3 space-y-3">
-              <div className="flex items-start gap-2">
-                <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-amber-600 dark:text-amber-400 font-medium">
-                  {saveMessage}
-                </p>
+            <div className="rounded-xl border border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-900 p-4 space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="p-1 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 shrink-0">
+                  <Info className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                    ログインが必要です
+                  </p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+                    {saveMessage}
+                  </p>
+                </div>
               </div>
-              <Link href="/login">
-                <Button size="sm" variant="outline" className="w-full">
+              <Link href="/login" className="block">
+                <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
                   <LogIn className="mr-2 h-4 w-4" />
-                  ログインページへ
+                  ログインページへ移動
                 </Button>
               </Link>
             </div>
           )}
 
           {/* 保存ボタン */}
-          <Button
-            onClick={handleSave}
-            disabled={isSaving || saveStatus === "success"}
-            className="w-full"
-            size="lg"
-          >
-            {isSaving ? (
-              <>
-                <span className="mr-2">保存中...</span>
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-              </>
-            ) : saveStatus === "success" ? (
-              <>
-                <CheckCircle2 className="mr-2 h-5 w-5" />
-                保存済み
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-5 w-5" />
-                この結果を保存
-              </>
-            )}
-          </Button>
+          <div className="flex flex-col items-center gap-3">
+            <Button
+              onClick={handleSave}
+              disabled={isSaving || saveStatus === "success"}
+              className={`w-full h-12 text-base font-semibold transition-all duration-300 ${saveStatus === "success"
+                ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                : "bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                }`}
+            >
+              {isSaving ? (
+                <>
+                  <span className="mr-2">保存中...</span>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                </>
+              ) : saveStatus === "success" ? (
+                <>
+                  <CheckCircle2 className="mr-2 h-5 w-5" />
+                  保存済み
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-5 w-5" />
+                  シミュレーション結果を保存
+                </>
+              )}
+            </Button>
 
-          <p className="text-xs text-muted-foreground text-center leading-relaxed">
-            保存した結果は、ダッシュボードのシミュレーション履歴から確認できます
-          </p>
+            <p className="text-xs text-muted-foreground text-center">
+              保存すると、ダッシュボードで履歴を確認したり、<br className="sm:hidden" />
+              寄付管理に反映させることができます
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>
