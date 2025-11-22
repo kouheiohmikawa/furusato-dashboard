@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Calendar, MapPin, CreditCard, FileText, Pencil, Trash2, Search, Filter } from "lucide-react";
+import { Calendar, MapPin, CreditCard, FileText, Pencil, Trash2, Search, Filter, Plus } from "lucide-react";
 import { deleteDonation } from "@/app/actions/donations";
 import type { Donation } from "@/types/database.types";
 import Link from "next/link";
@@ -104,27 +104,66 @@ export function DonationList({ donations }: DonationListProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* 統計情報 */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="border-none shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl ring-1 ring-slate-900/5 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <FileText className="w-24 h-24" />
+          </div>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <FileText className="w-4 h-4 text-blue-500" />
+              表示中の寄付件数
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-baseline gap-2">
+              <p className="text-4xl font-bold text-slate-900 dark:text-slate-100">{filteredDonations.length}</p>
+              <span className="text-sm text-muted-foreground">件</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-none shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl ring-1 ring-slate-900/5 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <CreditCard className="w-24 h-24" />
+          </div>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-emerald-500" />
+              表示中の寄付合計額
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+              {formatCurrency(totalAmount)}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* 検索とフィルター */}
-      <Card>
+      <Card className="border-none shadow-md bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm ring-1 ring-slate-900/5">
         <CardContent className="pt-6">
           <div className="space-y-4">
             {/* 検索バー */}
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="flex gap-3">
+              <div className="relative flex-1 group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-blue-500 transition-colors" />
                 <Input
                   type="text"
                   placeholder="自治体名、受領番号、メモで検索..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9"
+                  className="pl-10 h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
               </div>
               <Button
                 variant="outline"
                 size="icon"
                 onClick={() => setShowFilters(!showFilters)}
+                className={`h-11 w-11 border-slate-200 dark:border-slate-800 ${showFilters ? 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800' : ''}`}
               >
                 <Filter className="h-4 w-4" />
               </Button>
@@ -132,11 +171,11 @@ export function DonationList({ donations }: DonationListProps) {
 
             {/* フィルター */}
             {showFilters && (
-              <div className="grid gap-4 md:grid-cols-2 pt-4 border-t">
+              <div className="grid gap-4 md:grid-cols-2 pt-4 border-t border-slate-200/50 dark:border-slate-800/50 animate-in slide-in-from-top-2 duration-200">
                 <div className="space-y-2">
-                  <Label>年度でフィルター</Label>
+                  <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">年度でフィルター</Label>
                   <Select value={yearFilter} onValueChange={setYearFilter}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-10 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -155,109 +194,103 @@ export function DonationList({ donations }: DonationListProps) {
         </CardContent>
       </Card>
 
-      {/* 統計情報 */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              表示中の寄付件数
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{filteredDonations.length}件</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              表示中の寄付合計額
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{formatCurrency(totalAmount)}</p>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* 寄付記録リスト */}
       {filteredDonations.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">
+        <Card className="border-dashed border-2 border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+          <CardContent className="py-16 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+              <Search className="h-8 w-8 text-slate-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">
+              寄付記録が見つかりません
+            </h3>
+            <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
               {searchQuery || yearFilter !== "all"
-                ? "条件に一致する寄付記録が見つかりませんでした"
-                : "まだ寄付記録がありません"}
+                ? "検索条件に一致する寄付記録はありませんでした。条件を変更してお試しください。"
+                : "まだ寄付記録が登録されていません。新しい寄付を登録して管理を始めましょう。"}
             </p>
             <Link href="/dashboard/donations/add">
-              <Button className="mt-4">寄付を登録</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all">
+                <Plus className="mr-2 h-4 w-4" />
+                寄付を登録する
+              </Button>
             </Link>
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="grid gap-4">
           {filteredDonations.map((donation) => (
-            <Card key={donation.id} className="border-2 hover:border-primary/50 transition-colors">
-              <CardContent className="pt-6">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <Card key={donation.id} className="group border-none shadow-sm hover:shadow-md bg-white dark:bg-slate-900 ring-1 ring-slate-200 dark:ring-slate-800 transition-all duration-200">
+              <CardContent className="p-5">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
                   {/* 寄付情報 */}
                   <div className="flex-1 space-y-3">
-                    <div className="flex items-start gap-2">
-                      <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <div className="flex items-start gap-3">
+                      <div className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-200">
+                        <MapPin className="h-5 w-5" />
+                      </div>
                       <div>
-                        <h3 className="font-semibold text-lg">
+                        <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                           {donation.municipality_name}
                         </h3>
-                        <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                          <Calendar className="h-4 w-4" />
+                        <div className="flex items-center gap-2 mt-1.5 text-sm text-muted-foreground">
+                          <Calendar className="h-3.5 w-3.5" />
                           {formatDate(donation.donation_date)}
                         </div>
                       </div>
                     </div>
 
-                    <div className="grid gap-2 md:grid-cols-2 text-sm">
+                    <div className="flex flex-wrap gap-3 text-sm ml-[3.25rem]">
                       {donation.donation_type && (
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <FileText className="h-4 w-4" />
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                          <FileText className="h-3.5 w-3.5" />
                           {donation.donation_type}
                         </div>
                       )}
                       {donation.payment_method && (
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <CreditCard className="h-4 w-4" />
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                          <CreditCard className="h-3.5 w-3.5" />
                           {donation.payment_method}
                         </div>
                       )}
                     </div>
 
-                    {donation.receipt_number && (
-                      <p className="text-sm text-muted-foreground">
-                        受領番号: {donation.receipt_number}
-                      </p>
-                    )}
-
-                    {donation.notes && (
-                      <p className="text-sm text-muted-foreground bg-muted/50 p-2 rounded">
-                        {donation.notes}
-                      </p>
+                    {(donation.receipt_number || donation.notes) && (
+                      <div className="ml-[3.25rem] space-y-2 pt-1">
+                        {donation.receipt_number && (
+                          <div className="text-sm text-muted-foreground flex items-center gap-2">
+                            <span className="text-xs font-medium uppercase tracking-wider text-slate-400">受領番号</span>
+                            <span className="font-mono">{donation.receipt_number}</span>
+                          </div>
+                        )}
+                        {donation.notes && (
+                          <div className="text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+                            {donation.notes}
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
 
                   {/* 金額とアクション */}
-                  <div className="flex flex-col items-end gap-3 md:w-48">
-                    <p className="text-2xl font-bold text-primary">
-                      {formatCurrency(Number(donation.amount))}
-                    </p>
+                  <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-4 md:gap-2 pl-[3.25rem] md:pl-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800 pt-4 md:pt-0">
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground mb-0.5">寄付金額</p>
+                      <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                        {formatCurrency(Number(donation.amount))}
+                      </p>
+                    </div>
+
                     <div className="flex gap-2">
                       <Link href={`/dashboard/donations/${donation.id}/edit`}>
-                        <Button variant="outline" size="sm">
-                          <Pencil className="h-4 w-4 mr-1" />
+                        <Button variant="outline" size="sm" className="h-9 px-3 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/20 dark:hover:border-blue-800 transition-colors">
+                          <Pencil className="h-4 w-4 mr-1.5" />
                           編集
                         </Button>
                       </Link>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="outline" size="sm" disabled={isDeleting}>
+                          <Button variant="outline" size="sm" className="h-9 px-3 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-900/20 dark:hover:border-red-800 transition-colors" disabled={isDeleting}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </AlertDialogTrigger>
@@ -272,7 +305,7 @@ export function DonationList({ donations }: DonationListProps) {
                             <AlertDialogCancel>キャンセル</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDelete(donation.id)}
-                              className="bg-destructive hover:bg-destructive/90"
+                              className="bg-red-600 hover:bg-red-700 text-white"
                             >
                               削除する
                             </AlertDialogAction>
