@@ -27,10 +27,17 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError(result.error);
+        setIsLoading(false);
       }
+      // 成功時はredirect()が呼ばれるため、ここには到達しない
     } catch (err) {
+      // Next.jsのredirect()は正常な動作としてエラーをthrowするため、
+      // それ以外のエラーのみ表示する
+      if (err && typeof err === 'object' && 'digest' in err) {
+        // Next.jsのredirect/notFoundエラーは無視（正常な動作）
+        throw err;
+      }
       setError("ログインに失敗しました。もう一度お試しください。");
-    } finally {
       setIsLoading(false);
     }
   }

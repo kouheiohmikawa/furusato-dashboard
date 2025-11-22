@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 
 interface DetailedSimulatorFormProps {
-  onResult: (result: SimulatorResult) => void;
+  onResult: (result: SimulatorResult, inputData: DetailedSimulatorInput) => void;
 }
 
 export function DetailedSimulatorForm({ onResult }: DetailedSimulatorFormProps) {
@@ -78,7 +78,7 @@ export function DetailedSimulatorForm({ onResult }: DetailedSimulatorFormProps) 
 
     // 少し遅延させてローディング状態を見せる（UX向上）
     setTimeout(() => {
-      onResult(result);
+      onResult(result, data);
       setIsCalculating(false);
     }, 300);
   };

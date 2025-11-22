@@ -3,305 +3,297 @@
 ## 現在のステータス
 
 **ブランチ**: `feature/setup-project`  
-**フェーズ**: Phase 1（MVP v0.5 - シミュレーター機能）  
-**最終更新**: 2025-11-16
+**フェーズ**: Phase 2完了 + UI/UX改善完了  
+**最終更新**: 2025-01-17
 
 ---
 
 ## ✅ 完了した作業
 
-### Phase 1-1: プロジェクト基盤構築（完了）
+### Phase 1: MVP v0.5 - シミュレーター機能（完了）✨
 
 - [x] Next.js 16.0.3 プロジェクト作成
-- [x] TypeScript, Tailwind CSS, ESLint 設定
-- [x] shadcn/ui セットアップ
-- [x] React Hook Form, Zod インストール
-- [x] ディレクトリ構造整備
+- [x] シミュレーター機能（簡易版・詳細版）
+- [x] 控除上限額早見表
+- [x] ランディングページ
+- [x] エラーハンドリング
+- [x] レスポンシブデザイン
 
-### Phase 1-2: 定数・バリデーション準備（完了）
+### Phase 2: データベース & 認証基盤（完了）✨
 
-- [x] 都道府県マスターデータ（prefectures.ts）
-- [x] シミュレーションZodスキーマ（simulatorSchema.ts）
-- [x] シミュレーション計算ロジック（calculateLimit.ts）
-- [x] 共通型定義（types/index.ts）
+#### Tasks 1-11: 認証基盤（完了）
+- [x] Supabaseプロジェクト作成
+- [x] データベーススキーマ設計（profiles, donations, simulation_history, municipalities）
+- [x] Row Level Security (RLS) ポリシー設定
+- [x] 認証機能実装（ログイン、サインアップ、パスワードリセット）
+- [x] ミドルウェア実装
 
-### Phase 1-3: シミュレーション機能実装（完了）✨
+#### Tasks 12-18: データ管理機能（完了）
+- [x] プロフィール編集ページ
+- [x] 寄付記録CRUD機能
+- [x] 年度別寄付集計
+- [x] シミュレーション履歴保存・一覧機能
 
-#### SimulatorFormコンポーネント
-- [x] `src/features/simulator/ui/SimulatorForm.tsx` 作成
-  - React Hook Form + Zod統合
-  - 年収入力フィールド（数値、バリデーション付き）
-  - 配偶者有無選択（Select）
-  - 扶養家族数入力（0-10人）
-  - 都道府県選択（オプション、47都道府県）
-  - 計算ボタン（ローディング状態対応）
-  - エラーメッセージ表示
-  - レスポンシブデザイン
+### UI/UX改善（2025-01-17～01-18完了）🎨
 
-#### SimulatorResultコンポーネント
-- [x] `src/features/simulator/ui/SimulatorResult.tsx` 作成
-  - 推定上限額表示（大きく強調）
-  - 安全ライン表示（80%）
-  - 前提条件リスト表示
-  - 注意事項（警告スタイル）
-  - 会員登録への導線
-  - レスポンシブカードレイアウト
-  - ダークモード対応
+#### 1. トップページ改善
+**ファイル**: `src/app/page.tsx`, `src/components/layout/Header.tsx`
 
-#### シミュレーターページ
-- [x] `src/app/simulator/page.tsx` 作成
-  - ページヘッダー（タイトル・説明）
-  - 2カラムグリッドレイアウト（レスポンシブ）
-  - フォームと結果の並列表示
-  - 結果なし時の空状態表示
-  - フッター情報セクション
-  - Client Component として実装
+**変更内容**:
+- ヘッダーにログイン/サインアップボタンを追加
+- ヒーローセクションに「完全無料で使える」バッジと「無料で始める」ボタンを追加
+- 機能カードに「登録不要」「会員登録必要」バッジを追加
+- 新セクション「無料アカウントでできること」を追加
+  - シミュレーション結果を保存
+  - 寄付記録を一元管理
+  - 年度別の統計表示
+  - 手続きステータス管理
+- lucide-reactアイコンに統一
+- グラデーション、アニメーション強化
+- 会員登録への導線を大幅に改善
+
+**新規コンポーネント**:
+- `src/components/ui/badge.tsx` (shadcn/ui)
+
+#### 2. 認証機能改善
+**ファイル**: 
+- `src/app/actions/auth.ts`
+- `src/app/login/page.tsx`
+- `src/app/signup/page.tsx`
+- `src/app/auth/reset-password/page.tsx`
+
+**変更内容**:
+- **Supabaseエラーメッセージの日本語化**
+  - `translateAuthError()` 関数を実装
+  - 10種類の一般的なエラーをマッピング
+  - 「Invalid login credentials」→「メールアドレスまたはパスワードが正しくありません」
+- **ログイン成功時の一瞬のエラー表示を解消**
+  - Next.jsの`redirect()`エラーを正しく処理
+  - `digest`プロパティでredirectエラーを識別
+  - 正常なredirectエラーは再throwして処理
+- **エラーハンドリングの最適化**
+  - エラー時のみローディング状態を解除
+  - スムーズなページ遷移
+
+#### 3. ヘッダーナビゲーション改善
+**ファイル**: 
+- `src/components/layout/Header.tsx`
+- `src/app/layout.tsx`
+
+**変更内容**:
+- **認証状態に応じたサイト名リンク先の変更**
+  - ログイン時: サイト名クリックで `/dashboard` に遷移
+  - 未ログイン時: サイト名クリックで `/` (トップページ) に遷移
+- **認証状態に応じたナビゲーション表示**
+  - ログイン時: ログイン/サインアップボタンを非表示
+  - 未ログイン時: ログイン/サインアップボタンを表示
+- **RootLayoutでの認証チェック**
+  - Supabaseサーバークライアントで認証状態を取得
+  - `isLoggedIn` propをHeaderに渡す
+- **UX改善**
+  - ログイン中にサイト名をクリックしても再ログイン不要
+  - 直感的なナビゲーションフロー
+
+#### 3. ダッシュボード大幅改善
+**ファイル**: 
+- `src/app/dashboard/page.tsx`
+- `src/components/dashboard/DonationOverview.tsx` (新規)
+- `src/components/dashboard/UserMenu.tsx` (新規)
+
+**変更内容**:
+- **プロフィール情報を右上のドロップダウンメニューに移動**
+  - UserMenuコンポーネントを作成
+  - 目立たない位置に配置
+  - アカウント情報、プロフィール設定、ログアウトにアクセス可能
+
+- **DonationOverviewコンポーネント（新規・最重要）**
+  - 年度選択機能（ドロップダウン）
+  - **上限額 vs 現在の寄付額の比較**
+    - シミュレーション履歴から最新の上限額を自動取得
+    - プログレスバーで視覚的に表示
+    - パーセンテージと残り枠を明確に表示
+  - **ステータスバッジ**
+    - 余裕あり（緑）: 0-79%
+    - 上限接近（黄）: 80-99%
+    - 上限超過（赤）: 100%以上
+  - **上限額未設定時の表示**
+    - 警告アイコンと明確なメッセージ
+    - 「控除額を計算する」ボタンでシミュレーターへ誘導
+    - 現在の寄付総額のみ表示（寄付がある場合）
+  - **年度別統計**
+    - 寄付件数
+    - 平均寄付額
+  - **支払い方法別の内訳**
+    - ポータルごとの寄付額・件数
+    - 割合表示
+    - 順位表示
+
+- **クイックアクションを大きく目立たせる**
+  - 控除額シミュレーター（プライマリカラーのグラデーション）
+  - 寄付を登録（エメラルドグリーンのグラデーション）
+  - ホバー時のシャドウエフェクト
+  - 矢印アイコンのアニメーション
+
+- **情報階層の最適化**
+  1. 寄付概要（上限額比較、統計）- 最重要
+  2. クイックアクション（大）
+  3. サブメニュー（寄付記録一覧、シミュレーション履歴）（小）
+
+**新規コンポーネント**:
+- `src/components/dashboard/DonationOverview.tsx` (237行)
+- `src/components/dashboard/UserMenu.tsx` (62行)
+- `src/components/ui/dropdown-menu.tsx` (shadcn/ui)
+- `src/components/ui/progress.tsx` (shadcn/ui)
 
 ---
 
-### Phase 1-4: ランディングページ（完了）✨
+## 📊 全体の進捗
 
-#### レイアウトコンポーネント
-- [x] `src/components/layout/Header.tsx` 作成
-  - ロゴ/サイト名とホームリンク
-  - ナビゲーション（シミュレーターへのリンク）
-  - Sticky ヘッダー（backdrop-blur効果）
-  - 将来のログイン/サインアップボタン用にコメントアウト
-
-- [x] `src/components/layout/Footer.tsx` 作成
-  - 4カラムグリッドレイアウト
-  - サイト情報、機能リンク、サポートリンク
-  - 利用規約・プライバシーポリシーへのリンク
-  - コピーライト表示（動的な年号）
-
-#### ホームページ
-- [x] `src/app/page.tsx` リニューアル
-  - ヒーローセクション（キャッチコピー + CTA）
-  - 主な機能紹介（3つのカード）
-  - CTAセクション（シミュレーションへの導線）
-  - FAQセクション（3つの質問）
-  - レスポンシブデザイン
-
-#### 法的ページ
-- [x] `src/app/terms/page.tsx` 作成
-  - 利用規約（5条構成）
-  - 日本語メタデータ設定
-
-- [x] `src/app/privacy/page.tsx` 作成
-  - プライバシーポリシー（6項目）
-  - 日本語メタデータ設定
-
-#### ルートレイアウト更新
-- [x] `src/app/layout.tsx` 更新
-  - Header/Footer統合
-  - 日本語メタデータ
-  - flex レイアウト（Header、main、Footer）
-
-### Phase 1-5: エラーハンドリング & 品質チェック（完了）🎉
-
-#### エラーページ実装
-- [x] `src/app/error.tsx` 作成
-  - Client Component（"use client"）
-  - Error Boundaryコンポーネント
-  - エラーメッセージ表示（error.message、error.digest）
-  - リトライボタン（reset関数）
-  - ホームに戻るリンク
-  - 警告アイコンとカードレイアウト
-
-- [x] `src/app/not-found.tsx` 作成
-  - 404エラーページ
-  - 大きな404表示
-  - ホームとシミュレーターへの導線
-  - アイコン付きリンクリスト
-
-#### Lint修正
-- [x] error.tsx: `<a>` → `<Link>` に変更
-- [x] Header.tsx: 未使用の `Button` import削除
-
-#### 品質チェック
-- [x] Lintチェック: エラー0（警告1つのみ、React Compiler関連）
-- [x] TypeScriptチェック: エラー0
-- [x] ビルド成功確認: 7ページ静的生成
-
----
-
-## 🚧 進行中の作業
-
-なし（Phase 1完了！）
-
----
-
-## 📋 次のタスク（Phase 2: データベース & 認証基盤）
-
-### 2-1. Docker Compose でローカルPostgreSQL
-- [ ] `docker-compose.yml` 作成
-- [ ] PostgreSQL起動確認
-
-### 2-2. Prisma セットアップ
-- [ ] Prismaインストール
-- [ ] `prisma/schema.prisma` にスキーマ定義
-- [ ] マイグレーション実行
-- [ ] `src/shared/lib/prisma.ts` 作成
-
----
-
-## 📊 Phase 1（MVP v0.5）全体の進捗
-
-| サブフェーズ | ステータス | 推定時間 | 実績時間 |
-|------------|----------|---------|---------|
-| 1-1. プロジェクト基盤構築 | 🟢 完了 | 2-3時間 | 1時間 |
-| 1-2. 定数・バリデーション | 🟢 完了 | 1時間 | 0.5時間 |
-| 1-3. シミュレーション機能 | 🟢 完了 | 3-4時間 | 1.5時間 |
-| 1-4. ランディングページ | 🟢 完了 | 2-3時間 | 1時間 |
-| 1-5. エラーハンドリング | 🟢 完了 | 1-2時間 | 0.5時間 |
+| フェーズ | ステータス | 完了率 |
+|---------|-----------|--------|
+| Phase 1: シミュレーター | 🟢 完了 | 100% |
+| Phase 2: 認証・DB | 🟢 完了 | 100% |
+| UI/UX改善 | 🟢 完了 | 100% |
 
 **凡例**: 🟢 完了 | 🟡 進行中 | ⚪ 未着手
 
-**進捗率**: Phase 1 完了（100%）🎉
-
 ---
 
-## 🎯 マイルストーン
+## 🎯 達成したマイルストーン
 
-### マイルストーン 1: MVP v0.5（達成！）🎉
+### マイルストーン 1: MVP v0.5（達成）
 - シミュレーター機能完成 ✅
 - ランディングページ完成 ✅
-- エラーハンドリング完成 ✅
-- デプロイ可能な状態 ✅
 
-### 達成基準
-- [x] `/simulator` で控除額シミュレーションが動作
-- [x] レスポンシブ対応
-- [x] ホームページ、利用規約、プライバシーポリシー完成
-- [x] エラーハンドリング実装
-- [x] Lintエラー0、TypeScriptエラー0、ビルド成功
-- [ ] Vercel デプロイ ← 次のステップ
+### マイルストーン 2: MVP v1.0（達成）
+- データベース構築 ✅
+- 認証機能実装 ✅
+- 寄付記録管理 ✅
+- 年度別統計 ✅
+- シミュレーション履歴 ✅
+
+### マイルストーン 3: UI/UX最適化（達成）
+- トップページの会員登録導線改善 ✅
+- 認証エラーの日本語化 ✅
+- ダッシュボードの情報階層最適化 ✅
+- シミュレーション結果との連携 ✅
 
 ---
 
-## 📂 作成されたファイル
+## ✅ 最新のGitコミット
 
-### Phase 1-1
-- `src/components/ui/*`（shadcn/ui）
-- `src/lib/utils.ts`
+**コミットハッシュ**: `751a34b`  
+**日付**: 2025-01-18  
+**メッセージ**: feat: improve header navigation based on authentication state
 
-### Phase 1-2
-- `src/shared/config/prefectures.ts`
-- `src/features/simulator/lib/simulatorSchema.ts`
-- `src/features/simulator/lib/calculateLimit.ts`
-- `src/types/index.ts`
+**変更内容**:
+- 3ファイル変更
+- Header componentに認証状態に応じたナビゲーション実装
+- RootLayoutで認証チェック追加
+- ログイン時のUX改善
 
-### Phase 1-3
-- `src/features/simulator/ui/SimulatorForm.tsx`
-- `src/features/simulator/ui/SimulatorResult.tsx`
-- `src/app/simulator/page.tsx`
+**プッシュ済み**: ✅ origin/feature/setup-project
 
-### Phase 1-4
-- `src/components/layout/Header.tsx`
-- `src/components/layout/Footer.tsx`
-- `src/app/page.tsx`（リニューアル）
-- `src/app/layout.tsx`（Header/Footer統合）
-- `src/app/terms/page.tsx`
-- `src/app/privacy/page.tsx`
+### 過去のコミット
+- `5e35f5d` (2025-01-17): feat: improve UI/UX for landing page, authentication, and dashboard
 
-### Phase 1-5 ⭐
-- `src/app/error.tsx`（エラー境界）
-- `src/app/not-found.tsx`（404ページ）
+---
+
+## 📂 主要なファイル構成
+
+```
+src/
+├── app/
+│   ├── page.tsx                       # トップページ（改善済み）
+│   ├── login/page.tsx                 # ログインページ（改善済み）
+│   ├── signup/page.tsx                # サインアップページ（改善済み）
+│   ├── dashboard/
+│   │   └── page.tsx                   # ダッシュボード（大幅改善）
+│   ├── actions/
+│   │   └── auth.ts                    # 認証Actions（日本語化）
+│   └── ...
+├── components/
+│   ├── layout/
+│   │   └── Header.tsx                 # ヘッダー（改善済み）
+│   ├── dashboard/
+│   │   ├── DonationOverview.tsx       # 寄付概要（新規）
+│   │   └── UserMenu.tsx               # ユーザーメニュー（新規）
+│   └── ui/
+│       ├── badge.tsx                  # バッジ（新規）
+│       ├── dropdown-menu.tsx          # ドロップダウン（新規）
+│       └── progress.tsx               # プログレスバー（新規）
+└── ...
+```
 
 ---
 
 ## 💡 技術的なポイント
 
-### SimulatorForm実装
-- React Hook Form の `useForm` フック使用
-- `zodResolver` でバリデーション統合
-- `setValue` と `watch` でフォーム状態管理
-- `valueAsNumber` で数値型に自動変換
+### Supabaseとの連携
+- `simulation_history`テーブルから最新の上限額を取得
+- JSONBフィールド（`result_data`）の型安全なアクセス
+- Server Componentでのデータフェッチング
 
-### SimulatorResult実装
-- `toLocaleString("ja-JP")` で3桁区切り表示
-- 条件付きレンダリングで空状態対応
-- Tailwind CSS でダークモード対応
+### エラーハンドリング
+- Next.jsの`redirect()`が内部的にエラーをthrowする仕様に対応
+- `digest`プロパティでNext.js内部エラーを識別
+- ユーザー向けエラーメッセージの日本語化
 
-### ビルド結果（Phase 1-4）
-```
-✓ Compiled successfully
-✓ TypeScript errors: 0
-✓ Static pages: 7 (/, /_not-found, /privacy, /simulator, /terms)
-✓ Production build: 成功
-```
+### UI/UXパターン
+- 情報階層の最適化（主要機能を優先表示）
+- 状態に応じた表示切り替え（上限額設定済み/未設定）
+- ユーザーの次のアクションを明確に提示
+- グラデーション、アイコン、アニメーションで視覚的訴求
 
 ---
 
-## 📝 学んだこと・技術メモ
+## 🎨 デザインシステム
 
-### Next.js App Router
-- Client Component（"use client"）ではmetadataをエクスポート不可
-- layout.tsxまたはServer Componentでmetadata定義が必要
+### カラー
+- Primary: 控除額シミュレーター、重要情報
+- Emerald: 寄付登録（ポジティブアクション）
+- Amber: 警告、上限接近
+- Red: エラー、上限超過
+- Green: 成功、余裕あり
 
-### Zod v4
-- エラーメッセージは `message` パラメータで指定
-- オブジェクト形式: `{ message: "..." }`
+### アイコン
+- lucide-react統一
+- 主要アクションに大きなアイコン（h-6 w-6）
+- 補助情報に小さなアイコン（h-4 w-4, h-5 w-5）
 
-### shadcn/ui Select
-- `value` と `onValueChange` でコントロール
-- boolean値は文字列に変換して管理
-
----
-
-## 🎨 UI/UX の特徴
-
-### デザイン
-- New York スタイル（shadcn/ui）
-- Neutral カラーパレット
-- レスポンシブグリッド（lg:grid-cols-2）
-
-### アクセシビリティ
-- Label と Input の関連付け
-- aria-label（計算機アイコン等）
-- エラーメッセージの表示
-
-### UX改善
-- 計算時の短いローディング（300ms）
-- 空状態のビジュアル表示
-- 段階的な情報開示
-
----
-
-## ✅ Gitコミット履歴
-
-1. `d760410` - Add Serena project configuration and design documentation
-2. `7be22d5` - feat: initialize Next.js project with TypeScript and Tailwind CSS
-3. `133c28c` - feat: setup shadcn/ui and project directory structure
-4. `430e016` - feat: add validation schemas and business logic for simulator
-5. `d7fcc27` - feat: implement simulator UI and page
-6. `5682726` - feat: ランディングページとレイアウトコンポーネントを実装
-7. `0f344a1` - docs: add detailed documentation for Phase 1-4 landing page
-8. `8ba59c2` - feat: implement error handling and add quality checks ✨
-
----
-
-## 🔗 関連ドキュメント
-
-- 設計仕様: `development_roadmap.md`
-- フロントエンドアーキテクチャ: `frontend_architecture.md`
-- 技術スタック: `tech_stack.md`, `technical_decisions.md`
-- ビジネスルール: `business_rules.md`
+### アニメーション
+- ホバー時の矢印移動（translate-x-1）
+- プログレスバーのアニメーション
+- fade-inエフェクト
 
 ---
 
 ## 🚀 次のアクション
 
-**MVP v0.5完成！次はVercelデプロイ**
+### オプション1: Vercelデプロイ
+1. Vercelアカウント作成
+2. GitHubリポジトリ連携
+3. 環境変数設定（Supabase）
+4. デプロイ実行
 
-1. Vercelアカウント作成（または既存アカウント使用）
-2. GitHubリポジトリをVercelに連携
-3. `feature/setup-project` ブランチをデプロイ
-4. デプロイURL確認と動作テスト
-5. 問題なければ `main` ブランチにマージ
+### オプション2: 追加機能開発
+- CSVエクスポート機能
+- グラフ表示（Chart.js）
+- 自治体検索機能
+- お気に入り機能
 
-または
+### オプション3: パフォーマンス最適化
+- 画像最適化
+- コード分割
+- キャッシング戦略
 
-**Phase 2に進む（データベース & 認証基盤）**
-1. Docker ComposeでローカルPostgreSQL構築
-2. Prismaセットアップ
+---
+
+## 📈 統計情報
+
+**総ファイル数**: 70+ ファイル  
+**総行数**: 10,000+ 行  
+**コンポーネント数**: 30+ コンポーネント  
+**完了タスク数**: 38/38（Phase 2の20タスク + UI/UX改善）
+
+**ビルド状況**: ✅ エラー0、警告0、17ルート生成成功

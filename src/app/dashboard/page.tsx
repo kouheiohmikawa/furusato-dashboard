@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Heart, History, User, LogOut } from "lucide-react";
-import { logout } from "@/app/actions/auth";
+import { Calculator, Heart, Plus, TrendingUp, ArrowRight, Home } from "lucide-react";
+import { DonationOverview } from "@/components/dashboard/DonationOverview";
+import { UserMenu } from "@/components/dashboard/UserMenu";
 import Link from "next/link";
-import type { Profile } from "@/types/database.types";
+import type { Profile, Donation, SimulationHistory } from "@/types/database.types";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -25,153 +26,132 @@ export default async function DashboardPage() {
     .eq("id", user.id)
     .maybeSingle()) as { data: Profile | null };
 
+  // 寄付記録を取得
+  const { data: donations } = (await supabase
+    .from("donations")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("donation_date", { ascending: false })) as { data: Donation[] | null };
+
+  // シミュレーション履歴から最新の結果を取得
+  const { data: latestSimulation } = (await supabase
+    .from("simulation_history")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle()) as { data: SimulationHistory | null };
+
+  // 推定上限額を取得（シミュレーション結果から）
+  const estimatedLimit = latestSimulation
+    ? (latestSimulation.result_data as { estimatedLimit?: number })?.estimatedLimit
+    : undefined;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
-      <div className="container mx-auto px-4 py-8 sm:py-12 max-w-7xl">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
         {/* ヘッダー */}
-        <div className="mb-8 sm:mb-12 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+        <div className="mb-6 sm:mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="ghost" size="sm">
+                <Home className="h-4 w-4 mr-2" />
+                トップ
+              </Button>
+            </Link>
+            <div className="h-6 w-px bg-border" />
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
               ダッシュボード
             </h1>
-            <p className="text-muted-foreground mt-2">
-              こんにちは、{profile?.display_name || "ユーザー"}さん
-            </p>
           </div>
-          <form action={logout}>
-            <Button variant="outline" size="sm">
-              <LogOut className="mr-2 h-4 w-4" />
-              ログアウト
-            </Button>
-          </form>
+          <UserMenu user={user} profile={profile} />
         </div>
 
-        {/* メニューカード */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* プロフィール */}
-          <Link href="/dashboard/profile">
-            <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer h-full">
-              <CardHeader className="space-y-2">
-                <div className="p-2 rounded-lg bg-primary/10 w-fit">
-                  <User className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle className="text-xl">プロフィール</CardTitle>
-                <CardDescription>
-                  アカウント情報の確認・編集
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  表示名や都道府県などの設定
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
+        {/* グリッドレイアウト - 全て1画面に */}
+        <div className="grid gap-4 lg:grid-cols-3">
+          {/* 左カラム - 寄付概要（2列分） */}
+          <div className="lg:col-span-2">
+            <DonationOverview donations={donations || []} estimatedLimit={estimatedLimit} />
+          </div>
 
-          {/* 寄付記録 */}
-          <Link href="/dashboard/donations">
-            <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer h-full">
-              <CardHeader className="space-y-2">
-                <div className="p-2 rounded-lg bg-primary/10 w-fit">
-                  <Heart className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle className="text-xl">寄付記録</CardTitle>
-                <CardDescription>
-                  寄付履歴の管理
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  寄付の登録、編集、削除、集計
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          {/* シミュレーション履歴 */}
-          <Link href="/dashboard/history">
-            <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer h-full">
-              <CardHeader className="space-y-2">
-                <div className="p-2 rounded-lg bg-primary/10 w-fit">
-                  <History className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle className="text-xl">シミュレーション履歴</CardTitle>
-                <CardDescription>
-                  過去の計算結果を確認
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  保存したシミュレーション結果の閲覧
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
-
-        {/* クイックアクション */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">クイックアクション</h2>
-          <div className="grid gap-4 md:grid-cols-2">
+          {/* 右カラム - クイックアクション */}
+          <div className="space-y-4">
             <Link href="/simulator">
-              <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <LayoutDashboard className="h-5 w-5 text-primary" />
-                    控除額シミュレーター
-                  </CardTitle>
+              <Card className="border-2 bg-gradient-to-br from-primary/10 via-primary/5 to-background hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+                        <Calculator className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base">シミュレーター</CardTitle>
+                        <CardDescription className="text-xs mt-0.5">
+                          上限額を確認
+                        </CardDescription>
+                      </div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    ふるさと納税の控除上限額を計算
-                  </p>
-                </CardContent>
               </Card>
             </Link>
 
             <Link href="/dashboard/donations/add">
-              <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Heart className="h-5 w-5 text-primary" />
-                    寄付を登録
-                  </CardTitle>
+              <Card className="border-2 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-background hover:border-emerald-500 transition-all hover:shadow-lg cursor-pointer group">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
+                        <Plus className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base">寄付を登録</CardTitle>
+                        <CardDescription className="text-xs mt-0.5">
+                          記録を追加
+                        </CardDescription>
+                      </div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-emerald-500 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    新しい寄付記録を追加
-                  </p>
-                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/dashboard/donations">
+              <Card className="border hover:border-primary/50 transition-colors cursor-pointer group">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Heart className="h-4 w-4 text-primary" />
+                      <CardTitle className="text-sm">寄付記録一覧</CardTitle>
+                    </div>
+                    <ArrowRight className="h-3 w-3 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  </div>
+                  <CardDescription className="text-xs">
+                    すべての寄付を確認
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+
+            <Link href="/dashboard/history">
+              <Card className="border hover:border-primary/50 transition-colors cursor-pointer group">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-primary" />
+                      <CardTitle className="text-sm">履歴</CardTitle>
+                    </div>
+                    <ArrowRight className="h-3 w-3 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  </div>
+                  <CardDescription className="text-xs">
+                    過去の計算結果
+                  </CardDescription>
+                </CardHeader>
               </Card>
             </Link>
           </div>
-        </div>
-
-        {/* アカウント情報 */}
-        <div className="mt-12">
-          <Card className="border-2">
-            <CardHeader>
-              <CardTitle>アカウント情報</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">メールアドレス</span>
-                <span className="font-medium">{user.email}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">表示名</span>
-                <span className="font-medium">
-                  {profile?.display_name || "未設定"}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">都道府県</span>
-                <span className="font-medium">
-                  {profile?.prefecture || "未設定"}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>

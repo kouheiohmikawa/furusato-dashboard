@@ -1,11 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Shield, Info, AlertTriangle, Sparkles } from "lucide-react";
-import type { SimulatorResult } from "../lib/simulatorSchema";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, Shield, Info, AlertTriangle, Sparkles, Save, CheckCircle2, LogIn } from "lucide-react";
+import { saveSimulation } from "@/app/actions/simulation";
+import type { SimulatorResult, SimulatorInput } from "../lib/simulatorSchema";
+import type { DetailedSimulatorInput } from "../lib/detailedSimulatorSchema";
+import Link from "next/link";
 
 type SimulatorResultProps = {
   result: SimulatorResult;
+  inputData: SimulatorInput | DetailedSimulatorInput;
+  simulationType: "simple" | "detailed";
 };
 
 /**
@@ -15,8 +22,46 @@ function formatCurrency(amount: number): string {
   return amount.toLocaleString("ja-JP");
 }
 
-export function SimulatorResult({ result }: SimulatorResultProps) {
+export function SimulatorResult({ result, inputData, simulationType }: SimulatorResultProps) {
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error" | "auth_required">("idle");
+  const [saveMessage, setSaveMessage] = useState<string>("");
+
   const safeLimitRatio = (result.safeLimit / result.estimatedLimit) * 100;
+
+  async function handleSave() {
+    setIsSaving(true);
+    setSaveStatus("idle");
+    setSaveMessage("");
+
+    try {
+      const response = await saveSimulation(simulationType, inputData, result);
+
+      if (response.error) {
+        if (response.error === "認証が必要です") {
+          setSaveStatus("auth_required");
+          setSaveMessage("結果を保存するにはログインが必要です");
+        } else {
+          setSaveStatus("error");
+          setSaveMessage(response.error);
+        }
+      } else if (response.success) {
+        setSaveStatus("success");
+        setSaveMessage(response.message || "保存しました");
+        // 3秒後にメッセージをクリア
+        setTimeout(() => {
+          setSaveStatus("idle");
+          setSaveMessage("");
+        }, 3000);
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      setSaveStatus("error");
+      setSaveMessage("保存中にエラーが発生しました");
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   return (
     <Card className="border-2 border-primary/20 shadow-xl bg-gradient-to-br from-background to-primary/5 animate-in fade-in-50 duration-500">
@@ -118,10 +163,71 @@ export function SimulatorResult({ result }: SimulatorResultProps) {
           </ul>
         </div>
 
-        {/* アクション */}
-        <div className="pt-4 border-t border-border/50">
-          <p className="text-sm text-muted-foreground text-center leading-relaxed">
-            より詳細な計算や寄付の記録は、会員登録後にご利用いただけます
+        {/* アクション - 保存ボタン */}
+        <div className="pt-4 border-t border-border/50 space-y-4">
+          {/* 成功メッセージ */}
+          {saveStatus === "success" && (
+            <div className="rounded-lg border border-emerald-500/50 bg-emerald-500/10 p-3 flex items-start gap-2 animate-in fade-in-50 duration-300">
+              <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+                {saveMessage}
+              </p>
+            </div>
+          )}
+
+          {/* エラーメッセージ */}
+          {saveStatus === "error" && (
+            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 flex items-start gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-destructive">{saveMessage}</p>
+            </div>
+          )}
+
+          {/* 認証必要メッセージ */}
+          {saveStatus === "auth_required" && (
+            <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-3 space-y-3">
+              <div className="flex items-start gap-2">
+                <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-amber-600 dark:text-amber-400 font-medium">
+                  {saveMessage}
+                </p>
+              </div>
+              <Link href="/login">
+                <Button size="sm" variant="outline" className="w-full">
+                  <LogIn className="mr-2 h-4 w-4" />
+                  ログインページへ
+                </Button>
+              </Link>
+            </div>
+          )}
+
+          {/* 保存ボタン */}
+          <Button
+            onClick={handleSave}
+            disabled={isSaving || saveStatus === "success"}
+            className="w-full"
+            size="lg"
+          >
+            {isSaving ? (
+              <>
+                <span className="mr-2">保存中...</span>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              </>
+            ) : saveStatus === "success" ? (
+              <>
+                <CheckCircle2 className="mr-2 h-5 w-5" />
+                保存済み
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-5 w-5" />
+                この結果を保存
+              </>
+            )}
+          </Button>
+
+          <p className="text-xs text-muted-foreground text-center leading-relaxed">
+            保存した結果は、ダッシュボードのシミュレーション履歴から確認できます
           </p>
         </div>
       </CardContent>

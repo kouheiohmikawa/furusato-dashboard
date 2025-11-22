@@ -5,12 +5,19 @@ import { SimulatorForm } from "@/features/simulator/ui/SimulatorForm";
 import { DetailedSimulatorForm } from "@/features/simulator/ui/DetailedSimulatorForm";
 import { SimulatorResult } from "@/features/simulator/ui/SimulatorResult";
 import { LimitTable } from "@/features/simulator/ui/LimitTable";
-import type { SimulatorResult as SimulatorResultType } from "@/features/simulator/lib/simulatorSchema";
+import type { SimulatorResult as SimulatorResultType, SimulatorInput } from "@/features/simulator/lib/simulatorSchema";
+import type { DetailedSimulatorInput } from "@/features/simulator/lib/detailedSimulatorSchema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calculator, Zap, Info, Shield, Sparkles } from "lucide-react";
 
+type SimulationData = {
+  result: SimulatorResultType;
+  inputData: SimulatorInput | DetailedSimulatorInput;
+  simulationType: "simple" | "detailed";
+};
+
 export default function SimulatorPage() {
-  const [result, setResult] = useState<SimulatorResultType | null>(null);
+  const [simulationData, setSimulationData] = useState<SimulationData | null>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
@@ -29,7 +36,7 @@ export default function SimulatorPage() {
         </div>
 
         {/* タブ */}
-        <Tabs defaultValue="simple" className="w-full" onValueChange={() => setResult(null)}>
+        <Tabs defaultValue="simple" className="w-full" onValueChange={() => setSimulationData(null)}>
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8 h-auto p-1 bg-muted/50 backdrop-blur-sm">
             <TabsTrigger value="simple" className="gap-2 py-3">
               <Zap className="h-4 w-4" />
@@ -48,13 +55,21 @@ export default function SimulatorPage() {
             <div className="grid gap-6 xl:grid-cols-2">
               {/* フォーム */}
               <div>
-                <SimulatorForm onResult={setResult} />
+                <SimulatorForm
+                  onResult={(result, inputData) =>
+                    setSimulationData({ result, inputData, simulationType: "simple" })
+                  }
+                />
               </div>
 
               {/* 結果 */}
               <div className="xl:sticky xl:top-8 xl:self-start">
-                {result ? (
-                  <SimulatorResult result={result} />
+                {simulationData ? (
+                  <SimulatorResult
+                    result={simulationData.result}
+                    inputData={simulationData.inputData}
+                    simulationType={simulationData.simulationType}
+                  />
                 ) : (
                   <div className="h-full min-h-[400px] flex items-center justify-center">
                     <div className="text-center text-muted-foreground space-y-4 p-8">
@@ -82,13 +97,21 @@ export default function SimulatorPage() {
             <div className="grid gap-6 xl:grid-cols-2">
               {/* フォーム */}
               <div>
-                <DetailedSimulatorForm onResult={setResult} />
+                <DetailedSimulatorForm
+                  onResult={(result, inputData) =>
+                    setSimulationData({ result, inputData, simulationType: "detailed" })
+                  }
+                />
               </div>
 
               {/* 結果 */}
               <div className="xl:sticky xl:top-8 xl:self-start">
-                {result ? (
-                  <SimulatorResult result={result} />
+                {simulationData ? (
+                  <SimulatorResult
+                    result={simulationData.result}
+                    inputData={simulationData.inputData}
+                    simulationType={simulationData.simulationType}
+                  />
                 ) : (
                   <div className="h-full min-h-[400px] flex items-center justify-center">
                     <div className="text-center text-muted-foreground space-y-4 p-8">

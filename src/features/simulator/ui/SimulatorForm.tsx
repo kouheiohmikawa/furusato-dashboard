@@ -23,7 +23,7 @@ import {
 import { simulateLimit } from "../lib/calculateLimit";
 
 type SimulatorFormProps = {
-  onResult: (result: SimulatorResult) => void;
+  onResult: (result: SimulatorResult, inputData: SimulatorInput) => void;
 };
 
 export function SimulatorForm({ onResult }: SimulatorFormProps) {
@@ -55,7 +55,7 @@ export function SimulatorForm({ onResult }: SimulatorFormProps) {
 
     // 少し遅延させてローディング状態を見せる（UX向上）
     setTimeout(() => {
-      onResult(result);
+      onResult(result, data);
       setIsCalculating(false);
     }, 300);
   };

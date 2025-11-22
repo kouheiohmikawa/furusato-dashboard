@@ -1,11 +1,18 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
-export function Header() {
+type HeaderProps = {
+  isLoggedIn?: boolean;
+};
+
+export function Header({ isLoggedIn = false }: HeaderProps) {
+  const homeLink = isLoggedIn ? "/dashboard" : "/";
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* ロゴ・サイト名 */}
-        <Link href="/" className="flex items-center space-x-2">
+        <Link href={homeLink} className="flex items-center space-x-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -28,24 +35,26 @@ export function Header() {
         </Link>
 
         {/* ナビゲーション */}
-        <nav className="flex items-center space-x-4">
+        <nav className="flex items-center space-x-2 sm:space-x-4">
           <Link
             href="/simulator"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
             シミュレーター
           </Link>
-
-          {/* 将来の機能用（コメントアウト） */}
-          {/* <Link
-            href="/login"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-          >
-            ログイン
-          </Link>
-          <Button asChild size="sm">
-            <Link href="/signup">無料で始める</Link>
-          </Button> */}
+          {!isLoggedIn && (
+            <>
+              <Link
+                href="/login"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                ログイン
+              </Link>
+              <Button asChild size="sm">
+                <Link href="/signup">無料で始める</Link>
+              </Button>
+            </>
+          )}
         </nav>
       </div>
     </header>
