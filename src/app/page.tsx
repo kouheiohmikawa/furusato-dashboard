@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Calculator, ClipboardList, Bell, BarChart3, Save, Sparkles, ArrowRight } from "lucide-react";
+import { CheckCircle2, Calculator, ClipboardList, Bell, BarChart3, Save, Sparkles } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -43,20 +43,12 @@ export default function HomePage() {
               </Link>
             </Button>
 
-            <div className="flex gap-3 w-full sm:w-auto">
-              <Button asChild variant="outline" size="lg" className="flex-1 sm:flex-none h-12 px-6 text-lg border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                <Link href="/signup">
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  新規登録
-                </Link>
-              </Button>
-              <Button asChild variant="ghost" size="lg" className="flex-1 sm:flex-none h-12 px-6 text-lg text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                <Link href="/login">
-                  <span className="mr-2">ログイン</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto h-12 px-8 text-lg border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              <Link href="/signup">
+                <Sparkles className="mr-2 h-5 w-5" />
+                新規登録
+              </Link>
+            </Button>
           </div>
 
           <p className="text-sm text-muted-foreground pt-2">
