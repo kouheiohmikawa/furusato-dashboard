@@ -145,7 +145,7 @@ export default async function DashboardPage() {
                   <Link href="/dashboard/statistics">
                     <Button variant="ghost" className="w-full justify-start h-10 font-normal">
                       <BarChart3 className="mr-2 h-4 w-4 text-purple-500" />
-                      統計・分析
+                      詳しいデータを見る
                       <ArrowRight className="ml-auto h-3 w-3 text-muted-foreground opacity-50" />
                     </Button>
                   </Link>

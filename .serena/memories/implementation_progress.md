@@ -321,25 +321,32 @@ COMMENT ON COLUMN donations.portal_site IS 'ポータルサイト名（ふるさ
 
 ---
 
-## ✅ 最新のGitコミット
+## ✅ 最新のGitコミット（2025-11-22）
 
-**コミットハッシュ**: `0900c6e`  
-**日付**: 2025-01-22  
-**メッセージ**: feat: add portal site tracking to donation records
+**コミットハッシュ**: `1338bec`  
+**日付**: 2025-11-22  
+**メッセージ**: feat: add comprehensive donation statistics and analysis page
 
 **変更内容**:
-- 6ファイル変更
-- ポータルサイトトラッキング機能追加
-- ダッシュボード統計を支払い方法別→ポータルサイト別に変更
-- 寄付フォーム・編集フォームにポータルサイト選択追加
+- 3ファイル変更（427行追加）
+- 統計・分析ページ追加（/dashboard/statistics）
+- 5種類のグラフ実装（ポータル、都道府県、月別、種類別）
+- 年度フィルター機能
 
-**プッシュ済み**: ✅ origin/feature/setup-project
+**プッシュ済み**: ✅ origin/feature/add-donation-statistics-graphs
 
-### 過去のコミット
-- `31ad0bf` (2025-01-22): fix: manual limit input showing wrong value
-- `10b9b4b` (2025-01-22): feat: improve manual limit input UX with presets and slider
-- `f9319cc` (2025-01-22): feat: add manual donation limit setting
-- `e173f9e` (2025-01-22): feat: enhance dashboard chart visibility and statistics
+### 最近のコミット（2025-11-22）
+- `1338bec`: feat: add comprehensive donation statistics and analysis page
+- `c8ab31c`: feat: separate prefecture and municipality fields in donations
+- `31c4b59`: feat: replace 'Back to Home' with 'Logout' button in dashboard sidebar
+- `b61809a`: fix: add duplicate email check for signup
+
+### 過去のコミット（2025-01-22）
+- `0900c6e`: feat: add portal site tracking to donation records
+- `31ad0bf`: fix: manual limit input showing wrong value
+- `10b9b4b`: feat: improve manual limit input UX with presets and slider
+- `f9319cc`: feat: add manual donation limit setting
+- `e173f9e`: feat: enhance dashboard chart visibility and statistics
 - `1cbc7af` (2025-01-18): feat: redesign dashboard with compact donut chart layout
 - `751a34b` (2025-01-18): feat: improve header navigation based on authentication state
 - `5e35f5d` (2025-01-17): feat: improve UI/UX for landing page, authentication, and dashboard
@@ -438,11 +445,159 @@ src/
 
 ## 📈 統計情報
 
-**総ファイル数**: 70+ ファイル  
-**総行数**: 10,000+ 行  
-**コンポーネント数**: 30+ コンポーネント  
-**完了タスク数**: 41/41（Phase 2の20タスク + UI/UX改善21件）
+**総ファイル数**: 75+ ファイル  
+**総行数**: 11,500+ 行  
+**コンポーネント数**: 35+ コンポーネント  
+**完了タスク数**: 52/52（Phase 2の20タスク + UI/UX改善21件 + 追加機能11件）
 
-**ビルド状況**: ✅ エラー0、警告0、17ルート生成成功
+**ビルド状況**: ✅ エラー0、警告0、18ルート生成成功
 
-**最終更新**: 2025-01-22
+**最終更新**: 2025-11-22
+
+---
+
+## 🆕 追加機能（2025-11-22）
+
+### 8. 重複メールアドレスチェック機能
+**ブランチ**: `feature/fix-duplicate-email-signup`  
+**コミット**: `b61809a`  
+**ファイル**: `src/app/actions/auth.ts`
+
+**変更内容**:
+- **Supabaseの仕様に対応**
+  - 既存メールアドレスでサインアップ時、errorではなく`data.user.identities`が空配列
+  - この仕様を検知して適切なエラーメッセージを表示
+- **エラーメッセージ**
+  - 「このメールアドレスは既に登録されています。ログインしてください。」
+- **デバッグログ追加**
+  - 開発環境でSupabaseレスポンスをコンソールに出力
+
+**技術的背景**:
+- Supabaseはセキュリティ対策として「メールアドレス存在確認攻撃」を防ぐため、エラーを返さない
+- `data.user.identities.length === 0` で既存ユーザーを判定
+
+### 9. サイドバーにログアウトボタン追加
+**ブランチ**: `feature/add-logout-button-to-sidebar`  
+**コミット**: `31c4b59`  
+**ファイル**: `src/app/dashboard/page.tsx`
+
+**変更内容**:
+- **「トップページへ戻る」を削除**
+  - ダッシュボード内からトップページへ戻るニーズは低い
+- **「ログアウト」ボタンを追加**
+  - サイドバーメニュー内に配置
+  - 赤色（destructive）で視認性向上
+  - formタグでlogout actionを実行
+- **UX改善**
+  - ドロップダウンメニューを開かずに直接ログアウト可能
+  - より分かりやすい位置にログアウト機能を配置
+
+### 10. 都道府県・市区町村の分離 🗾
+**ブランチ**: `feature/separate-prefecture-municipality`  
+**コミット**: `c8ab31c`  
+**マージ済み**: mainブランチ
+
+**変更内容**:
+- **データベースマイグレーション**
+  - `donations.prefecture` (VARCHAR 10) 追加
+  - `donations.municipality` (VARCHAR 100) 追加
+  - `donations.municipality_name` をNULL許可に変更（後方互換性）
+  - インデックス追加（prefecture, municipality）
+- **フォーム改善**
+  - Before: `[東京都渋谷区    ]` 1つの入力フィールド
+  - After: `[東京都 ▼]` 都道府県Select + `[渋谷区    ]` 市区町村Input
+  - 都道府県は47都道府県のドロップダウンから選択
+- **Server Actions更新**
+  - `createDonation()`, `updateDonation()` で新フィールドを処理
+  - `municipality_name`も自動生成して後方互換性を維持
+- **表示コンポーネント更新**
+  - `DonationList.tsx` で都道府県・市区町村別の検索に対応
+  - 優先順位: prefecture + municipality > municipality_name
+
+**メリット**:
+- ✅ 都道府県別の集計が可能
+- ✅ 入力ミス削減（都道府県はドロップダウン）
+- ✅ 検索・フィルタリング強化
+- ✅ 将来の拡張性（自治体マスタとの連携）
+
+**必要なSQL**:
+```sql
+ALTER TABLE donations
+  ADD COLUMN prefecture VARCHAR(10),
+  ADD COLUMN municipality VARCHAR(100);
+ALTER TABLE donations ALTER COLUMN municipality_name DROP NOT NULL;
+CREATE INDEX idx_donations_prefecture ON donations(prefecture);
+CREATE INDEX idx_donations_municipality ON donations(municipality);
+```
+
+**ファイル**: 6ファイル変更
+- `migrations/003_add_prefecture_municipality_columns.sql` (新規)
+- `src/types/database.types.ts`
+- `src/components/donations/DonationForm.tsx`
+- `src/components/donations/DonationEditForm.tsx`
+- `src/app/actions/donations.ts`
+- `src/components/donations/DonationList.tsx`
+
+### 11. 統計・分析ページ追加 📊
+**ブランチ**: `feature/add-donation-statistics-graphs`  
+**コミット**: `1338bec`  
+**ファイル**: 3ファイル変更（427行追加）
+
+**変更内容**:
+- **新規ページ**: `/dashboard/statistics`
+- **サイドバーメニュー追加**
+  - 「統計・分析」ボタン（紫色のBarChart3アイコン）
+  - メニュー構成: 寄付記録一覧 → シミュレーション履歴 → 統計・分析 → ログアウト
+
+- **統計サマリーカード**
+  - 寄付件数（青）
+  - 合計金額（緑）
+  - 平均金額（紫）
+  - 年度フィルター（全年度/個別年度選択）
+
+- **実装したグラフ（5種類）**
+  1. **ポータルサイト別寄付額**（棒グラフ）
+     - 各ポータルサイトの寄付額を比較
+     - どのサイトをメインで使っているか一目瞭然
+  2. **ポータルサイト別割合**（円グラフ）
+     - パーセンテージ表示
+     - 8色のカラーパレット
+  3. **都道府県別寄付額**（横棒グラフ）
+     - 上位10件のみ表示
+     - 応援している地域が分かる
+     - prefecture分離機能により実現
+  4. **月別寄付額推移**（折れ線グラフ）
+     - 年度選択時のみ表示
+     - 1-12月の寄付パターンを可視化
+  5. **寄付の種類別割合**（円グラフ）
+     - ワンストップ vs 確定申告など
+
+- **技術スタック**
+  - Recharts（既に導入済み）
+  - ResponsiveContainer（全グラフでレスポンシブ対応）
+  - インタラクティブなTooltip（金額フォーマット付き）
+  - カスタムカラーパレット
+
+- **UX/UI**
+  - データがない場合の空状態メッセージ
+  - プロフェッショナルなグラデーション＆シャドウ
+  - 既存のデザインシステムに統合
+  - 紫-青のグラデーションタイトル
+
+**新規ファイル**:
+- `src/app/dashboard/statistics/page.tsx` (40行)
+- `src/components/dashboard/DonationStatistics.tsx` (387行)
+
+**変更ファイル**:
+- `src/app/dashboard/page.tsx` (BarChart3アイコン追加、メニュー項目追加)
+
+**メリット**:
+- ✅ 寄付傾向を視覚的に分析できる
+- ✅ ポータルサイトの使い分けが明確に
+- ✅ 都道府県別の寄付状況が分かる（今回のprefecture分離で実現）
+- ✅ 時系列でのトレンド分析
+- ✅ ふるさと納税管理アプリとしての差別化要素
+
+**ビルド状況**: ✅ エラー0、警告0、18ルート生成成功
+
+**最終更新**: 2025-11-22
