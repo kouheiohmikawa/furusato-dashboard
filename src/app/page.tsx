@@ -74,7 +74,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2 max-w-4xl mx-auto">
             {/* 機能1: シミュレーター */}
             <Card className="group relative overflow-hidden border-none shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl ring-1 ring-slate-900/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
               <div className="absolute right-4 top-4">
@@ -111,22 +111,6 @@ export default function HomePage() {
               </CardHeader>
             </Card>
 
-            {/* 機能3: 手続き管理 */}
-            <Card className="group relative overflow-hidden border-none shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl ring-1 ring-slate-900/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <div className="absolute right-4 top-4">
-                <Badge variant="outline" className="border-slate-200 dark:border-slate-700">会員限定</Badge>
-              </div>
-              <CardHeader>
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform duration-300">
-                  <Bell className="h-7 w-7" />
-                </div>
-                <CardTitle className="text-xl font-bold">手続き漏れ防止</CardTitle>
-                <CardDescription className="text-base leading-relaxed">
-                  ワンストップ特例申請や確定申告のステータスを記録。
-                  うっかり忘れを防いで、確実に控除を受けられます。
-                </CardDescription>
-              </CardHeader>
-            </Card>
           </div>
         </div>
       </section>
@@ -147,7 +131,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-3">
             <Card className="border-none bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/30 dark:to-slate-900/50 shadow-sm hover:shadow-md transition-shadow">
               <CardHeader>
                 <div className="mb-4 flex items-center gap-4">
@@ -193,20 +177,6 @@ export default function HomePage() {
               </CardHeader>
             </Card>
 
-            <Card className="border-none bg-gradient-to-br from-rose-50 to-white dark:from-rose-950/30 dark:to-slate-900/50 shadow-sm hover:shadow-md transition-shadow">
-              <CardHeader>
-                <div className="mb-4 flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
-                    <CheckCircle2 className="h-6 w-6" />
-                  </div>
-                  <CardTitle className="text-xl">手続きステータス管理</CardTitle>
-                </div>
-                <CardDescription className="text-base pl-16">
-                  ワンストップ特例や確定申告の進捗を記録。
-                  手続き漏れを防いで、確実に控除を受けられます。
-                </CardDescription>
-              </CardHeader>
-            </Card>
           </div>
 
           <div className="mt-16 text-center">
