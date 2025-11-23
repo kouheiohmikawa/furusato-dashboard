@@ -158,9 +158,7 @@ export async function updateDonation(id: string, formData: FormData) {
     };
 
     const { error } = await supabase
-      // @ts-expect-error - Supabase type inference issue
       .from("donations")
-      // @ts-expect-error - Supabase type inference issue
       .update(updateData)
       .eq("id", id)
       .eq("user_id", user.id);
