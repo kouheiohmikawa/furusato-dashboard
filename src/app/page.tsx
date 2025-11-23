@@ -31,8 +31,8 @@ export default function HomePage() {
           </h1>
 
           <p className="mx-auto max-w-2xl text-lg text-slate-600 dark:text-slate-300 sm:text-xl leading-relaxed">
-            控除額のシミュレーションから寄付の管理まで。<br className="hidden sm:block" />
-            複数のポータルサイトをまたいだ寄付状況を、ひとつのダッシュボードで一元管理。
+            控除額のシミュレーションから寄付の記録・管理まで。<br className="hidden sm:block" />
+            ふるさと納税をもっと便利に、もっと簡単に。
           </p>
 
           <div className="flex flex-col items-center justify-center gap-6 pt-6">
@@ -70,12 +70,12 @@ export default function HomePage() {
           <div className="mb-16 text-center max-w-2xl mx-auto">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-slate-900 dark:text-slate-100 mb-4">主な機能</h2>
             <p className="text-lg text-muted-foreground">
-              ふるさと納税をもっと便利に、もっと簡単にするための機能を揃えました
+              会員登録なしで、すぐに使える
             </p>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2 max-w-4xl mx-auto">
-            {/* 機能1: シミュレーター */}
+          <div className="max-w-2xl mx-auto">
+            {/* 機能: シミュレーター */}
             <Card className="group relative overflow-hidden border-none shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl ring-1 ring-slate-900/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
               <div className="absolute right-4 top-4">
                 <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
@@ -93,24 +93,6 @@ export default function HomePage() {
                 </CardDescription>
               </CardHeader>
             </Card>
-
-            {/* 機能2: 一元管理 */}
-            <Card className="group relative overflow-hidden border-none shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl ring-1 ring-slate-900/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <div className="absolute right-4 top-4">
-                <Badge variant="outline" className="border-slate-200 dark:border-slate-700">会員限定</Badge>
-              </div>
-              <CardHeader>
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-300">
-                  <ClipboardList className="h-7 w-7" />
-                </div>
-                <CardTitle className="text-xl font-bold">複数ポータル一元管理</CardTitle>
-                <CardDescription className="text-base leading-relaxed">
-                  楽天、ふるなび、さとふるなど、複数のポータルサイトでの寄付履歴を
-                  ひとつの場所でまとめて管理できます。
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
           </div>
         </div>
       </section>
@@ -131,7 +113,22 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="border-none bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/30 dark:to-slate-900/50 shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader>
+                <div className="mb-4 flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                    <ClipboardList className="h-6 w-6" />
+                  </div>
+                  <CardTitle className="text-xl">複数ポータル一元管理</CardTitle>
+                </div>
+                <CardDescription className="text-base pl-16">
+                  楽天、ふるなび、さとふるなど、複数のポータルサイトでの寄付を
+                  ひとつの場所でまとめて管理できます。
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
             <Card className="border-none bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/30 dark:to-slate-900/50 shadow-sm hover:shadow-md transition-shadow">
               <CardHeader>
                 <div className="mb-4 flex items-center gap-4">
@@ -147,17 +144,17 @@ export default function HomePage() {
               </CardHeader>
             </Card>
 
-            <Card className="border-none bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/30 dark:to-slate-900/50 shadow-sm hover:shadow-md transition-shadow">
+            <Card className="border-none bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/30 dark:to-slate-900/50 shadow-sm hover:shadow-md transition-shadow">
               <CardHeader>
                 <div className="mb-4 flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-                    <ClipboardList className="h-6 w-6" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <CheckCircle2 className="h-6 w-6" />
                   </div>
-                  <CardTitle className="text-xl">寄付記録を一元管理</CardTitle>
+                  <CardTitle className="text-xl">寄付記録を詳細管理</CardTitle>
                 </div>
                 <CardDescription className="text-base pl-16">
-                  すべての寄付をひとつの場所で管理。
-                  自治体名、金額、返礼品、受領番号などを詳細に記録できます。
+                  自治体名、金額、返礼品、受領番号などを詳細に記録。
+                  確定申告に必要な情報をすぐに確認できます。
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -168,11 +165,11 @@ export default function HomePage() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400">
                     <BarChart3 className="h-6 w-6" />
                   </div>
-                  <CardTitle className="text-xl">年度別の統計表示</CardTitle>
+                  <CardTitle className="text-xl">年度別の統計・グラフ</CardTitle>
                 </div>
                 <CardDescription className="text-base pl-16">
                   年度ごとの寄付総額や件数を自動集計。
-                  控除上限額と比較して、残り枠を一目で確認できます。
+                  ポータル別や都道府県別のグラフで、寄付傾向を可視化できます。
                 </CardDescription>
               </CardHeader>
             </Card>
