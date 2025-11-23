@@ -2028,3 +2028,55 @@ ALTER TABLE donations ADD COLUMN portal_site VARCHAR(100);
 
 **ステータス**: ✅ 本番稼働中
 
+---
+
+## 🔍 Sentry再導入（2025-11-24完了）
+
+### 背景
+本番デプロイ時にSentryの依存関係エラーで一時的に削除していたが、エラー監視の重要性から再導入を実施。
+
+### 実装内容
+
+#### セキュリティ強化
+- **DSN環境変数化**: `NEXT_PUBLIC_SENTRY_DSN`
+- **PII送信無効化**: `sendDefaultPii: false`
+- **機密情報保護**: GitHubに認証情報を公開しない
+
+#### コスト最適化
+```typescript
+// 本番環境: 10%サンプリング（無料枠: 5,000イベント/月）
+tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
+
+// Session Replay: 環境別サンプリング
+replaysSessionSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
+replaysOnErrorSampleRate: 1.0,
+```
+
+#### 依存関係
+- `@sentry/nextjs@^10.26.0`
+- `import-in-the-middle@1.15.0` (正しいバージョン)
+- `require-in-the-middle@7.5.2` (正しいバージョン)
+
+**ビルド結果**: ✅ エラー0、警告0
+
+#### 設定ファイル
+1. `sentry.server.config.ts` - サーバーサイド
+2. `sentry.edge.config.ts` - Edge Runtime
+3. `src/instrumentation-client.ts` - クライアント
+4. `src/instrumentation.ts` - 統合
+5. `src/app/global-error.tsx` - グローバルエラーハンドリング
+
+#### その他
+- `.cursor/`を`.gitignoreに追加`
+- Sentryサンプルページを削除（本番環境に不要）
+
+### Vercel環境変数
+- `NEXT_PUBLIC_SENTRY_DSN` - 設定完了
+
+### 動作確認
+- ✅ ローカルビルド成功
+- ⏳ 本番環境デプロイ待ち
+- ⏳ Sentryダッシュボードでイベント確認待ち
+
+**コミット**: `9851c22`
+

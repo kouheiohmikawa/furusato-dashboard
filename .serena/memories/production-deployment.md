@@ -270,10 +270,10 @@ CREATE TABLE donations (
 ## 🔧 今後の改善予定
 
 ### 優先度: 高
-1. **Sentryの再導入**
-   - エラートラッキングのため
-   - 依存関係の問題が解決されている可能性
-   - 本番環境でのエラー監視が必須
+1. ~~**Sentryの再導入**~~ ✅ **完了 (2025-11-24)**
+   - エラー監視を再導入
+   - セキュリティとコスト最適化を実装
+   - 本番環境でエラー監視が稼働中
 
 2. **開発環境のデータベース同期**
    - ローカルのSupabaseに同じマイグレーションを実行
@@ -326,12 +326,46 @@ CREATE TABLE donations (
 
 ---
 
+## 🎉 Sentry再導入完了（2025-11-24）
+
+### 実装内容
+
+#### セキュリティ強化
+- ✅ DSNを環境変数化 (`NEXT_PUBLIC_SENTRY_DSN`)
+- ✅ PIIデータ送信を無効化 (`sendDefaultPii: false`)
+- ✅ GitHubに認証情報を公開しない設定
+
+#### コスト最適化
+- ✅ 本番環境: 10%サンプリング（無料枠内）
+- ✅ 開発環境: 100%サンプリング（デバッグ用）
+- ✅ Session Replay: 環境別サンプリング
+
+#### 依存関係
+- `@sentry/nextjs@^10.26.0`
+- `import-in-the-middle@1.15.0`
+- `require-in-the-middle@7.5.2`
+- ビルド警告: 0件
+
+#### 新規ファイル
+- `sentry.server.config.ts` - サーバーサイド設定
+- `sentry.edge.config.ts` - Edge Runtime設定
+- `src/instrumentation-client.ts` - クライアント設定
+- `src/instrumentation.ts` - 統合設定
+- `src/app/global-error.tsx` - グローバルエラーハンドリング
+
+#### Vercel環境変数
+- `NEXT_PUBLIC_SENTRY_DSN` - 設定済み
+
+#### コミット
+- `9851c22` - feat: re-integrate Sentry with security and cost optimizations
+
+---
+
 ## 次のデプロイ予定
 
 ### 予定日: 未定
 ### 予定内容:
-- Sentry再導入
 - パフォーマンス改善
 - 機能追加（未定）
 
-**最終更新**: 2025-11-23
+**最終更新**: 2025-11-24
