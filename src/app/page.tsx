@@ -23,10 +23,10 @@ export default function HomePage() {
           </div>
 
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl md:text-7xl text-slate-900 dark:text-slate-100 leading-tight">
-            ふるさと納税を
+            ふるさと納税管理を
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent pb-2 inline-block">
-              もっとシンプルに
+              もっとスマートに
             </span>
           </h1>
 
@@ -124,7 +124,7 @@ export default function HomePage() {
               <span>会員登録でさらに便利に</span>
             </div>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-slate-900 dark:text-slate-100 mb-4">
-              無料アカウントでできること
+              アカウント登録でできること
             </h2>
             <p className="text-lg text-muted-foreground">
               メールアドレスだけで簡単登録。すべての機能が完全無料で使えます
