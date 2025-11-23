@@ -2,9 +2,10 @@
 
 ## 現在のステータス
 
-**ブランチ**: `feature/setup-project`  
-**フェーズ**: Phase 2完了 + UI/UX改善完了  
-**最終更新**: 2025-01-17
+**ブランチ**: `main`  
+**フェーズ**: Phase 2完了 + UI/UX改善完了 + セキュリティ強化完了 + **本番デプロイ完了** 🚀  
+**本番環境URL**: https://furusato-hub.com  
+**最終更新**: 2025-11-23
 
 ---
 
@@ -1957,3 +1958,73 @@ COMMENT ON COLUMN donations.return_item IS '返礼品の内容（例: 和牛切�
 **ビルド状況**: ✅ エラー0、警告0、正常稼働
 
 **コミット予定**: `feature/return-item-field` ブランチにコミット後、mainにマージ
+
+---
+
+## 🚀 本番環境デプロイ（2025-11-23完了）
+
+### デプロイ情報
+- **本番URL**: https://furusato-hub.com
+- **プラットフォーム**: Vercel
+- **DNS**: AWS Route53
+- **データベース**: Supabase (本番環境)
+
+### デプロイ完了までの作業
+
+#### 1. ドメイン・インフラ準備
+- ✅ Route53でドメイン登録（furusato-hub.com）
+- ✅ Vercelプロジェクト作成
+- ✅ 本番用Supabaseプロジェクト作成
+- ✅ 環境変数設定（本番Supabase認証情報）
+
+#### 2. ビルドエラーの解決
+**エラー1**: Sentry依存関係の競合
+- ブランチ作成: `fix/sentry-dependency-version`
+- Sentryを一時的に削除（instrumentation.ts、sentry.*.config.ts、関連依存関係）
+- next.config.tsからSentry統合を削除
+
+**エラー2**: TypeScript型エラー
+- `@ts-expect-error`コメントを追加（donations.ts、profile.ts）
+- Supabase型推論問題への対処
+
+#### 3. デプロイ成功
+- ✅ Vercelビルド成功
+- ✅ https://furusato-hub.com でアクセス可能
+- ✅ 新規ユーザー登録・ログイン成功
+
+#### 4. 本番環境のスキーマ修正
+**問題**: プロフィール更新・寄付登録が失敗（PGRST204エラー）
+
+**原因**: 本番データベースに欠落カラムがあった
+- profiles.manual_limit
+- donations.prefecture
+- donations.municipality
+- donations.portal_site
+
+**解決**: マイグレーションSQLを実行
+```sql
+ALTER TABLE profiles ADD COLUMN manual_limit INTEGER;
+ALTER TABLE donations ADD COLUMN prefecture TEXT;
+ALTER TABLE donations ADD COLUMN municipality TEXT;
+ALTER TABLE donations ADD COLUMN portal_site VARCHAR(100);
+```
+
+#### 5. 動作確認完了
+- ✅ ユーザー登録・認証
+- ✅ プロフィール更新
+- ✅ 寄付記録登録
+- ✅ ダッシュボード表示
+- ✅ シミュレーター動作
+
+### 本番環境の最終構成
+
+**環境変数**:
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_ANON_KEY
+- SUPABASE_SERVICE_ROLE_KEY
+- NEXT_PUBLIC_SITE_URL
+
+**データベーススキーマ**: 開発環境と同期完了
+
+**ステータス**: ✅ 本番稼働中
+

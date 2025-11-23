@@ -254,17 +254,19 @@
 
 ## デプロイ計画
 
-### MVP v0.5（現在）
+### MVP v0.5（完了）
 - **環境**: ローカル開発環境のみ
 - **状態**: Phase 1完了
 
-### MVP v1.0（Phase 2完了後）
+### MVP v1.0（✅ 本番デプロイ完了 - 2025-11-23）
 - **デプロイ先**: Vercel
+- **本番URL**: https://furusato-hub.com
 - **環境**: 
-  - Production（本番環境）
-  - Preview（プレビュー環境）
-- **データベース**: Supabase（Free Tier）または Vercel Postgres
-- **ドメイン**: Vercelサブドメイン または カスタムドメイン
+  - Production（本番環境） ✅ 稼働中
+  - Preview（プレビュー環境） ✅ 利用可能
+- **データベース**: Supabase (本番環境)
+- **DNS**: AWS Route53
+- **ドメイン**: furusato-hub.com (カスタムドメイン)
 
 ### MVP v2.0（Phase 4完了後）
 - **スケールアップ検討**
@@ -320,4 +322,5 @@
 ---
 
 ## 更新履歴
+- 2025-11-23: 本番環境デプロイ完了を記録（https://furusato-hub.com）
 - 2025-11-16: 初版作成、Phase 1完了を記録

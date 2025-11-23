@@ -136,8 +136,33 @@ COMMENT ON COLUMN donations.return_item IS '返礼品の内容（例: 和牛切�
 
 ## 実行状況
 
-- [ ] manual_limitカラム追加
-- [ ] portal_siteカラム追加
-- [ ] return_itemカラム追加（マイグレーションファイル作成済み）
+- [x] manual_limitカラム追加 ✅ **本番環境実行済み (2025-11-23)**
+- [x] portal_siteカラム追加 ✅ **本番環境実行済み (2025-11-23)**
+- [x] return_itemカラム追加 ✅ **本番環境実行済み (2025-11-23)**
+- [x] prefectureカラム追加 (donations) ✅ **本番環境実行済み (2025-11-23)**
+- [x] municipalityカラム追加 (donations) ✅ **本番環境実行済み (2025-11-23)**
 
-**最終更新**: 2025-01-23
+**最終更新**: 2025-11-23
+
+---
+
+## 本番環境デプロイ履歴
+
+### 2025-11-23: 初回本番デプロイ
+- **URL**: https://furusato-hub.com
+- **プラットフォーム**: Vercel
+- **DNS**: AWS Route53
+- **データベース**: Supabase (本番環境)
+
+**実行したマイグレーション**:
+```sql
+ALTER TABLE profiles ADD COLUMN manual_limit INTEGER;
+ALTER TABLE donations ADD COLUMN prefecture TEXT;
+ALTER TABLE donations ADD COLUMN municipality TEXT;
+ALTER TABLE donations ADD COLUMN portal_site VARCHAR(100);
+```
+
+**動作確認済み**:
+- ✅ ユーザー登録・認証
+- ✅ プロフィール更新
+- ✅ 寄付記録の登録
