@@ -59,6 +59,15 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">サポート・規約</h3>
             <ul className="space-y-3 text-sm">
               <li>
+                <a
+                  href="mailto:support@example.com"
+                  className="flex items-center text-muted-foreground transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+                >
+                  <HelpCircle className="mr-2 h-4 w-4" />
+                  お問い合わせ
+                </a>
+              </li>
+              <li>
                 <Link
                   href="/terms"
                   className="flex items-center text-muted-foreground transition-colors hover:text-blue-600 dark:hover:text-blue-400"
@@ -74,15 +83,6 @@ export function Footer() {
                 >
                   <Shield className="mr-2 h-4 w-4" />
                   プライバシーポリシー
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/help"
-                  className="flex items-center text-muted-foreground transition-colors hover:text-blue-600 dark:hover:text-blue-400"
-                >
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  ヘルプセンター
                 </Link>
               </li>
             </ul>
