@@ -238,7 +238,7 @@ export function DonationStatistics({ donations }: DonationStatisticsProps) {
                     formatter={(value: number) => formatCurrency(value)}
                     contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px rgba(0,0,0,0.1)" }}
                   />
-                  <Bar dataKey="amount" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="amount" name="金額" fill="#3b82f6" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -298,7 +298,7 @@ export function DonationStatistics({ donations }: DonationStatisticsProps) {
                   formatter={(value: number) => formatCurrency(value)}
                   contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px rgba(0,0,0,0.1)" }}
                 />
-                <Bar dataKey="amount" fill="#10b981" radius={[0, 8, 8, 0]} />
+                <Bar dataKey="amount" name="金額" fill="#10b981" radius={[0, 8, 8, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -327,6 +327,7 @@ export function DonationStatistics({ donations }: DonationStatisticsProps) {
                 <Line
                   type="monotone"
                   dataKey="amount"
+                  name="金額"
                   stroke="#f59e0b"
                   strokeWidth={3}
                   dot={{ fill: "#f59e0b", r: 5 }}

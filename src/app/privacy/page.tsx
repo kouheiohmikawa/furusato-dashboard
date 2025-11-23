@@ -125,7 +125,7 @@ export default function PrivacyPage() {
             本ポリシーに関するお問い合わせは、下記の窓口までお願いいたします。
           </p>
           <p className="text-muted-foreground">
-            お問い合わせ先: <a href="mailto:support@example.com" className="text-blue-600 hover:underline">support@example.com</a>
+            お問い合わせ先: <a href="mailto:furusato.dashboard.service@gmail.com" className="text-blue-600 hover:underline">furusato.dashboard.service@gmail.com</a>
           </p>
         </CardContent>
       </Card>

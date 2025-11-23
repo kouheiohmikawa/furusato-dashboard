@@ -60,7 +60,7 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li>
                 <a
-                  href="mailto:support@example.com"
+                  href="mailto:furusato.dashboard.service@gmail.com"
                   className="flex items-center text-muted-foreground transition-colors hover:text-blue-600 dark:hover:text-blue-400"
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />

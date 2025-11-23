@@ -5,6 +5,7 @@
  */
 
 import { z } from "zod";
+import { DONATION_TYPES, PAYMENT_METHODS, PORTAL_SITES } from "@/lib/constants/donations";
 
 /**
  * 都道府県のバリデーション
@@ -17,35 +18,6 @@ const PREFECTURES = [
   "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県",
   "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
   "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
-] as const;
-
-/**
- * 寄付種別
- */
-const DONATION_TYPES = ["通常", "災害支援", "特定事業支援"] as const;
-
-/**
- * 支払方法
- */
-const PAYMENT_METHODS = [
-  "クレジットカード",
-  "銀行振込",
-  "コンビニ決済",
-  "PayPay",
-  "その他"
-] as const;
-
-/**
- * ポータルサイト
- */
-const PORTAL_SITES = [
-  "ふるさとチョイス",
-  "楽天ふるさと納税",
-  "さとふる",
-  "ふるなび",
-  "au PAY ふるさと納税",
-  "その他",
-  "直接申込"
 ] as const;
 
 /**
@@ -151,6 +123,17 @@ export const receiptNumberSchema = z
   .or(z.literal(""));
 
 /**
+ * 返礼品スキーマ
+ */
+export const returnItemSchema = z
+  .string()
+  .max(200, "返礼品は200文字以内で入力してください")
+  .trim()
+  .nullable()
+  .optional()
+  .or(z.literal(""));
+
+/**
  * 備考スキーマ
  */
 export const notesSchema = z
@@ -173,6 +156,7 @@ export const createDonationSchema = z.object({
   paymentMethod: paymentMethodSchema,
   portalSite: portalSiteSchema,
   receiptNumber: receiptNumberSchema,
+  returnItem: returnItemSchema,
   notes: notesSchema,
 });
 
@@ -190,4 +174,4 @@ export type UpdateDonationInput = z.infer<typeof updateDonationSchema>;
 /**
  * 定数エクスポート
  */
-export { PREFECTURES, DONATION_TYPES, PAYMENT_METHODS, PORTAL_SITES };
+export { PREFECTURES };

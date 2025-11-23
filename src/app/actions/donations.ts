@@ -38,6 +38,7 @@ export async function createDonation(formData: FormData) {
       paymentMethod: getFormValue(formData, "paymentMethod") || null,
       portalSite: getFormValue(formData, "portalSite") || null,
       receiptNumber: getFormValue(formData, "receiptNumber") || null,
+      returnItem: getFormValue(formData, "returnItem") || null,
       notes: sanitizeTextarea(formData.get("notes") as string || "") || null,
     });
 
@@ -55,6 +56,7 @@ export async function createDonation(formData: FormData) {
       paymentMethod,
       portalSite,
       receiptNumber,
+      returnItem,
       notes,
     } = validationResult.data;
 
@@ -70,10 +72,11 @@ export async function createDonation(formData: FormData) {
       payment_method: paymentMethod,
       portal_site: portalSite,
       receipt_number: receiptNumber,
+      return_item: returnItem,
       notes,
     };
 
-    // @ts-ignore - Supabase type inference issue in build mode
+    // @ts-expect-error - Supabase type inference issue in build mode
     const { error } = await supabase.from("donations").insert(newDonation);
 
     if (error) {
@@ -117,6 +120,7 @@ export async function updateDonation(id: string, formData: FormData) {
       paymentMethod: getFormValue(formData, "paymentMethod") || null,
       portalSite: getFormValue(formData, "portalSite") || null,
       receiptNumber: getFormValue(formData, "receiptNumber") || null,
+      returnItem: getFormValue(formData, "returnItem") || null,
       notes: sanitizeTextarea(formData.get("notes") as string || "") || null,
     });
 
@@ -134,6 +138,7 @@ export async function updateDonation(id: string, formData: FormData) {
       paymentMethod,
       portalSite,
       receiptNumber,
+      returnItem,
       notes,
     } = validationResult.data;
 
@@ -148,13 +153,14 @@ export async function updateDonation(id: string, formData: FormData) {
       payment_method: paymentMethod,
       portal_site: portalSite,
       receipt_number: receiptNumber,
+      return_item: returnItem,
       notes,
     };
 
     const { error } = await supabase
-      // @ts-ignore - Supabase type inference issue in build mode
+      // @ts-expect-error - Supabase type inference issue
       .from("donations")
-      // @ts-ignore - Supabase type inference issue in build mode
+      // @ts-expect-error - Supabase type inference issue
       .update(updateData)
       .eq("id", id)
       .eq("user_id", user.id);

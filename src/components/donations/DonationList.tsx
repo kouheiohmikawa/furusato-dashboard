@@ -59,6 +59,7 @@ export function DonationList({ donations }: DonationListProps) {
         donation.prefecture?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         donation.municipality?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         donation.municipality_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        donation.return_item?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         donation.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         donation.receipt_number?.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -155,7 +156,7 @@ export function DonationList({ donations }: DonationListProps) {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-blue-500 transition-colors" />
                 <Input
                   type="text"
-                  placeholder="自治体名、受領番号、メモで検索..."
+                  placeholder="自治体名、返礼品、受領番号、メモで検索..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
@@ -259,12 +260,18 @@ export function DonationList({ donations }: DonationListProps) {
                       )}
                     </div>
 
-                    {(donation.receipt_number || donation.notes) && (
+                    {(donation.receipt_number || donation.return_item || donation.notes) && (
                       <div className="ml-[3.25rem] space-y-2 pt-1">
                         {donation.receipt_number && (
                           <div className="text-sm text-muted-foreground flex items-center gap-2">
                             <span className="text-xs font-medium uppercase tracking-wider text-slate-400">受領番号</span>
                             <span className="font-mono">{donation.receipt_number}</span>
+                          </div>
+                        )}
+                        {donation.return_item && (
+                          <div className="text-sm text-muted-foreground flex items-start gap-2">
+                            <span className="text-xs font-medium uppercase tracking-wider text-slate-400 mt-0.5">返礼品</span>
+                            <span className="text-slate-700 dark:text-slate-200 font-medium">{donation.return_item}</span>
                           </div>
                         )}
                         {donation.notes && (

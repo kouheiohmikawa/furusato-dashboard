@@ -29,11 +29,13 @@ export async function saveSimulation(
 
   try {
     // シミュレーション履歴を保存
-    // @ts-ignore - Supabase type inference issue in build mode
+    // @ts-expect-error - Supabase type inference issue in build mode
     const { error } = await supabase.from("simulation_history").insert({
       user_id: user.id,
       simulation_type: simulationType,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       input_data: inputData as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       result_data: resultData as any,
     });
 

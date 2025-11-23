@@ -70,7 +70,7 @@ export default function Error({
               <li>
                 問題が解決しない場合は、
                 <a
-                  href="mailto:support@example.com"
+                  href="mailto:furusato.dashboard.service@gmail.com"
                   className="text-primary hover:underline ml-1"
                 >
                   お問い合わせ

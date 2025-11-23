@@ -281,13 +281,36 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
           </p>
         </div>
 
+        {/* 返礼品 */}
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="returnItem" className="text-sm font-medium text-slate-700 dark:text-slate-300">返礼品</Label>
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
+            </div>
+            <Input
+              id="returnItem"
+              name="returnItem"
+              type="text"
+              placeholder="例: 和牛切り落とし 1kg、お米 10kg など"
+              defaultValue={donation.return_item || ""}
+              maxLength={200}
+              disabled={isLoading}
+              className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground pl-1">
+            受け取った返礼品の内容を記録できます（任意）
+          </p>
+        </div>
+
         {/* メモ */}
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="notes" className="text-sm font-medium text-slate-700 dark:text-slate-300">メモ</Label>
           <Textarea
             id="notes"
             name="notes"
-            placeholder="返礼品の内容や特記事項などを記録できます"
+            placeholder="配送日や特記事項などを記録できます"
             defaultValue={donation.notes || ""}
             rows={4}
             maxLength={500}

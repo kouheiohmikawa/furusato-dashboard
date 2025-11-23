@@ -196,6 +196,7 @@ export function DetailedSimulatorForm({ onResult }: DetailedSimulatorFormProps) 
               <Label htmlFor="detailed-prefecture" className="text-sm font-medium text-slate-700 dark:text-slate-300">都道府県</Label>
               <Select
                 value={prefecture ?? ""}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onValueChange={(value) => setValue("prefecture", value as any)}
               >
                 <SelectTrigger
@@ -335,6 +336,7 @@ export function DetailedSimulatorForm({ onResult }: DetailedSimulatorFormProps) 
                 <Label htmlFor="detailed-selfDisability" className="text-sm font-medium text-slate-700 dark:text-slate-300">本人</Label>
                 <Select
                   value={selfDisability ?? DisabilityType.NONE}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onValueChange={(value) => setValue("selfDisability", value as any)}
                 >
                   <SelectTrigger
@@ -357,7 +359,7 @@ export function DetailedSimulatorForm({ onResult }: DetailedSimulatorFormProps) 
                   <Label htmlFor="detailed-spouseDisability" className="text-sm font-medium text-slate-700 dark:text-slate-300">配偶者</Label>
                   <Select
                     value={spouseDisability ?? DisabilityType.NONE}
-                    onValueChange={(value) => setValue("spouseDisability", value as any)}
+                    onValueChange={(value) => setValue("spouseDisability", value as DisabilityType)}
                   >
                     <SelectTrigger
                       id="detailed-spouseDisability"
