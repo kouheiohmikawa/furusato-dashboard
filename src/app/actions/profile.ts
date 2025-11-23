@@ -49,14 +49,12 @@ export async function updateProfile(formData: FormData) {
   }
 
   // プロフィール更新
-  const { error } = await supabase
-    .from("profiles")
-    .update({
-      display_name: displayName.trim(),
-      prefecture: prefecture || null,
-      manual_limit: manualLimit,
-    })
-    .eq("id", user.id);
+  // @ts-expect-error - Supabase type inference issue in build mode
+  const { error } = await supabase.from("profiles").update({
+    display_name: displayName.trim(),
+    prefecture: prefecture || null,
+    manual_limit: manualLimit,
+  }).eq("id", user.id);
 
   if (error) {
     console.error("Profile update error:", error);

@@ -4,11 +4,8 @@
  * 統一的なエラー処理を提供し、以下を実現します：
  * - ユーザーフレンドリーなエラーメッセージ
  * - 機密情報の漏洩防止
- * - Sentryへの自動エラー報告
  * - 構造化されたエラーレスポンス
  */
-
-import * as Sentry from "@sentry/nextjs";
 
 /**
  * Server Actionのレスポンス型
@@ -133,24 +130,6 @@ export function withErrorHandling<T, Args extends unknown[]>(
       };
     } catch (error) {
       const { message, category } = getErrorMessage(error);
-
-      // Sentryにエラーを報告（ただし、想定内のエラーは除外）
-      const shouldReportToSentry =
-        category !== ErrorCategory.VALIDATION &&
-        category !== ErrorCategory.AUTH &&
-        category !== ErrorCategory.PERMISSION;
-
-      if (shouldReportToSentry && process.env.NEXT_PUBLIC_SENTRY_DSN) {
-        Sentry.captureException(error, {
-          tags: {
-            category,
-            action: action.name,
-          },
-          extra: {
-            args: args,
-          },
-        });
-      }
 
       // 開発環境ではコンソールにエラーを出力
       if (process.env.NODE_ENV === "development") {
