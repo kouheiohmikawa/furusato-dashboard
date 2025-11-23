@@ -369,3 +369,52 @@ CREATE TABLE donations (
 - 機能追加（未定）
 
 **最終更新**: 2025-11-24
+
+---
+
+## 🔍 Sentry環境タグ追加（2025-11-24）
+
+### 背景
+開発環境と本番環境のエラーが同じSentryプロジェクトに混在し、本番エラーが埋もれるリスクがあった。
+
+### 実装内容
+
+#### 環境タグの追加
+全Sentry設定ファイルに `environment` フィールドを追加：
+
+```typescript
+environment: process.env.NODE_ENV,
+```
+
+**変更ファイル**:
+- `sentry.server.config.ts`
+- `sentry.edge.config.ts`
+- `src/instrumentation-client.ts`
+
+#### 環境別の識別
+- **開発環境**: `environment: "development"`
+- **本番環境**: `environment: "production"`
+
+#### Sentryダッシュボードでの活用
+- Issues → Environment フィルターで環境別表示
+- 本番エラーのみアラート設定可能
+- 環境別の統計・分析が可能
+
+### ブランチ管理
+- ブランチ: `feature/sentry-environment-tags`
+- コミット: `a1e861d`
+- PR作成待ち
+
+### Sentryテストページ
+開発環境専用のテストページも作成：
+- `/test/sentry` - テストページ（3種類のエラーテスト）
+- `/test/sentry/api` - サーバーエラーテスト用API
+- 本番環境では自動的に404を返す
+
+**ブランチ**: `feature/sentry-test-page` → mainにマージ済み
+
+### メリット
+- ✅ 本番エラーが開発テストで埋もれない
+- ✅ 環境別のアラート設定が可能
+- ✅ エラー分析が容易
+- ✅ 将来的なSentry動作確認が簡単

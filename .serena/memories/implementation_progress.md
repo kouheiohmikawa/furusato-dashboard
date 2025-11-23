@@ -2080,3 +2080,75 @@ replaysOnErrorSampleRate: 1.0,
 
 **コミット**: `9851c22`
 
+---
+
+## 🧪 Sentryテストページ作成（2025-11-24完了）
+
+### 背景
+Sentryが正常に動作しているか確認するため、開発環境専用のテストページを作成。
+
+### 実装内容
+
+#### 新規ファイル
+1. **`src/app/test/sentry/page.tsx`** (97行)
+   - 3種類のエラーテストボタン
+   - クライアントエラー（処理済み）
+   - クライアントエラー（未処理）
+   - サーバーエラー
+
+2. **`src/app/test/sentry/api/route.ts`** (26行)
+   - サーバーサイドエラーのテスト用API
+
+#### セキュリティ
+```typescript
+if (process.env.NODE_ENV === "production") {
+  throw new Error("Not Found");
+}
+```
+本番環境では自動的に404を返す
+
+#### テスト結果
+- ✅ 3種類のエラーすべてSentryに送信成功
+- ✅ Sentryダッシュボードでイベント確認完了
+
+**ブランチ**: `feature/sentry-test-page`  
+**マージ**: mainにマージ済み（PR #25）  
+**コミット**: `62fa034`
+
+---
+
+## 🏷️ Sentry環境タグ追加（2025-11-24実装）
+
+### 問題点
+開発環境と本番環境のエラーが混在し、本番エラーが埋もれるリスク。
+
+### 解決策
+全Sentry設定に環境タグを追加：
+
+```typescript
+environment: process.env.NODE_ENV,
+```
+
+#### 変更ファイル
+- `sentry.server.config.ts`
+- `sentry.edge.config.ts`
+- `src/instrumentation-client.ts`
+
+#### 効果
+- **開発環境**: `environment: "development"`
+- **本番環境**: `environment: "production"`
+- Sentryダッシュボードで環境別フィルタリング可能
+
+**ブランチ**: `feature/sentry-environment-tags`  
+**ステータス**: PR作成待ち  
+**コミット**: `a1e861d`
+
+### ブランチ管理ポリシー
+今後すべての変更は専用ブランチから：
+1. ブランチ作成: `git checkout -b feature/xxx`
+2. 変更実装 → コミット → プッシュ
+3. GitHubでPR作成
+4. レビュー後にmainへマージ
+
+mainブランチへの直接pushは禁止。
+
