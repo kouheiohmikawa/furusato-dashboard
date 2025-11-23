@@ -20,6 +20,20 @@ Row Level Security (RLS) ポリシーを設定します。
 - ユーザーは自分のデータのみにアクセス可能
 - 自治体情報は全ユーザーが閲覧可能
 
+### 20250117000003_update_donations_table.sql
+donationsテーブルの構造を更新します。
+
+**変更内容:**
+- `municipality_name`カラムの更新（都道府県・市区町村を分離）
+- 既存データの後方互換性を維持
+
+### 20250123000001_add_return_item.sql
+返礼品専用フィールドを追加します。
+
+**変更内容:**
+- `return_item`カラムの追加（TEXT型、NULL許可）
+- 受け取った返礼品の内容を記録可能に
+
 ## マイグレーションの適用方法
 
 ### 方法1: Supabase SQL Editor（推奨）
@@ -36,7 +50,12 @@ Row Level Security (RLS) ポリシーを設定します。
 ```
 1. 20250117000001_initial_schema.sql
 2. 20250117000002_rls_policies.sql
+3. 20250117000003_update_donations_table.sql
+4. 20250123000001_add_return_item.sql
 ```
+
+**注意:** 初回セットアップの場合はすべてのマイグレーションを順番に実行してください。
+既存のデータベースに対しては、まだ実行していないマイグレーションのみを実行してください。
 
 ### 方法2: Supabase CLI
 
