@@ -109,7 +109,7 @@ export async function updateSession(request: NextRequest) {
   // 2. ルート保護 (アクセス制御)
   // ---------------------------------------------------------
   // 公開ルート（認証不要で常にアクセス可能）
-  const publicPaths = ["/", "/auth/callback", "/auth/reset-password"];
+  const publicPaths = ["/", "/auth/callback", "/auth/reset-password", "/monitoring"];
   const isPublic = publicPaths.some((p) => path.startsWith(p));
 
   // 保護されたルート（ログインが必要）
