@@ -40,6 +40,9 @@ export async function createDonation(formData: FormData) {
       receiptNumber: getFormValue(formData, "receiptNumber") || null,
       returnItem: getFormValue(formData, "returnItem") || null,
       notes: sanitizeTextarea(formData.get("notes") as string || "") || null,
+      hasOneStop: formData.get("hasOneStop") === "true",
+      oneStopSentDate: getFormValue(formData, "oneStopSentDate") || null,
+      oneStopConfirmedDate: getFormValue(formData, "oneStopConfirmedDate") || null,
     });
 
     if (!validationResult.success) {
@@ -58,6 +61,9 @@ export async function createDonation(formData: FormData) {
       receiptNumber,
       returnItem,
       notes,
+      hasOneStop,
+      oneStopSentDate,
+      oneStopConfirmedDate,
     } = validationResult.data;
 
     // 寄付記録を登録
@@ -74,6 +80,9 @@ export async function createDonation(formData: FormData) {
       receipt_number: receiptNumber,
       return_item: returnItem,
       notes,
+      has_one_stop: hasOneStop,
+      one_stop_sent_date: oneStopSentDate,
+      one_stop_confirmed_date: oneStopConfirmedDate,
     };
 
     // @ts-expect-error - Supabase type inference issue in build mode
@@ -122,6 +131,9 @@ export async function updateDonation(id: string, formData: FormData) {
       receiptNumber: getFormValue(formData, "receiptNumber") || null,
       returnItem: getFormValue(formData, "returnItem") || null,
       notes: sanitizeTextarea(formData.get("notes") as string || "") || null,
+      hasOneStop: formData.get("hasOneStop") === "true",
+      oneStopSentDate: getFormValue(formData, "oneStopSentDate") || null,
+      oneStopConfirmedDate: getFormValue(formData, "oneStopConfirmedDate") || null,
     });
 
     if (!validationResult.success) {
@@ -140,6 +152,9 @@ export async function updateDonation(id: string, formData: FormData) {
       receiptNumber,
       returnItem,
       notes,
+      hasOneStop,
+      oneStopSentDate,
+      oneStopConfirmedDate,
     } = validationResult.data;
 
     // 寄付記録を更新（自分の記録のみ）
@@ -155,6 +170,9 @@ export async function updateDonation(id: string, formData: FormData) {
       receipt_number: receiptNumber,
       return_item: returnItem,
       notes,
+      has_one_stop: hasOneStop,
+      one_stop_sent_date: oneStopSentDate,
+      one_stop_confirmed_date: oneStopConfirmedDate,
     };
 
     // @ts-expect-error - Supabase type inference issue in build mode

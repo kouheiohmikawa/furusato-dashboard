@@ -158,6 +158,9 @@ export const createDonationSchema = z.object({
   receiptNumber: receiptNumberSchema,
   returnItem: returnItemSchema,
   notes: notesSchema,
+  hasOneStop: z.boolean().default(false),
+  oneStopSentDate: z.string().nullable().optional().or(z.literal("")),
+  oneStopConfirmedDate: z.string().nullable().optional().or(z.literal("")),
 });
 
 /**

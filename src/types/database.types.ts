@@ -57,6 +57,9 @@ export interface Database {
           receipt_number: string | null;
           return_item: string | null;
           notes: string | null;
+          has_one_stop: boolean;
+          one_stop_sent_date: string | null;
+          one_stop_confirmed_date: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -74,6 +77,9 @@ export interface Database {
           receipt_number?: string | null;
           return_item?: string | null;
           notes?: string | null;
+          has_one_stop?: boolean;
+          one_stop_sent_date?: string | null;
+          one_stop_confirmed_date?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -91,6 +97,9 @@ export interface Database {
           receipt_number?: string | null;
           return_item?: string | null;
           notes?: string | null;
+          has_one_stop?: boolean;
+          one_stop_sent_date?: string | null;
+          one_stop_confirmed_date?: string | null;
           created_at?: string;
           updated_at?: string;
         };

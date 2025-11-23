@@ -246,6 +246,23 @@ export function DonationList({ donations }: DonationListProps) {
                     </div>
 
                     <div className="flex flex-wrap gap-3 text-sm ml-[3.25rem]">
+                      {donation.has_one_stop && (
+                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border ${donation.one_stop_confirmed_date
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800"
+                            : donation.one_stop_sent_date
+                              ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800"
+                              : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800"
+                          }`}>
+                          <FileText className="h-3.5 w-3.5" />
+                          <span className="font-medium">
+                            {donation.one_stop_confirmed_date
+                              ? "ワンストップ完了"
+                              : donation.one_stop_sent_date
+                                ? "ワンストップ申請済"
+                                : "ワンストップ申請待"}
+                          </span>
+                        </div>
+                      )}
                       {donation.donation_type && (
                         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                           <FileText className="h-3.5 w-3.5" />

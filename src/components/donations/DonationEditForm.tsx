@@ -32,6 +32,7 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
   const [donationType, setDonationType] = useState(donation.donation_type || "");
   const [paymentMethod, setPaymentMethod] = useState(donation.payment_method || "");
   const [portalSite, setPortalSite] = useState(donation.portal_site || "");
+  const [hasOneStop, setHasOneStop] = useState(donation.has_one_stop || false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -302,6 +303,56 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
           <p className="text-xs text-muted-foreground pl-1">
             受け取った返礼品の内容を記録できます（任意）
           </p>
+        </div>
+
+        {/* ワンストップ特例制度 */}
+        <div className="space-y-4 md:col-span-2 border rounded-lg p-4 bg-slate-50 dark:bg-slate-900/50">
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="hasOneStop"
+              name="hasOneStop"
+              value="true"
+              checked={hasOneStop}
+              onChange={(e) => setHasOneStop(e.target.checked)}
+              disabled={isLoading}
+              className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+            />
+            <Label htmlFor="hasOneStop" className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
+              ワンストップ特例制度を利用する
+            </Label>
+          </div>
+
+          {hasOneStop && (
+            <div className="grid gap-6 md:grid-cols-2 pl-6 animate-in slide-in-from-top-2 duration-200">
+              <div className="space-y-2">
+                <Label htmlFor="oneStopSentDate" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  申請書送付日
+                </Label>
+                <Input
+                  id="oneStopSentDate"
+                  name="oneStopSentDate"
+                  type="date"
+                  defaultValue={donation.one_stop_sent_date || ""}
+                  disabled={isLoading}
+                  className="bg-white dark:bg-slate-950"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="oneStopConfirmedDate" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  受領確認日
+                </Label>
+                <Input
+                  id="oneStopConfirmedDate"
+                  name="oneStopConfirmedDate"
+                  type="date"
+                  defaultValue={donation.one_stop_confirmed_date || ""}
+                  disabled={isLoading}
+                  className="bg-white dark:bg-slate-950"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* メモ */}
