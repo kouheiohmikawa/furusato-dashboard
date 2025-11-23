@@ -111,6 +111,23 @@ export default function HomePage() {
               </CardHeader>
             </Card>
 
+            {/* 機能3: 手続き管理 */}
+            <Card className="group relative overflow-hidden border-none shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl ring-1 ring-slate-900/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <div className="absolute right-4 top-4">
+                <Badge variant="default" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 border-none text-white shadow-md">NEW</Badge>
+              </div>
+              <CardHeader>
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform duration-300">
+                  <Bell className="h-7 w-7" />
+                </div>
+                <CardTitle className="text-xl font-bold">手続き漏れ防止</CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  ワンストップ特例申請や確定申告のステータスを「申請待」「申請済」「完了」の3段階で可視化。
+                  手続き漏れを防いで、確実に控除を受けられます。
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
           </div>
         </div>
       </section>
@@ -173,6 +190,21 @@ export default function HomePage() {
                 <CardDescription className="text-base pl-16">
                   年度ごとの寄付総額や件数を自動集計。
                   控除上限額と比較して、残り枠を一目で確認できます。
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-none bg-gradient-to-br from-rose-50 to-white dark:from-rose-950/30 dark:to-slate-900/50 shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader>
+                <div className="mb-4 flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                    <CheckCircle2 className="h-6 w-6" />
+                  </div>
+                  <CardTitle className="text-xl">手続きステータス管理</CardTitle>
+                </div>
+                <CardDescription className="text-base pl-16">
+                  ワンストップ特例や確定申告の進捗を記録。
+                  手続き漏れを防いで、確実に控除を受けられます。
                 </CardDescription>
               </CardHeader>
             </Card>
