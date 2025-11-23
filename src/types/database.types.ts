@@ -55,6 +55,7 @@ export interface Database {
           payment_method: string | null;
           portal_site: string | null;
           receipt_number: string | null;
+          return_item: string | null;
           notes: string | null;
           created_at: string;
           updated_at: string;
@@ -71,6 +72,7 @@ export interface Database {
           payment_method?: string | null;
           portal_site?: string | null;
           receipt_number?: string | null;
+          return_item?: string | null;
           notes?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -87,6 +89,7 @@ export interface Database {
           payment_method?: string | null;
           portal_site?: string | null;
           receipt_number?: string | null;
+          return_item?: string | null;
           notes?: string | null;
           created_at?: string;
           updated_at?: string;

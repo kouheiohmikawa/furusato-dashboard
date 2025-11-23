@@ -30,10 +30,11 @@ export async function GET(request: Request) {
 
         // プロフィールが存在しない場合は作成
         if (!profile) {
+          // @ts-expect-error - Supabase type inference issue
           await supabase.from("profiles").insert({
             id: user.id,
             display_name: user.email?.split("@")[0] || "ユーザー",
-          } as any);
+          } as unknown);
         }
       }
 

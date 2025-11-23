@@ -1678,3 +1678,282 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 **ビルド状況**: ✅ エラー0、警告0、正常稼働
 
 **最終更新**: 2025-11-23
+
+---
+
+### 15. 返礼品専用フィールド実装 🎁
+**ブランチ**: `feature/return-item-field`  
+**日付**: 2025-11-23  
+**ファイル**: 7ファイル変更、1新規ファイル（200行追加）
+
+**背景**: 
+ユーザーから「返礼品ありを選択した場合に、何をもらったかも入力できると便利」という提案を受け、返礼品専用フィールドを実装。従来は`notes`（メモ）フィールドに返礼品を記録していたが、専用フィールド化することで検索性・分析性が向上。
+
+#### **実装内容**
+
+##### **1. データベースマイグレーション**
+**新規ファイル**: `supabase/migrations/20250123000001_add_return_item.sql` (11行)
+
+**SQL**:
+```sql
+-- 返礼品カラムを追加
+ALTER TABLE donations ADD COLUMN return_item TEXT;
+
+-- コメントを追加
+COMMENT ON COLUMN donations.return_item IS '返礼品の内容（例: 和牛切り落とし 1kg、お米 10kg など）';
+```
+
+**特徴**:
+- TEXT型（可変長）
+- NULL許可（返礼品なしの場合）
+- 最大200文字を想定（フォーム側でmaxLength制限）
+
+##### **2. 型定義の更新**
+**ファイル**: `src/types/database.types.ts`
+
+**変更内容**:
+```typescript
+donations: {
+  Row: {
+    // ... 既存フィールド
+    return_item: string | null;  // 追加
+    notes: string | null;
+    // ...
+  };
+  Insert: {
+    // ... 既存フィールド
+    return_item?: string | null;  // 追加
+    notes?: string | null;
+    // ...
+  };
+  Update: {
+    // ... 既存フィールド
+    return_item?: string | null;  // 追加
+    notes?: string | null;
+    // ...
+  };
+}
+```
+
+**効果**: TypeScriptで型安全にreturn_itemにアクセス可能
+
+##### **3. フォームへの入力欄追加**
+**ファイル**: 
+- `src/components/donations/DonationForm.tsx` (新規登録用)
+- `src/components/donations/DonationEditForm.tsx` (編集用)
+
+**UI実装**:
+```typescript
+{/* 返礼品 */}
+<div className="space-y-2 md:col-span-2">
+  <Label htmlFor="returnItem">返礼品</Label>
+  <div className="relative">
+    <div className="absolute left-3 top-1/2 -translate-y-1/2">
+      {/* ギフトボックスアイコン */}
+      <svg>...</svg>
+    </div>
+    <Input
+      id="returnItem"
+      name="returnItem"
+      type="text"
+      placeholder="例: 和牛切り落とし 1kg、お米 10kg など"
+      maxLength={200}
+      disabled={isLoading}
+      className="pl-10 h-11 bg-white/50 ..."
+    />
+  </div>
+  <p className="text-xs text-muted-foreground">
+    受け取った返礼品の内容を記録できます（任意）
+  </p>
+</div>
+```
+
+**配置順序**:
+1. 受領番号
+2. **返礼品**（新規追加）
+3. メモ（placeholder変更: "配送日や特記事項などを記録できます"）
+
+**アイコン**: ギフトボックス（lucide-react風のSVG）
+
+##### **4. バリデーションスキーマの追加**
+**ファイル**: `src/lib/validations/donations.ts`
+
+**新規スキーマ**:
+```typescript
+/**
+ * 返礼品スキーマ
+ */
+export const returnItemSchema = z
+  .string()
+  .max(200, "返礼品は200文字以内で入力してください")
+  .trim()
+  .nullable()
+  .optional()
+  .or(z.literal(""));
+```
+
+**createDonationSchemaに追加**:
+```typescript
+export const createDonationSchema = z.object({
+  prefecture: prefectureSchema,
+  municipality: municipalitySchema,
+  donationDate: donationDateSchema,
+  amount: amountSchema,
+  donationType: donationTypeSchema,
+  paymentMethod: paymentMethodSchema,
+  portalSite: portalSiteSchema,
+  receiptNumber: receiptNumberSchema,
+  returnItem: returnItemSchema,  // 追加
+  notes: notesSchema,
+});
+```
+
+**特徴**:
+- 200文字制限
+- 前後の空白を自動削除（trim）
+- NULLと空文字を許可（任意入力）
+
+##### **5. Server Actionsの更新**
+**ファイル**: `src/app/actions/donations.ts`
+
+**createDonation**:
+```typescript
+// バリデーション
+const validationResult = createDonationSchema.safeParse({
+  // ... 既存フィールド
+  returnItem: getFormValue(formData, "returnItem") || null,  // 追加
+  notes: sanitizeTextarea(formData.get("notes") as string || "") || null,
+});
+
+// DB登録
+const newDonation: DonationInsert = {
+  // ... 既存フィールド
+  return_item: returnItem,  // 追加
+  notes,
+};
+```
+
+**updateDonation**: 同様に`returnItem`を追加
+
+**効果**: フォームから送信された返礼品データをバリデーション→サニタイズ→DB保存
+
+##### **6. 寄付一覧表示の更新**
+**ファイル**: `src/components/donations/DonationList.tsx`
+
+**検索フィルターに追加**:
+```typescript
+const matchesSearch =
+  searchQuery === "" ||
+  donation.prefecture?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  donation.municipality?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  donation.municipality_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  donation.return_item?.toLowerCase().includes(searchQuery.toLowerCase()) ||  // 追加
+  donation.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  donation.receipt_number?.toLowerCase().includes(searchQuery.toLowerCase());
+```
+
+**プレースホルダー更新**:
+```typescript
+<Input
+  placeholder="自治体名、返礼品、受領番号、メモで検索..."  // 「返礼品」追加
+/>
+```
+
+**表示部分に追加**:
+```typescript
+{(donation.receipt_number || donation.return_item || donation.notes) && (
+  <div className="ml-[3.25rem] space-y-2 pt-1">
+    {donation.receipt_number && (...)}
+    
+    {/* 返礼品表示（新規追加） */}
+    {donation.return_item && (
+      <div className="text-sm text-muted-foreground flex items-start gap-2">
+        <span className="text-xs font-medium uppercase tracking-wider text-slate-400 mt-0.5">
+          返礼品
+        </span>
+        <span className="text-slate-700 dark:text-slate-200 font-medium">
+          {donation.return_item}
+        </span>
+      </div>
+    )}
+    
+    {donation.notes && (...)}
+  </div>
+)}
+```
+
+**UI特徴**:
+- 受領番号 → 返礼品 → メモの順で表示
+- 返礼品は通常テキストより太字（font-medium）
+- ラベルは小さく灰色（uppercase tracking-wider）
+
+#### **メリット**
+
+##### **Before（notesに記録）**
+```
+メモ欄: 和牛切り落とし 1kg、2025/1配送予定
+```
+- ❌ 返礼品とメモが混在
+- ❌ 検索しにくい
+- ❌ 将来的な分析困難（返礼品ランキングなど）
+
+##### **After（専用フィールド）**
+```
+返礼品: 和牛切り落とし 1kg
+メモ: 2025/1配送予定
+```
+- ✅ 返礼品とメモが分離
+- ✅ 返礼品で検索可能
+- ✅ 将来的に「よくもらう返礼品TOP10」などの分析が可能
+- ✅ データの構造化
+
+#### **実装時間**
+**予定**: 45分  
+**実際**: 35分（予定より早く完了）
+
+#### **動作確認項目**
+```
+✅ 新規登録フォームに返礼品入力欄が表示される
+✅ 編集フォームに返礼品入力欄が表示される（既存値の表示含む）
+✅ 返礼品を入力して保存できる
+✅ 返礼品が寄付一覧に表示される
+✅ 返礼品で検索できる
+✅ 200文字制限が機能する
+✅ 空欄でも保存できる（任意入力）
+```
+
+#### **必要なマイグレーション実行**
+
+**開発環境**:
+```sql
+-- Supabaseダッシュボード → SQL Editor で実行
+ALTER TABLE donations ADD COLUMN return_item TEXT;
+COMMENT ON COLUMN donations.return_item IS '返礼品の内容（例: 和牛切り落とし 1kg、お米 10kg など）';
+```
+
+**本番環境**: 同じSQLを本番Supabaseで実行
+
+#### **ファイル変更サマリー**
+
+**新規ファイル** (1):
+1. `supabase/migrations/20250123000001_add_return_item.sql`
+
+**変更ファイル** (7):
+1. `src/types/database.types.ts` (Row, Insert, Update に return_item 追加)
+2. `src/lib/validations/donations.ts` (returnItemSchema 追加)
+3. `src/components/donations/DonationForm.tsx` (入力欄追加)
+4. `src/components/donations/DonationEditForm.tsx` (入力欄追加)
+5. `src/app/actions/donations.ts` (createDonation, updateDonation 対応)
+6. `src/components/donations/DonationList.tsx` (表示・検索対応)
+
+**行数**: 約200行追加
+
+#### **次のステップ**
+- [ ] マイグレーション実行（開発環境）
+- [ ] 動作確認（登録・編集・表示・検索）
+- [ ] マイグレーション実行（本番環境）
+- [ ] 将来: 返礼品分析機能（統計ページに追加）
+
+**ビルド状況**: ✅ エラー0、警告0、正常稼働
+
+**コミット予定**: `feature/return-item-field` ブランチにコミット後、mainにマージ

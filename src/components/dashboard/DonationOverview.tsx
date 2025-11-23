@@ -302,15 +302,13 @@ export function DonationOverview({ donations, estimatedLimit, limitSource = "non
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col items-end gap-1">
                       <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight text-right ml-2">
                         {formatCurrency(estimatedLimit)}
                       </p>
-                      <Link href="/dashboard/profile">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-muted-foreground hover:text-blue-600 transition-colors">
-                          <Settings className="h-4 w-4" />
-                          <span className="sr-only">設定を変更</span>
-                        </Button>
+                      <Link href="/dashboard/profile" className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center transition-colors">
+                        <Settings className="h-3 w-3 mr-1" />
+                        設定を変更
                       </Link>
                     </div>
                   </div>

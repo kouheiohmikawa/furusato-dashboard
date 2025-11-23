@@ -26,6 +26,8 @@ import {
   Calculator,
 } from "lucide-react";
 import { deleteSimulation } from "@/app/actions/simulation";
+import type { SimulatorResult, SimulatorInput } from "@/features/simulator/lib/simulatorSchema";
+import type { DetailedSimulatorInput } from "@/features/simulator/lib/detailedSimulatorSchema";
 import type { SimulationHistory } from "@/types/database.types";
 
 type SimulationHistoryListProps = {
@@ -79,8 +81,9 @@ export function SimulationHistoryList({ simulations }: SimulationHistoryListProp
       {simulations.map((simulation) => {
         const isExpanded = expandedId === simulation.id;
         const isDeleting = deletingId === simulation.id;
-        const resultData = simulation.result_data as any;
-        const inputData = simulation.input_data as any;
+        // JSON型を適切な型にキャスト
+        const resultData = simulation.result_data as unknown as SimulatorResult;
+        const inputData = simulation.input_data as unknown as (SimulatorInput & DetailedSimulatorInput);
 
         return (
           <Card key={simulation.id} className="border-2 hover:border-primary/50 transition-colors">

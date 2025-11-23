@@ -107,9 +107,37 @@ COMMENT ON COLUMN donations.portal_site IS 'ポータルサイト名（ふるさ
 
 ---
 
+### 3. 返礼品専用フィールド（return_item）
+
+**実装日**: 2025-01-23  
+**マイグレーションファイル**: `supabase/migrations/20250123000001_add_return_item.sql`
+
+**SQL**:
+```sql
+ALTER TABLE donations ADD COLUMN return_item TEXT;
+COMMENT ON COLUMN donations.return_item IS '返礼品の内容（例: 和牛切り落とし 1kg、お米 10kg など）';
+```
+
+**説明**:
+- 寄付テーブルに`return_item`カラムを追加
+- 受け取った返礼品の内容を構造化して記録
+- NULL許可（任意項目）
+- 200文字制限（フロントエンド）
+
+**影響範囲**:
+- `src/types/database.types.ts` - 型定義に追加済み
+- `src/lib/validations/donations.ts` - バリデーションスキーマ追加済み
+- `src/components/donations/DonationForm.tsx` - 登録フォーム実装済み
+- `src/components/donations/DonationEditForm.tsx` - 編集フォーム実装済み
+- `src/app/actions/donations.ts` - 保存/更新処理実装済み
+- `src/components/donations/DonationList.tsx` - 表示・検索機能実装済み
+
+---
+
 ## 実行状況
 
 - [ ] manual_limitカラム追加
 - [ ] portal_siteカラム追加
+- [ ] return_itemカラム追加（マイグレーションファイル作成済み）
 
-**最終更新**: 2025-01-22
+**最終更新**: 2025-01-23

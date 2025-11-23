@@ -9,6 +9,7 @@ export const DONATION_TYPES = [
   "返礼品あり",
   "返礼品なし（純粋な寄付）",
   "災害支援",
+  "特定事業支援",
 ] as const;
 
 export type DonationType = typeof DONATION_TYPES[number];
@@ -20,6 +21,7 @@ export const PAYMENT_METHODS = [
   "クレジットカード",
   "銀行振込",
   "コンビニ決済",
+  "PayPay",
   "その他",
 ] as const;
 
@@ -38,6 +40,7 @@ export const PORTAL_SITES = [
   "JALふるさと納税",
   "ふるさとプレミアム",
   "その他",
+  "直接申込",
 ] as const;
 
 export type PortalSite = typeof PORTAL_SITES[number];

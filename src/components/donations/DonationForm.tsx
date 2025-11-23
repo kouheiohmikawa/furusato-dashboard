@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -44,11 +45,17 @@ export function DonationForm() {
         setError(result.error);
       } else if (result?.success) {
         setSuccess(result.message || "寄付記録を登録しました");
-        // 一覧ページにリダイレクト
-        setTimeout(() => {
-          router.push("/dashboard/donations");
-          router.refresh();
-        }, 1500);
+        // フォームをリセット
+        form.reset();
+        setPrefecture("");
+        setDonationType("");
+        setPaymentMethod("");
+        setPortalSite("");
+        // ページトップへスクロール
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // データを再取得（一覧の更新のため）
+        router.refresh();
       }
     } catch (err) {
       console.error("Donation creation error:", err);
@@ -83,6 +90,15 @@ export function DonationForm() {
             <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">
               {success}
             </p>
+            <div className="mt-2">
+              <Link
+                href="/dashboard/donations"
+                className="text-xs font-medium text-emerald-700 dark:text-emerald-300 underline hover:text-emerald-800 dark:hover:text-emerald-200 transition-colors inline-flex items-center gap-1"
+              >
+                寄付記録一覧を見る
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+              </Link>
+            </div>
           </div>
         </div>
       )}
@@ -272,13 +288,35 @@ export function DonationForm() {
           </p>
         </div>
 
+        {/* 返礼品 */}
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="returnItem" className="text-sm font-medium text-slate-700 dark:text-slate-300">返礼品</Label>
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
+            </div>
+            <Input
+              id="returnItem"
+              name="returnItem"
+              type="text"
+              placeholder="例: 和牛切り落とし 1kg、お米 10kg など"
+              maxLength={200}
+              disabled={isLoading}
+              className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground pl-1">
+            受け取った返礼品の内容を記録できます（任意）
+          </p>
+        </div>
+
         {/* メモ */}
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="notes" className="text-sm font-medium text-slate-700 dark:text-slate-300">メモ</Label>
           <Textarea
             id="notes"
             name="notes"
-            placeholder="返礼品の内容や特記事項などを記録できます"
+            placeholder="配送日や特記事項などを記録できます"
             rows={4}
             maxLength={500}
             disabled={isLoading}

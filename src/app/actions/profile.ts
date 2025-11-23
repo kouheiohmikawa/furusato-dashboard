@@ -50,9 +50,7 @@ export async function updateProfile(formData: FormData) {
 
   // プロフィール更新
   const { error } = await supabase
-    // @ts-ignore - Supabase type inference issue in build mode
     .from("profiles")
-    // @ts-ignore - Supabase type inference issue in build mode
     .update({
       display_name: displayName.trim(),
       prefecture: prefecture || null,
