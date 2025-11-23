@@ -42,26 +42,41 @@ export default function Error({
             申し訳ございません。予期しないエラーが発生しました。
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="rounded-lg bg-muted p-4">
-            <p className="text-sm font-mono text-muted-foreground break-all">
-              {error.message || "不明なエラーが発生しました"}
-            </p>
-            {error.digest && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                エラーID: {error.digest}
-              </p>
-            )}
+        <CardContent className="space-y-6">
+          <div className="text-center">
+            <p className="text-7xl font-bold text-red-500/20">500</p>
           </div>
+
+          {process.env.NODE_ENV === "development" && (
+            <div className="rounded-lg bg-muted p-4">
+              <p className="text-sm font-mono text-muted-foreground break-all">
+                {error.message || "不明なエラーが発生しました"}
+              </p>
+              {error.digest && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  エラーID: {error.digest}
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              以下の方法をお試しください：
+              一時的な問題の可能性があります。以下をお試しください：
             </p>
-            <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+            <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground pl-2">
               <li>ページを再読み込みする</li>
-              <li>しばらく時間をおいてから再度お試しください</li>
-              <li>問題が解決しない場合は、お手数ですがお問い合わせください</li>
+              <li>しばらく時間をおいて再度アクセスする</li>
+              <li>
+                問題が解決しない場合は、
+                <a
+                  href="mailto:support@example.com"
+                  className="text-primary hover:underline ml-1"
+                >
+                  お問い合わせ
+                </a>
+                ください
+              </li>
             </ul>
           </div>
 

@@ -77,12 +77,26 @@ export default function PrivacyPage() {
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>5. Cookie（クッキー）の使用について</CardTitle>
+          <CardTitle>5. Cookie（クッキー）と広告配信について</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted-foreground">
             本サービスでは、利用者の利便性向上のため、Cookieを使用することがあります。
-            Cookieの使用を希望されない場合は、ブラウザの設定でCookieを無効にすることができます。
+          </p>
+
+          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mt-4">Google AdSenseについて</h3>
+          <p className="text-muted-foreground">
+            当サイトでは、第三者配信の広告サービス「Google AdSense」を利用しています。
+            広告配信事業者は、ユーザーの興味に応じた広告を表示するためにCookieを使用することがあります。
+            Cookieを無効にする設定やGoogleアドセンスに関する詳細は<a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">「Googleポリシーと規約」</a>をご覧ください。
+          </p>
+
+          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mt-4">アクセス解析ツールについて</h3>
+          <p className="text-muted-foreground">
+            当サイトでは、Googleによるアクセス解析ツール「Googleアナリティクス」を利用しています。
+            このGoogleアナリティクスはトラフィックデータの収集のためにCookieを使用しています。
+            このトラフィックデータは匿名で収集されており、個人を特定するものではありません。
+            この機能はCookieを無効にすることで収集を拒否することが出来ますので、お使いのブラウザの設定をご確認ください。
           </p>
         </CardContent>
       </Card>
@@ -98,6 +112,20 @@ export default function PrivacyPage() {
           </p>
           <p className="text-muted-foreground">
             変更後のプライバシーポリシーは、本ウェブサイトに掲載したときから効力を生じるものとします。
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>7. お問い合わせ窓口</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">
+            本ポリシーに関するお問い合わせは、下記の窓口までお願いいたします。
+          </p>
+          <p className="text-muted-foreground">
+            お問い合わせ先: <a href="mailto:support@example.com" className="text-blue-600 hover:underline">support@example.com</a>
           </p>
         </CardContent>
       </Card>

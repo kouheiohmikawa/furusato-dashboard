@@ -84,12 +84,51 @@ export default function TermsPage() {
           <p className="text-muted-foreground">
             本サービスに掲載されている情報は、あくまで目安です。
             実際の控除額は、所得控除の状況により変動する場合があります。
+            正確な金額については、お住まいの自治体や税務署にご確認いただくか、税理士等の専門家にご相談ください。
           </p>
           <p className="text-muted-foreground">
             当方は、本サービスの内容の正確性、完全性、有用性について、いかなる保証もいたしません。
           </p>
           <p className="text-muted-foreground">
             利用者が本サービスを利用して被った損害について、当方は一切の責任を負いません。
+          </p>
+          <p className="text-muted-foreground">
+            当方は、本サービスに関して、利用者と他の利用者または第三者との間において生じた取引、連絡または紛争等について一切責任を負いません。
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>第6条（サービス内容の変更等）</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">
+            当方は、利用者に通知することなく、本サービスの内容を変更しまたは本サービスの提供を中止することができるものとし、これによって利用者に生じた損害について一切の責任を負いません。
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>第7条（利用規約の変更）</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">
+            当方は、必要と判断した場合には、利用者に通知することなくいつでも本規約を変更することができるものとします。
+            なお、本規約の変更後、本サービスの利用を開始した場合には、当該利用者は変更後の規約に同意したものとみなします。
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>第8条（準拠法・裁判管轄）</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">
+            本規約の解釈にあたっては、日本法を準拠法とします。
+            本サービスに関して紛争が生じた場合には、当方の本店所在地を管轄する裁判所を専属的合意管轄とします。
           </p>
         </CardContent>
       </Card>
