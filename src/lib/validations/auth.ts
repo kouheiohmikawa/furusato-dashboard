@@ -94,9 +94,18 @@ export const updatePasswordSchema = z.object({
 });
 
 /**
+ * メールアドレス変更のスキーマ
+ */
+export const changeEmailSchema = z.object({
+  currentPassword: z.string().min(1, "現在のパスワードを入力してください"),
+  newEmail: emailSchema,
+});
+
+/**
  * 型エクスポート
  */
 export type LoginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;
 export type ResetPasswordRequestInput = z.infer<typeof resetPasswordRequestSchema>;
 export type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>;
+export type ChangeEmailInput = z.infer<typeof changeEmailSchema>;

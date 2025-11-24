@@ -32,13 +32,17 @@ type ProfileFormProps = {
   displayName: string;
   prefecture: string;
   manualLimit?: number | null;
+  onSuccess?: (message: string) => void;
+  onError?: (message: string) => void;
 };
 
 export function ProfileForm({
   email,
   displayName: initialDisplayName,
   prefecture: initialPrefecture,
-  manualLimit: initialManualLimit
+  manualLimit: initialManualLimit,
+  onSuccess,
+  onError,
 }: ProfileFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -61,18 +65,33 @@ export function ProfileForm({
       const result = await updateProfile(formData);
 
       if (result?.error) {
-        setError(result.error);
+        const errorMessage = result.error;
+        if (onError) {
+          onError(errorMessage);
+        } else {
+          setError(errorMessage);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       } else if (result?.success) {
-        setSuccess(result.message || "プロフィールを更新しました");
-        // ダッシュボードの情報も更新されるようにする
-        setTimeout(() => {
-          router.push("/dashboard");
-          router.refresh();
-        }, 1500);
+        const successMessage = result.message || "プロフィールを更新しました";
+        if (onSuccess) {
+          onSuccess(successMessage);
+        } else {
+          setSuccess(successMessage);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        // ページデータを更新してダッシュボードの情報も最新にする
+        router.refresh();
       }
     } catch (err) {
       console.error("Profile update error:", err);
-      setError("プロフィールの更新に失敗しました");
+      const errorMessage = "プロフィールの更新に失敗しました";
+      if (onError) {
+        onError(errorMessage);
+      } else {
+        setError(errorMessage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     } finally {
       setIsLoading(false);
     }
