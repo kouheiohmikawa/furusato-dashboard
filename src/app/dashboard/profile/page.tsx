@@ -66,7 +66,7 @@ export default async function ProfilePage() {
         </Card>
 
         {/* プロフィール編集フォーム */}
-        <Card className="border-none shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl overflow-hidden ring-1 ring-slate-900/5">
+        <Card className="mt-8 border-none shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl overflow-hidden ring-1 ring-slate-900/5">
           <CardHeader className="border-b border-slate-100 dark:border-slate-800/50 pb-6">
             <CardTitle className="text-xl">基本情報</CardTitle>
             <CardDescription>
