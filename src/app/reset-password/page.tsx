@@ -29,10 +29,16 @@ export default function ResetPasswordPage() {
         setError(result.error);
       } else if (result?.success) {
         setSuccess(result.message || "メールを送信しました");
-        // フォームをリセット
-        event.currentTarget.reset();
+        // フォームをリセット（エラーが出ても無視）
+        try {
+          event.currentTarget.reset();
+        } catch (resetError) {
+          // フォームリセットの失敗は無視
+          console.warn("Form reset failed:", resetError);
+        }
       }
     } catch (err) {
+      console.error("Password reset error:", err);
       setError("メール送信に失敗しました。もう一度お試しください。");
     } finally {
       setIsLoading(false);
