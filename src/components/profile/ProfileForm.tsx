@@ -62,14 +62,20 @@ export function ProfileForm({
 
       if (result?.error) {
         setError(result.error);
+        // エラーメッセージを確認できるように画面上部にスクロール
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (result?.success) {
         setSuccess(result.message || "プロフィールを更新しました");
+        // 成功メッセージを確認できるように画面上部にスクロール
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         // ページデータを更新してダッシュボードの情報も最新にする
         router.refresh();
       }
     } catch (err) {
       console.error("Profile update error:", err);
       setError("プロフィールの更新に失敗しました");
+      // エラーメッセージを確認できるように画面上部にスクロール
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setIsLoading(false);
     }
