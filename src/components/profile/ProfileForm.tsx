@@ -64,11 +64,8 @@ export function ProfileForm({
         setError(result.error);
       } else if (result?.success) {
         setSuccess(result.message || "プロフィールを更新しました");
-        // ダッシュボードの情報も更新されるようにする
-        setTimeout(() => {
-          router.push("/dashboard");
-          router.refresh();
-        }, 1500);
+        // ページデータを更新してダッシュボードの情報も最新にする
+        router.refresh();
       }
     } catch (err) {
       console.error("Profile update error:", err);
