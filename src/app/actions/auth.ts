@@ -15,6 +15,7 @@ import {
   signupSchema,
   resetPasswordRequestSchema,
   updatePasswordSchema,
+  changeEmailSchema,
 } from "@/lib/validations/auth";
 import { getFormValue } from "@/lib/sanitize";
 
@@ -252,6 +253,106 @@ export async function updatePassword(formData: FormData) {
     console.error("[Update Password Error]", error);
     return {
       error: "パスワード更新に失敗しました。もう一度お試しください。",
+    };
+  }
+}
+
+/**
+ * メールアドレス変更処理
+ */
+export async function changeEmail(formData: FormData) {
+  try {
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Change Email] Starting email change process");
+    }
+
+    // 入力値のバリデーション
+    const validationResult = changeEmailSchema.safeParse({
+      currentPassword: formData.get("currentPassword") as string,
+      newEmail: getFormValue(formData, "newEmail"),
+    });
+
+    if (!validationResult.success) {
+      const firstError = validationResult.error.issues[0];
+      if (process.env.NODE_ENV === 'development') {
+        console.log("[Change Email] Validation failed:", firstError.message);
+      }
+      return { error: firstError.message };
+    }
+
+    const { currentPassword, newEmail } = validationResult.data;
+
+    const supabase = await createClient();
+
+    // 1. 現在のユーザー情報を取得
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log("[Change Email] User not found");
+      }
+      return { error: "ユーザー情報の取得に失敗しました" };
+    }
+
+    const currentEmail = user.email;
+
+    if (!currentEmail) {
+      return { error: "現在のメールアドレスが見つかりません" };
+    }
+
+    // 新しいメールアドレスが現在のものと同じかチェック
+    if (newEmail.toLowerCase() === currentEmail.toLowerCase()) {
+      return { error: "新しいメールアドレスは現在のものと異なる必要があります" };
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Change Email] Verifying password for:", currentEmail);
+    }
+
+    // 2. 現在のパスワードで本人確認
+    const { error: verifyError } = await supabase.auth.signInWithPassword({
+      email: currentEmail,
+      password: currentPassword,
+    });
+
+    if (verifyError) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log("[Change Email] Password verification failed:", verifyError.message);
+      }
+      return { error: "現在のパスワードが正しくありません" };
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Change Email] Updating email to:", newEmail);
+    }
+
+    // 3. メールアドレス変更リクエスト
+    // Supabaseが自動的に新しいメールアドレスに確認メールを送信
+    const { error: updateError } = await supabase.auth.updateUser({
+      email: newEmail,
+    });
+
+    if (updateError) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log("[Change Email] Update failed:", updateError.message);
+      }
+      return { error: translateAuthError(updateError.message) };
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Change Email] Email change request successful");
+    }
+
+    revalidatePath("/dashboard/profile", "page");
+
+    return {
+      success: true,
+      message: `新しいメールアドレス（${newEmail}）に確認メールを送信しました。メール内のリンクをクリックして変更を完了してください。`,
+    };
+  } catch (error) {
+    console.error("[Change Email Error]", error);
+    return {
+      error: "メールアドレスの変更に失敗しました。もう一度お試しください。",
     };
   }
 }
