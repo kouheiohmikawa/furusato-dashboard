@@ -56,6 +56,10 @@ function translateAuthError(errorMessage: string): string {
  */
 export async function login(formData: FormData) {
   try {
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Login] Starting login process");
+    }
+
     // 入力値のバリデーション
     const validationResult = loginSchema.safeParse({
       email: getFormValue(formData, "email"),
@@ -65,28 +69,47 @@ export async function login(formData: FormData) {
 
     if (!validationResult.success) {
       const firstError = validationResult.error.issues[0];
+      if (process.env.NODE_ENV === 'development') {
+        console.log("[Login] Validation failed:", firstError.message);
+      }
       return { error: firstError.message };
     }
 
     const { email, password, redirect: redirectTo } = validationResult.data;
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Login] Attempting login for:", email);
+    }
 
     const supabase = await createClient();
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error, data } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Login] Supabase response:", { error: error?.message, hasSession: !!data?.session });
+    }
+
     if (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log("[Login] Login failed:", error.message);
+      }
       return { error: translateAuthError(error.message) };
     }
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Login] Login successful, redirecting to:", redirectTo || "/dashboard");
+    }
     revalidatePath("/", "layout");
     // リダイレクト先が指定されている場合はそこへ、なければダッシュボードへ
     redirect(redirectTo || "/dashboard");
   } catch (error) {
     // Next.jsのredirect()は正常動作でエラーをthrowするため、それは再スロー
     if (error && typeof error === 'object' && 'digest' in error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log("[Login] Redirecting (normal behavior)");
+      }
       throw error;
     }
 
@@ -180,6 +203,10 @@ export async function logout() {
  */
 export async function resetPassword(formData: FormData) {
   try {
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Reset Password] Starting reset password process");
+    }
+
     // 入力値のバリデーション
     const validationResult = resetPasswordRequestSchema.safeParse({
       email: getFormValue(formData, "email"),
@@ -187,10 +214,16 @@ export async function resetPassword(formData: FormData) {
 
     if (!validationResult.success) {
       const firstError = validationResult.error.issues[0];
+      if (process.env.NODE_ENV === 'development') {
+        console.log("[Reset Password] Validation failed:", firstError.message);
+      }
       return { error: firstError.message };
     }
 
     const { email } = validationResult.data;
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Reset Password] Sending reset email to:", email);
+    }
 
     const supabase = await createClient();
 
@@ -198,10 +231,20 @@ export async function resetPassword(formData: FormData) {
       redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001"}/auth/reset-password`,
     });
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Reset Password] Supabase response:", { error: error?.message });
+    }
+
     if (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log("[Reset Password] Failed:", error.message);
+      }
       return { error: translateAuthError(error.message) };
     }
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[Reset Password] Email sent successfully");
+    }
     return {
       success: true,
       message: "パスワードリセット用のメールを送信しました。",
