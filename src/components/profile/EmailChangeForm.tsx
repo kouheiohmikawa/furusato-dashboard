@@ -32,8 +32,13 @@ export function EmailChangeForm({ currentEmail }: EmailChangeFormProps) {
         setError(result.error);
       } else if (result?.success) {
         setSuccess(result.message || "メールアドレスの変更リクエストを送信しました");
-        // フォームをリセット
-        event.currentTarget.reset();
+        // フォームをリセット（エラーが出ても無視）
+        try {
+          event.currentTarget.reset();
+        } catch (resetError) {
+          // フォームリセットの失敗は無視
+          console.warn("Form reset failed:", resetError);
+        }
         // フォームを折りたたむ
         setTimeout(() => {
           setIsExpanded(false);
