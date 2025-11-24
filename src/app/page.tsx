@@ -44,12 +44,11 @@ export default function HomePage() {
             </Button>
 
             <div className="flex items-center gap-4">
-              <Button asChild variant="outline" className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-slate-300 dark:hover:border-slate-600">
+              <Button asChild variant="outline" className="border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900/50">
                 <Link href="/login">
                   ログイン
                 </Link>
               </Button>
-              <span className="text-slate-200 dark:text-slate-800 h-6 w-px bg-slate-200 dark:bg-slate-800" />
               <Button asChild variant="outline" className="border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700">
                 <Link href="/signup">
                   <Sparkles className="mr-2 h-4 w-4" />
