@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { ProfileForm } from "@/components/profile/ProfileForm";
-import { EmailChangeForm } from "@/components/profile/EmailChangeForm";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProfilePageClient } from "@/components/profile/ProfilePageClient";
 import { Button } from "@/components/ui/button";
 import { User, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -52,36 +50,13 @@ export default async function ProfilePage() {
           </div>
         </div>
 
-        {/* メールアドレス変更セクション */}
-        <Card className="border-none shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl overflow-hidden ring-1 ring-slate-900/5">
-          <CardHeader className="border-b border-slate-100 dark:border-slate-800/50 pb-6">
-            <CardTitle className="text-xl">アカウント情報</CardTitle>
-            <CardDescription>
-              メールアドレスの変更・管理
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <EmailChangeForm currentEmail={user.email || ""} />
-          </CardContent>
-        </Card>
-
-        {/* プロフィール編集フォーム */}
-        <Card className="mt-8 border-none shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl overflow-hidden ring-1 ring-slate-900/5">
-          <CardHeader className="border-b border-slate-100 dark:border-slate-800/50 pb-6">
-            <CardTitle className="text-xl">基本情報</CardTitle>
-            <CardDescription>
-              表示名と都道府県を設定してください
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <ProfileForm
-              email={user.email || ""}
-              displayName={profile?.display_name || ""}
-              prefecture={profile?.prefecture || ""}
-              manualLimit={profile?.manual_limit}
-            />
-          </CardContent>
-        </Card>
+        {/* プロフィール管理（アラートとカードを含む） */}
+        <ProfilePageClient
+          email={user.email || ""}
+          displayName={profile?.display_name || ""}
+          prefecture={profile?.prefecture || ""}
+          manualLimit={profile?.manual_limit}
+        />
       </div>
     </div>
   );

@@ -9,9 +9,11 @@ import { changeEmail } from "@/app/actions/auth";
 
 type EmailChangeFormProps = {
   currentEmail: string;
+  onSuccess?: (message: string) => void;
+  onError?: (message: string) => void;
 };
 
-export function EmailChangeForm({ currentEmail }: EmailChangeFormProps) {
+export function EmailChangeForm({ currentEmail, onSuccess, onError }: EmailChangeFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,9 +31,19 @@ export function EmailChangeForm({ currentEmail }: EmailChangeFormProps) {
       const result = await changeEmail(formData);
 
       if (result?.error) {
-        setError(result.error);
+        const errorMessage = result.error;
+        if (onError) {
+          onError(errorMessage);
+        } else {
+          setError(errorMessage);
+        }
       } else if (result?.success) {
-        setSuccess(result.message || "メールアドレスの変更リクエストを送信しました");
+        const successMessage = result.message || "メールアドレスの変更リクエストを送信しました";
+        if (onSuccess) {
+          onSuccess(successMessage);
+        } else {
+          setSuccess(successMessage);
+        }
         // フォームをリセット（エラーが出ても無視）
         try {
           event.currentTarget.reset();
@@ -46,7 +58,12 @@ export function EmailChangeForm({ currentEmail }: EmailChangeFormProps) {
       }
     } catch (err) {
       console.error("Email change error:", err);
-      setError("メールアドレスの変更に失敗しました");
+      const errorMessage = "メールアドレスの変更に失敗しました";
+      if (onError) {
+        onError(errorMessage);
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
