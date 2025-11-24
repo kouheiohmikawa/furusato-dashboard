@@ -27,6 +27,7 @@ function translateAuthError(errorMessage: string): string {
     "Invalid login credentials": "メールアドレスまたはパスワードが正しくありません",
     "Email not confirmed": "メールアドレスが確認されていません。確認メールをご確認ください",
     "User already registered": "このメールアドレスは既に登録されています",
+    "A user with this email address has already been registered": "このメールアドレスは既に他のアカウントで使用されています",
     "Password should be at least 6 characters": "パスワードは6文字以上で入力してください",
     "Unable to validate email address: invalid format": "メールアドレスの形式が正しくありません",
     "Email rate limit exceeded": "メール送信の制限を超えました。しばらく待ってから再度お試しください",
