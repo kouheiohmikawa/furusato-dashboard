@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 
@@ -14,20 +15,15 @@ export function Header({ isLoggedIn = false }: HeaderProps) {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* ロゴ・サイト名 */}
         <Link href={homeLink} className="flex items-center space-x-3 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5"
-            >
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
+          <div className="flex h-10 w-10 items-center justify-center group-hover:scale-105 transition-transform duration-300">
+            <Image
+              src="/logo.svg"
+              alt="ふるさと納税ダッシュボード"
+              width={40}
+              height={40}
+              className="h-10 w-10"
+              priority
+            />
           </div>
           <span className="hidden font-bold text-lg sm:inline-block bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
             ふるさと納税ダッシュボード
