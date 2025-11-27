@@ -145,6 +145,29 @@ export const notesSchema = z
   .or(z.literal(""));
 
 /**
+ * 商品URLスキーマ
+ */
+export const productUrlSchema = z
+  .string()
+  .url("有効なURLを入力してください")
+  .max(2048, "URLは2048文字以内で入力してください")
+  .trim()
+  .nullable()
+  .optional()
+  .or(z.literal(""));
+
+/**
+ * サブカテゴリIDスキーマ
+ */
+export const subcategoryIdSchema = z
+  .number({
+    message: "カテゴリを選択してください",
+  })
+  .int()
+  .nullable()
+  .optional();
+
+/**
  * 寄付記録作成スキーマ
  */
 export const createDonationSchema = z.object({
@@ -158,6 +181,8 @@ export const createDonationSchema = z.object({
   receiptNumber: receiptNumberSchema,
   returnItem: returnItemSchema,
   notes: notesSchema,
+  productUrl: productUrlSchema,
+  subcategoryId: subcategoryIdSchema,
 });
 
 /**

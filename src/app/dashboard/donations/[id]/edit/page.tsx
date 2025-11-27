@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Pencil, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { getReturnItemCategories, getReturnItemSubcategories } from "@/lib/supabase/queries";
 import type { Donation } from "@/types/database.types";
 
 type PageProps = {
@@ -36,6 +37,11 @@ export default async function EditDonationPage({ params }: PageProps) {
   if (!donation) {
     redirect("/dashboard/donations");
   }
+
+  const [categories, subcategories] = await Promise.all([
+    getReturnItemCategories(supabase),
+    getReturnItemSubcategories(supabase),
+  ]);
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/50">
@@ -77,7 +83,7 @@ export default async function EditDonationPage({ params }: PageProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
-            <DonationEditForm donation={donation} />
+            <DonationEditForm donation={donation} categories={categories} subcategories={subcategories} />
           </CardContent>
         </Card>
 

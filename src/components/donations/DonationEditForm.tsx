@@ -15,15 +15,21 @@ import {
 } from "@/components/ui/select";
 import { AlertCircle, CheckCircle2, Save } from "lucide-react";
 import { updateDonation } from "@/app/actions/donations";
-import { DONATION_TYPES, PAYMENT_METHODS, PORTAL_SITES } from "@/lib/constants/donations";
+import {
+  DONATION_TYPES,
+  PAYMENT_METHODS,
+  PORTAL_SITES,
+} from "@/lib/constants/donations";
 import { PREFECTURES } from "@/shared/config/prefectures";
 import type { Donation } from "@/types/database.types";
 
 type DonationEditFormProps = {
   donation: Donation;
+  categories: { id: number; name: string; }[];
+  subcategories: { id: number; category_id: number; name: string; }[];
 };
 
-export function DonationEditForm({ donation }: DonationEditFormProps) {
+export function DonationEditForm({ donation, categories, subcategories }: DonationEditFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -32,6 +38,23 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
   const [donationType, setDonationType] = useState(donation.donation_type || "");
   const [paymentMethod, setPaymentMethod] = useState(donation.payment_method || "");
   const [portalSite, setPortalSite] = useState(donation.portal_site || "");
+
+  // カテゴリ初期値の特定
+  const initialSubcategory = donation.subcategory_id
+    ? subcategories.find(s => s.id === donation.subcategory_id)
+    : null;
+  const initialMainCategoryId = initialSubcategory
+    ? initialSubcategory.category_id.toString()
+    : "";
+
+  // カテゴリ選択用ステート
+  const [selectedMainCategory, setSelectedMainCategory] = useState(initialMainCategoryId);
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(donation.subcategory_id?.toString() || "");
+
+  // 選択された大カテゴリに基づく小カテゴリリスト
+  const availableSubcategories = selectedMainCategory
+    ? subcategories.filter(sub => sub.category_id === parseInt(selectedMainCategory))
+    : [];
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -65,7 +88,7 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {/* エラーメッセージ */}
+      {/* ... (Error/Success messages) ... */}
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-900 p-4 flex items-start gap-3 animate-in fade-in-50 duration-300">
           <div className="p-1 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 shrink-0">
@@ -75,7 +98,6 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
         </div>
       )}
 
-      {/* 成功メッセージ */}
       {success && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-900 p-4 flex items-start gap-3 animate-in fade-in-50 duration-300">
           <div className="p-1 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 shrink-0">
@@ -93,6 +115,7 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
       )}
 
       <div className="grid gap-6 md:grid-cols-2">
+        {/* ... (Existing fields) ... */}
         {/* 都道府県 */}
         <div className="space-y-2">
           <Label htmlFor="prefecture" className="text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -302,6 +325,91 @@ export function DonationEditForm({ donation }: DonationEditFormProps) {
           <p className="text-xs text-muted-foreground pl-1">
             受け取った返礼品の内容を記録できます（任意）
           </p>
+        </div>
+
+        {/* 商品URL */}
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="productUrl" className="text-sm font-medium text-slate-700 dark:text-slate-300">商品URL</Label>
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+            </div>
+            <Input
+              id="productUrl"
+              name="productUrl"
+              type="url"
+              placeholder="例: https://..."
+              defaultValue={donation.product_url || ""}
+              maxLength={2048}
+              disabled={isLoading}
+              className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground pl-1">
+            返礼品の商品ページURL（さとふる、楽天ふるさと納税など）を保存できます（任意）
+          </p>
+        </div>
+
+        {/* 返礼品カテゴリ */}
+        <div className="space-y-4 md:col-span-2">
+          <div>
+            <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              返礼品カテゴリ
+            </Label>
+            <p className="text-xs text-muted-foreground mt-1">
+              返礼品のカテゴリを選択してください。まず大カテゴリを選び、次に該当する小カテゴリを選んでください（任意）
+            </p>
+          </div>
+
+          {/* メインカテゴリ選択 */}
+          <div className="space-y-2">
+            <Label htmlFor="mainCategory" className="text-xs font-medium text-slate-600 dark:text-slate-400">
+              1. 大カテゴリを選択
+            </Label>
+            <Select
+              value={selectedMainCategory}
+              onValueChange={setSelectedMainCategory}
+              disabled={isLoading}
+            >
+              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                <SelectValue placeholder="カテゴリを選択してください" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id.toString()}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* サブカテゴリ選択 */}
+          {selectedMainCategory && availableSubcategories.length > 0 && (
+            <div className="space-y-2">
+              <Label htmlFor="subcategoryId" className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                2. 小カテゴリを選択
+              </Label>
+              <Select
+                value={selectedSubcategoryId}
+                onValueChange={setSelectedSubcategoryId}
+                disabled={isLoading}
+              >
+                <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                  <SelectValue placeholder="小カテゴリを選択してください" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableSubcategories.map((subcategory) => (
+                    <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
+                      {subcategory.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {/* Hidden input for formData */}
+              <input type="hidden" name="subcategoryId" value={selectedSubcategoryId} />
+            </div>
+          )}
         </div>
 
         {/* メモ */}
