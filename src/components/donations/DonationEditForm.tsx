@@ -13,7 +13,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AlertCircle, CheckCircle2, Save } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Save,
+  MapPin,
+  Calendar,
+  Building2,
+  Gift,
+  Tag,
+  Link as LinkIcon,
+  FileText,
+  CreditCard,
+  Globe,
+  Receipt,
+  StickyNote,
+  ChevronDown,
+  ChevronUp
+} from "lucide-react";
 import { updateDonation } from "@/app/actions/donations";
 import {
   DONATION_TYPES,
@@ -50,6 +68,7 @@ export function DonationEditForm({ donation, categories, subcategories }: Donati
   // カテゴリ選択用ステート
   const [selectedMainCategory, setSelectedMainCategory] = useState(initialMainCategoryId);
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(donation.subcategory_id?.toString() || "");
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   // 選択された大カテゴリに基づく小カテゴリリスト
   const availableSubcategories = selectedMainCategory
@@ -114,321 +133,389 @@ export function DonationEditForm({ donation, categories, subcategories }: Donati
         </div>
       )}
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* ... (Existing fields) ... */}
-        {/* 都道府県 */}
-        <div className="space-y-2">
-          <Label htmlFor="prefecture" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            都道府県 <span className="text-red-500 ml-1">*</span>
-          </Label>
-          <Select
-            name="prefecture"
-            value={prefecture || undefined}
-            onValueChange={setPrefecture}
-            disabled={isLoading}
-            required
-          >
-            <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
-              <SelectValue placeholder="選択してください" />
-            </SelectTrigger>
-            <SelectContent>
-              {PREFECTURES.map((pref) => (
-                <SelectItem key={pref} value={pref}>
-                  {pref}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* 市区町村 */}
-        <div className="space-y-2">
-          <Label htmlFor="municipality" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            市区町村 <span className="text-red-500 ml-1">*</span>
-          </Label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+      {/* セクション1: 基本情報 */}
+      <Card className="border-none shadow-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm ring-1 ring-slate-900/5">
+        <CardHeader className="pb-4 border-b border-slate-100 dark:border-slate-800">
+          <CardTitle className="text-lg font-semibold flex items-center gap-2 text-slate-800 dark:text-slate-200">
+            <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+              <Building2 className="h-5 w-5" />
             </div>
-            <Input
-              id="municipality"
-              name="municipality"
-              type="text"
-              placeholder="例: 札幌市、渋谷区"
-              defaultValue={donation.municipality || ""}
-              required
-              maxLength={100}
-              disabled={isLoading}
-              className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
-            />
-          </div>
-          <p className="text-xs text-muted-foreground pl-1">
-            寄付先の市区町村名を入力してください
-          </p>
-        </div>
-
-        {/* 寄付日 */}
-        <div className="space-y-2">
-          <Label htmlFor="donationDate" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            寄付日 <span className="text-red-500 ml-1">*</span>
-          </Label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></svg>
-            </div>
-            <Input
-              id="donationDate"
-              name="donationDate"
-              type="date"
-              defaultValue={donation.donation_date}
-              required
-              disabled={isLoading}
-              className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
-            />
-          </div>
-        </div>
-
-        {/* 寄付金額 */}
-        <div className="space-y-2">
-          <Label htmlFor="amount" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            寄付金額（円） <span className="text-red-500 ml-1">*</span>
-          </Label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-              <span className="text-sm font-bold">¥</span>
-            </div>
-            <Input
-              id="amount"
-              name="amount"
-              type="number"
-              placeholder="例: 10000"
-              defaultValue={donation.amount}
-              required
-              min="1"
-              step="1"
-              disabled={isLoading}
-              className="pl-8 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
-            />
-          </div>
-        </div>
-
-        {/* 寄付の種類 */}
-        <div className="space-y-2">
-          <Label htmlFor="donationType" className="text-sm font-medium text-slate-700 dark:text-slate-300">寄付の種類</Label>
-          <Select
-            name="donationType"
-            value={donationType || undefined}
-            onValueChange={setDonationType}
-            disabled={isLoading}
-          >
-            <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
-              <SelectValue placeholder="選択してください（任意）" />
-            </SelectTrigger>
-            <SelectContent>
-              {DONATION_TYPES.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* 支払い方法 */}
-        <div className="space-y-2">
-          <Label htmlFor="paymentMethod" className="text-sm font-medium text-slate-700 dark:text-slate-300">支払い方法</Label>
-          <Select
-            name="paymentMethod"
-            value={paymentMethod || undefined}
-            onValueChange={setPaymentMethod}
-            disabled={isLoading}
-          >
-            <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
-              <SelectValue placeholder="選択してください（任意）" />
-            </SelectTrigger>
-            <SelectContent>
-              {PAYMENT_METHODS.map((method) => (
-                <SelectItem key={method} value={method}>
-                  {method}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* ポータルサイト */}
-        <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="portalSite" className="text-sm font-medium text-slate-700 dark:text-slate-300">ポータルサイト</Label>
-          <Select
-            name="portalSite"
-            value={portalSite || undefined}
-            onValueChange={setPortalSite}
-            disabled={isLoading}
-          >
-            <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
-              <SelectValue placeholder="選択してください（任意）" />
-            </SelectTrigger>
-            <SelectContent>
-              {PORTAL_SITES.map((site) => (
-                <SelectItem key={site} value={site}>
-                  {site}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground pl-1">
-            寄付したポータルサイトを選択してください（任意）
-          </p>
-        </div>
-
-        {/* 受領番号 */}
-        <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="receiptNumber" className="text-sm font-medium text-slate-700 dark:text-slate-300">受領番号</Label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
-            </div>
-            <Input
-              id="receiptNumber"
-              name="receiptNumber"
-              type="text"
-              placeholder="例: 2025-001234"
-              defaultValue={donation.receipt_number || ""}
-              maxLength={50}
-              disabled={isLoading}
-              className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
-            />
-          </div>
-          <p className="text-xs text-muted-foreground pl-1">
-            受領証明書に記載されている番号（任意）
-          </p>
-        </div>
-
-        {/* 返礼品 */}
-        <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="returnItem" className="text-sm font-medium text-slate-700 dark:text-slate-300">返礼品</Label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
-            </div>
-            <Input
-              id="returnItem"
-              name="returnItem"
-              type="text"
-              placeholder="例: 和牛切り落とし 1kg、お米 10kg など"
-              defaultValue={donation.return_item || ""}
-              maxLength={200}
-              disabled={isLoading}
-              className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
-            />
-          </div>
-          <p className="text-xs text-muted-foreground pl-1">
-            受け取った返礼品の内容を記録できます（任意）
-          </p>
-        </div>
-
-        {/* 商品URL */}
-        <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="productUrl" className="text-sm font-medium text-slate-700 dark:text-slate-300">商品URL</Label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
-            </div>
-            <Input
-              id="productUrl"
-              name="productUrl"
-              type="url"
-              placeholder="例: https://..."
-              defaultValue={donation.product_url || ""}
-              maxLength={2048}
-              disabled={isLoading}
-              className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
-            />
-          </div>
-          <p className="text-xs text-muted-foreground pl-1">
-            返礼品の商品ページURL（さとふる、楽天ふるさと納税など）を保存できます（任意）
-          </p>
-        </div>
-
-        {/* 返礼品カテゴリ */}
-        <div className="space-y-4 md:col-span-2">
-          <div>
-            <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              返礼品カテゴリ
+            基本情報
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
+          {/* 寄付金額 */}
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="amount" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              寄付金額（円） <span className="text-red-500 ml-1">*</span>
             </Label>
-            <p className="text-xs text-muted-foreground mt-1">
-              返礼品のカテゴリを選択してください。まず大カテゴリを選び、次に該当する小カテゴリを選んでください（任意）
-            </p>
-          </div>
-
-          {/* メインカテゴリ選択 */}
-          <div className="space-y-2">
-            <Label htmlFor="mainCategory" className="text-xs font-medium text-slate-600 dark:text-slate-400">
-              1. 大カテゴリを選択
-            </Label>
-            <Select
-              value={selectedMainCategory}
-              onValueChange={setSelectedMainCategory}
-              disabled={isLoading}
-            >
-              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
-                <SelectValue placeholder="カテゴリを選択してください" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id.toString()}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* サブカテゴリ選択 */}
-          {selectedMainCategory && availableSubcategories.length > 0 && (
-            <div className="space-y-2">
-              <Label htmlFor="subcategoryId" className="text-xs font-medium text-slate-600 dark:text-slate-400">
-                2. 小カテゴリを選択
-              </Label>
-              <Select
-                value={selectedSubcategoryId}
-                onValueChange={setSelectedSubcategoryId}
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <span className="text-sm font-bold">¥</span>
+              </div>
+              <Input
+                id="amount"
+                name="amount"
+                type="number"
+                placeholder="例: 10000"
+                defaultValue={donation.amount}
+                required
+                min="1"
+                step="1"
                 disabled={isLoading}
+                className="pl-8 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              />
+            </div>
+          </div>
+
+          {/* 寄付の種類 */}
+          <div className="space-y-2">
+            <Label htmlFor="donationType" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              寄付の種類 <span className="text-red-500 ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
+                <FileText className="h-4 w-4" />
+              </div>
+              <Select
+                name="donationType"
+                value={donationType || undefined}
+                onValueChange={setDonationType}
+                disabled={isLoading}
+                required
               >
-                <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
-                  <SelectValue placeholder="小カテゴリを選択してください" />
+                <SelectTrigger className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                  <SelectValue placeholder="選択してください" />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableSubcategories.map((subcategory) => (
-                    <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
-                      {subcategory.name}
+                  {DONATION_TYPES.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {/* Hidden input for formData */}
-              <input type="hidden" name="subcategoryId" value={selectedSubcategoryId} />
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* メモ */}
-        <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="notes" className="text-sm font-medium text-slate-700 dark:text-slate-300">メモ</Label>
-          <Textarea
-            id="notes"
-            name="notes"
-            placeholder="配送日や特記事項などを記録できます"
-            defaultValue={donation.notes || ""}
-            rows={4}
-            maxLength={500}
-            disabled={isLoading}
-            className="bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
-          />
-          <p className="text-xs text-muted-foreground pl-1">
-            任意で追加情報を入力できます（500文字以内）
-          </p>
-        </div>
+          {/* 寄付日 */}
+          <div className="space-y-2">
+            <Label htmlFor="donationDate" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              寄付日 <span className="text-red-500 ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+              </div>
+              <Input
+                id="donationDate"
+                name="donationDate"
+                type="date"
+                defaultValue={donation.donation_date}
+                required
+                disabled={isLoading}
+                className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              />
+            </div>
+          </div>
+
+          {/* 都道府県 */}
+          <div className="space-y-2">
+            <Label htmlFor="prefecture" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              都道府県 <span className="text-red-500 ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
+                <MapPin className="h-4 w-4" />
+              </div>
+              <Select
+                name="prefecture"
+                value={prefecture || undefined}
+                onValueChange={setPrefecture}
+                disabled={isLoading}
+                required
+              >
+                <SelectTrigger className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                  <SelectValue placeholder="選択してください" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PREFECTURES.map((pref) => (
+                    <SelectItem key={pref} value={pref}>
+                      {pref}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* 市区町村 */}
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="municipality" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              市区町村 <span className="text-red-500 ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+              </div>
+              <Input
+                id="municipality"
+                name="municipality"
+                type="text"
+                placeholder="例: 札幌市、渋谷区"
+                defaultValue={donation.municipality || ""}
+                required
+                maxLength={100}
+                disabled={isLoading}
+                className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground pl-1">
+              寄付先の市区町村名を入力してください
+            </p>
+          </div>
+
+          {/* 返礼品 */}
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="returnItem" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              返礼品 <span className="text-red-500 ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <Gift className="h-4 w-4" />
+              </div>
+              <Input
+                id="returnItem"
+                name="returnItem"
+                type="text"
+                placeholder="例: 和牛切り落とし 1kg、お米 10kg など"
+                defaultValue={donation.return_item || ""}
+                maxLength={200}
+                required
+                disabled={isLoading}
+                className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              />
+            </div>
+          </div>
+
+          {/* 返礼品カテゴリ */}
+          <div className="space-y-4 md:col-span-2">
+            <div>
+              <Label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                <Tag className="h-4 w-4 text-muted-foreground" />
+                返礼品カテゴリ
+              </Label>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* メインカテゴリ選択 */}
+              <div className="space-y-2">
+                <Label htmlFor="mainCategory" className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                  大カテゴリ
+                </Label>
+                <Select
+                  value={selectedMainCategory}
+                  onValueChange={setSelectedMainCategory}
+                  disabled={isLoading}
+                >
+                  <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                    <SelectValue placeholder="選択してください" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id.toString()}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* サブカテゴリ選択 */}
+              <div className="space-y-2">
+                <Label htmlFor="subcategoryId" className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                  小カテゴリ
+                </Label>
+                <Select
+                  value={selectedSubcategoryId}
+                  onValueChange={setSelectedSubcategoryId}
+                  disabled={isLoading || !selectedMainCategory}
+                >
+                  <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                    <SelectValue placeholder={selectedMainCategory ? "選択してください" : "大カテゴリを先に選択"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableSubcategories.map((subcategory) => (
+                      <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
+                        {subcategory.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {/* Hidden input for formData */}
+                <input type="hidden" name="subcategoryId" value={selectedSubcategoryId} />
+              </div>
+            </div>
+          </div>
+
+          {/* 商品URL */}
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="productUrl" className="text-sm font-medium text-slate-700 dark:text-slate-300">商品URL</Label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <LinkIcon className="h-4 w-4" />
+              </div>
+              <Input
+                id="productUrl"
+                name="productUrl"
+                type="url"
+                placeholder="例: https://..."
+                defaultValue={donation.product_url || ""}
+                maxLength={2048}
+                disabled={isLoading}
+                className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground pl-1">
+              返礼品の商品ページURL（さとふる、楽天ふるさと納税など）を保存できます（任意）
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* セクション2: 詳細情報（折りたたみ） */}
+      <div className="space-y-4">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => setIsDetailsOpen(!isDetailsOpen)}
+          className="w-full flex items-center justify-between p-4 h-auto bg-white/50 dark:bg-slate-900/50 hover:bg-white/80 dark:hover:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl transition-all"
+        >
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400">
+              <StickyNote className="h-5 w-5" />
+            </div>
+            <div className="text-left">
+              <div className="font-semibold text-slate-800 dark:text-slate-200">詳細情報・メモ</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                寄付の種類、支払い方法、URL、メモなど
+              </div>
+            </div>
+          </div>
+          {isDetailsOpen ? (
+            <ChevronUp className="h-5 w-5 text-slate-400" />
+          ) : (
+            <ChevronDown className="h-5 w-5 text-slate-400" />
+          )}
+        </Button>
+
+        {isDetailsOpen && (
+          <Card className="border-none shadow-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm ring-1 ring-slate-900/5 animate-in slide-in-from-top-2 duration-200">
+            <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
+
+
+              {/* 支払い方法 */}
+              <div className="space-y-2">
+                <Label htmlFor="paymentMethod" className="text-sm font-medium text-slate-700 dark:text-slate-300">支払い方法</Label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
+                    <CreditCard className="h-4 w-4" />
+                  </div>
+                  <Select
+                    name="paymentMethod"
+                    value={paymentMethod || undefined}
+                    onValueChange={setPaymentMethod}
+                    disabled={isLoading}
+                  >
+                    <SelectTrigger className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                      <SelectValue placeholder="選択してください（任意）" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PAYMENT_METHODS.map((method) => (
+                        <SelectItem key={method} value={method}>
+                          {method}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* ポータルサイト */}
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="portalSite" className="text-sm font-medium text-slate-700 dark:text-slate-300">ポータルサイト</Label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
+                    <Globe className="h-4 w-4" />
+                  </div>
+                  <Select
+                    name="portalSite"
+                    value={portalSite || undefined}
+                    onValueChange={setPortalSite}
+                    disabled={isLoading}
+                  >
+                    <SelectTrigger className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                      <SelectValue placeholder="選択してください（任意）" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PORTAL_SITES.map((site) => (
+                        <SelectItem key={site} value={site}>
+                          {site}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <p className="text-xs text-muted-foreground pl-1">
+                  寄付したポータルサイトを選択してください（任意）
+                </p>
+              </div>
+
+              {/* 受領番号 */}
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="receiptNumber" className="text-sm font-medium text-slate-700 dark:text-slate-300">受領番号</Label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    <Receipt className="h-4 w-4" />
+                  </div>
+                  <Input
+                    id="receiptNumber"
+                    name="receiptNumber"
+                    type="text"
+                    placeholder="例: 2025-001234"
+                    defaultValue={donation.receipt_number || ""}
+                    maxLength={50}
+                    disabled={isLoading}
+                    className="pl-10 h-11 bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground pl-1">
+                  受領証明書に記載されている番号（任意）
+                </p>
+              </div>
+
+
+
+              {/* メモ */}
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="notes" className="text-sm font-medium text-slate-700 dark:text-slate-300">メモ</Label>
+                <Textarea
+                  id="notes"
+                  name="notes"
+                  placeholder="配送日や特記事項などを記録できます"
+                  defaultValue={donation.notes || ""}
+                  rows={4}
+                  maxLength={500}
+                  disabled={isLoading}
+                  className="bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
+                />
+                <p className="text-xs text-muted-foreground pl-1">
+                  任意で追加情報を入力できます（500文字以内）
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* 更新ボタン */}
