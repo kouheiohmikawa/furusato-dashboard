@@ -44,3 +44,36 @@ export const PORTAL_SITES = [
 ] as const;
 
 export type PortalSite = typeof PORTAL_SITES[number];
+
+/**
+ * ポータルサイトのURLパターン（自動検出用）
+ */
+export const PORTAL_SITE_URL_PATTERNS: Record<string, string[]> = {
+  "ふるさとチョイス": ["furusato-tax.jp", "furu-sato.com"],
+  "楽天ふるさと納税": ["rakuten.co.jp/f/"],
+  "さとふる": ["satofull.jp"],
+  "ふるなび": ["furunavi.jp"],
+  "ANAのふるさと納税": ["ana-furusato.com", "ana.co.jp/ja/jp/domestic/promotions/furusato"],
+  "au PAY ふるさと納税": ["wowma.jp/camp/furusato", "aupay-furusato.auone.jp"],
+  "JALふるさと納税": ["jal-furusato.com"],
+  "ふるさとプレミアム": ["furusato-premium.com", "26p.jp"],
+};
+
+/**
+ * URLからポータルサイトを自動検出
+ */
+export function detectPortalSiteFromUrl(url: string): PortalSite | null {
+  if (!url) return null;
+
+  const lowerUrl = url.toLowerCase();
+
+  for (const [siteName, patterns] of Object.entries(PORTAL_SITE_URL_PATTERNS)) {
+    if (patterns.some(pattern => lowerUrl.includes(pattern))) {
+      return siteName as PortalSite;
+    }
+  }
+
+  return null;
+}
+
+

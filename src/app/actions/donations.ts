@@ -40,6 +40,8 @@ export async function createDonation(formData: FormData) {
       receiptNumber: getFormValue(formData, "receiptNumber") || null,
       returnItem: getFormValue(formData, "returnItem") || null,
       notes: sanitizeTextarea(formData.get("notes") as string || "") || null,
+      productUrl: getFormValue(formData, "productUrl") || null,
+      subcategoryId: getFormNumber(formData, "subcategoryId"),
     });
 
     if (!validationResult.success) {
@@ -58,6 +60,8 @@ export async function createDonation(formData: FormData) {
       receiptNumber,
       returnItem,
       notes,
+      productUrl,
+      subcategoryId,
     } = validationResult.data;
 
     // 寄付記録を登録
@@ -74,6 +78,8 @@ export async function createDonation(formData: FormData) {
       receipt_number: receiptNumber,
       return_item: returnItem,
       notes,
+      product_url: productUrl,
+      subcategory_id: subcategoryId,
     };
 
     // @ts-expect-error - Supabase type inference issue in build mode
@@ -122,6 +128,8 @@ export async function updateDonation(id: string, formData: FormData) {
       receiptNumber: getFormValue(formData, "receiptNumber") || null,
       returnItem: getFormValue(formData, "returnItem") || null,
       notes: sanitizeTextarea(formData.get("notes") as string || "") || null,
+      productUrl: getFormValue(formData, "productUrl") || null,
+      subcategoryId: getFormNumber(formData, "subcategoryId"),
     });
 
     if (!validationResult.success) {
@@ -140,6 +148,8 @@ export async function updateDonation(id: string, formData: FormData) {
       receiptNumber,
       returnItem,
       notes,
+      productUrl,
+      subcategoryId,
     } = validationResult.data;
 
     // 寄付記録を更新（自分の記録のみ）
@@ -155,6 +165,8 @@ export async function updateDonation(id: string, formData: FormData) {
       receipt_number: receiptNumber,
       return_item: returnItem,
       notes,
+      product_url: productUrl,
+      subcategory_id: subcategoryId,
     };
 
     // @ts-expect-error - Supabase type inference issue in build mode

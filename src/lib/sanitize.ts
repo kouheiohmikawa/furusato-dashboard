@@ -126,8 +126,15 @@ export function getFormNumber(
 
   if (!value) return undefined;
 
-  const sanitized = sanitizeString(value);
-  const num = Number(sanitized);
+  // カンマを除去し、空白をトリム
+  const cleanValue = value.replace(/,/g, "").trim();
+
+  // 全角数字を半角に変換
+  const normalizedValue = cleanValue.replace(/[０-９]/g, (s) => {
+    return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
+  });
+
+  const num = Number(normalizedValue);
 
   return isNaN(num) ? undefined : num;
 }

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Heart, Plus, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import type { Donation } from "@/types/database.types";
+import type { DonationWithCategory } from "@/types/database.types";
 
 export default async function DonationsPage() {
   const supabase = await createClient();
@@ -19,11 +19,25 @@ export default async function DonationsPage() {
   }
 
   // 寄付記録を取得（新しい順）
-  const { data: donations } = (await supabase
+  // カテゴリ情報もJOINして取得
+  const { data: donations } = await supabase
     .from("donations")
-    .select("*")
+    .select(`
+      *,
+      return_item_subcategories (
+        id,
+        name,
+        slug,
+        category_id,
+        return_item_categories (
+          id,
+          name,
+          slug
+        )
+      )
+    `)
     .eq("user_id", user.id)
-    .order("donation_date", { ascending: false })) as { data: Donation[] | null };
+    .order("donation_date", { ascending: false });
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/50">
@@ -67,7 +81,7 @@ export default async function DonationsPage() {
 
         {/* 寄付記録リスト */}
         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-backwards delay-150">
-          <DonationList donations={donations || []} />
+          <DonationList donations={(donations as DonationWithCategory[]) || []} />
         </div>
       </div>
     </div>

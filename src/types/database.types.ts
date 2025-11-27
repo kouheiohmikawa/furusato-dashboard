@@ -57,6 +57,8 @@ export interface Database {
           receipt_number: string | null;
           return_item: string | null;
           notes: string | null;
+          product_url: string | null;
+          subcategory_id: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -74,6 +76,8 @@ export interface Database {
           receipt_number?: string | null;
           return_item?: string | null;
           notes?: string | null;
+          product_url?: string | null;
+          subcategory_id?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -91,6 +95,8 @@ export interface Database {
           receipt_number?: string | null;
           return_item?: string | null;
           notes?: string | null;
+          product_url?: string | null;
+          subcategory_id?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -118,6 +124,49 @@ export interface Database {
           simulation_type?: 'simple' | 'detailed';
           input_data?: Json;
           result_data?: Json;
+          created_at?: string;
+        };
+      };
+      return_item_categories: {
+        Row: {
+          id: number;
+          name: string;
+          slug: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          slug: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          name?: string;
+          slug?: string;
+          created_at?: string;
+        };
+      };
+      return_item_subcategories: {
+        Row: {
+          id: number;
+          category_id: number;
+          name: string;
+          slug: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          category_id: number;
+          name: string;
+          slug: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          category_id?: number;
+          name?: string;
+          slug?: string;
           created_at?: string;
         };
       };
@@ -187,14 +236,35 @@ export type Updates<T extends keyof Database['public']['Tables']> =
 export type Profile = Tables<'profiles'>;
 export type Donation = Tables<'donations'>;
 export type SimulationHistory = Tables<'simulation_history'>;
+export type ReturnItemCategory = Tables<'return_item_categories'>;
+export type ReturnItemSubcategory = Tables<'return_item_subcategories'>;
 export type Municipality = Tables<'municipalities'>;
 
 export type ProfileInsert = Inserts<'profiles'>;
 export type DonationInsert = Inserts<'donations'>;
 export type SimulationHistoryInsert = Inserts<'simulation_history'>;
+export type ReturnItemCategoryInsert = Inserts<'return_item_categories'>;
+export type ReturnItemSubcategoryInsert = Inserts<'return_item_subcategories'>;
 export type MunicipalityInsert = Inserts<'municipalities'>;
 
 export type ProfileUpdate = Updates<'profiles'>;
 export type DonationUpdate = Updates<'donations'>;
 export type SimulationHistoryUpdate = Updates<'simulation_history'>;
+export type ReturnItemCategoryUpdate = Updates<'return_item_categories'>;
+export type ReturnItemSubcategoryUpdate = Updates<'return_item_subcategories'>;
 export type MunicipalityUpdate = Updates<'municipalities'>;
+
+// カテゴリ情報を含む寄付記録の拡張型（一対一）
+export type DonationWithCategory = Donation & {
+  return_item_subcategories?: {
+    id: number;
+    name: string;
+    slug: string;
+    category_id: number;
+    return_item_categories: {
+      id: number;
+      name: string;
+      slug: string;
+    } | null;
+  } | null;
+};
