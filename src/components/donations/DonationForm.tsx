@@ -30,7 +30,9 @@ import {
   Globe,
   Receipt,
   StickyNote,
-  ArrowRight
+  ArrowRight,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { createDonation } from "@/app/actions/donations";
 import {
@@ -58,6 +60,7 @@ export function DonationForm({ categories, subcategories }: DonationFormProps) {
   // カテゴリ選択用ステート
   const [selectedMainCategory, setSelectedMainCategory] = useState("");
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState("");
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   // 選択された大カテゴリに基づく小カテゴリリスト
   const availableSubcategories = selectedMainCategory
@@ -139,7 +142,7 @@ export function DonationForm({ categories, subcategories }: DonationFormProps) {
         </div>
       )}
 
-      {/* セクション1: 基本情報 */}
+      {/* セクション1: 基本情報（必須・重要項目） */}
       <Card className="border-none shadow-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm ring-1 ring-slate-900/5">
         <CardHeader className="pb-4 border-b border-slate-100 dark:border-slate-800">
           <CardTitle className="text-lg font-semibold flex items-center gap-2 text-slate-800 dark:text-slate-200">
@@ -174,6 +177,36 @@ export function DonationForm({ categories, subcategories }: DonationFormProps) {
             <p className="text-xs text-muted-foreground pl-1">
               半角数字で入力してください
             </p>
+          </div>
+
+          {/* 寄付の種類 */}
+          <div className="space-y-2">
+            <Label htmlFor="donationType" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              寄付の種類 <span className="text-red-500 ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
+                <FileText className="h-4 w-4" />
+              </div>
+              <Select
+                name="donationType"
+                value={donationType || undefined}
+                onValueChange={setDonationType}
+                disabled={isLoading}
+                required
+              >
+                <SelectTrigger className="pl-10 h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                  <SelectValue placeholder="選択してください" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DONATION_TYPES.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* 寄付日 */}
@@ -245,32 +278,27 @@ export function DonationForm({ categories, subcategories }: DonationFormProps) {
               寄付先の市区町村名を入力してください
             </p>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* セクション2: 返礼品情報 */}
-      <Card className="border-none shadow-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm ring-1 ring-slate-900/5">
-        <CardHeader className="pb-4 border-b border-slate-100 dark:border-slate-800">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2 text-slate-800 dark:text-slate-200">
-            <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400">
-              <Gift className="h-5 w-5" />
-            </div>
-            返礼品情報
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
           {/* 返礼品名 */}
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="returnItem" className="text-sm font-medium text-slate-700 dark:text-slate-300">返礼品名</Label>
-            <Input
-              id="returnItem"
-              name="returnItem"
-              type="text"
-              placeholder="例: 和牛切り落とし 1kg、お米 10kg など"
-              maxLength={200}
-              disabled={isLoading}
-              className="h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
-            />
+            <Label htmlFor="returnItem" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              返礼品名 <span className="text-red-500 ml-1">*</span>
+            </Label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <Gift className="h-4 w-4" />
+              </div>
+              <Input
+                id="returnItem"
+                name="returnItem"
+                type="text"
+                placeholder="例: 和牛切り落とし 1kg、お米 10kg など"
+                maxLength={200}
+                required
+                disabled={isLoading}
+                className="pl-10 h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              />
+            </div>
           </div>
 
           {/* 返礼品カテゴリ */}
@@ -354,132 +382,129 @@ export function DonationForm({ categories, subcategories }: DonationFormProps) {
         </CardContent>
       </Card>
 
-      {/* セクション3: 詳細情報・メモ */}
-      <Card className="border-none shadow-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm ring-1 ring-slate-900/5">
-        <CardHeader className="pb-4 border-b border-slate-100 dark:border-slate-800">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2 text-slate-800 dark:text-slate-200">
+      {/* セクション2: 詳細情報（折りたたみ） */}
+      <div className="space-y-4">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => setIsDetailsOpen(!isDetailsOpen)}
+          className="w-full flex items-center justify-between p-4 h-auto bg-white/50 dark:bg-slate-900/50 hover:bg-white/80 dark:hover:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl transition-all"
+        >
+          <div className="flex items-center gap-2">
             <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400">
               <StickyNote className="h-5 w-5" />
             </div>
-            詳細情報・メモ
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
-          {/* 寄付の種類 */}
-          <div className="space-y-2">
-            <Label htmlFor="donationType" className="text-sm font-medium text-slate-700 dark:text-slate-300">寄付の種類</Label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
-                <FileText className="h-4 w-4" />
+            <div className="text-left">
+              <div className="font-semibold text-slate-800 dark:text-slate-200">詳細情報・メモ</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                寄付の種類、支払い方法、URL、メモなど
               </div>
-              <Select
-                name="donationType"
-                value={donationType || undefined}
-                onValueChange={setDonationType}
-                disabled={isLoading}
-              >
-                <SelectTrigger className="pl-10 h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
-                  <SelectValue placeholder="選択してください" />
-                </SelectTrigger>
-                <SelectContent>
-                  {DONATION_TYPES.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
+          {isDetailsOpen ? (
+            <ChevronUp className="h-5 w-5 text-slate-400" />
+          ) : (
+            <ChevronDown className="h-5 w-5 text-slate-400" />
+          )}
+        </Button>
 
-          {/* 支払い方法 */}
-          <div className="space-y-2">
-            <Label htmlFor="paymentMethod" className="text-sm font-medium text-slate-700 dark:text-slate-300">支払い方法</Label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
-                <CreditCard className="h-4 w-4" />
+        {isDetailsOpen && (
+          <Card className="border-none shadow-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm ring-1 ring-slate-900/5 animate-in slide-in-from-top-2 duration-200">
+            <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
+
+
+              {/* 支払い方法 */}
+              <div className="space-y-2">
+                <Label htmlFor="paymentMethod" className="text-sm font-medium text-slate-700 dark:text-slate-300">支払い方法</Label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
+                    <CreditCard className="h-4 w-4" />
+                  </div>
+                  <Select
+                    name="paymentMethod"
+                    value={paymentMethod || undefined}
+                    onValueChange={setPaymentMethod}
+                    disabled={isLoading}
+                  >
+                    <SelectTrigger className="pl-10 h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                      <SelectValue placeholder="選択してください" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PAYMENT_METHODS.map((method) => (
+                        <SelectItem key={method} value={method}>
+                          {method}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <Select
-                name="paymentMethod"
-                value={paymentMethod || undefined}
-                onValueChange={setPaymentMethod}
-                disabled={isLoading}
-              >
-                <SelectTrigger className="pl-10 h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
-                  <SelectValue placeholder="選択してください" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PAYMENT_METHODS.map((method) => (
-                    <SelectItem key={method} value={method}>
-                      {method}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
 
-          {/* ポータルサイト */}
-          <div className="space-y-2">
-            <Label htmlFor="portalSite" className="text-sm font-medium text-slate-700 dark:text-slate-300">ポータルサイト</Label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
-                <Globe className="h-4 w-4" />
+              {/* ポータルサイト */}
+              <div className="space-y-2">
+                <Label htmlFor="portalSite" className="text-sm font-medium text-slate-700 dark:text-slate-300">ポータルサイト</Label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
+                    <Globe className="h-4 w-4" />
+                  </div>
+                  <Select
+                    name="portalSite"
+                    value={portalSite || undefined}
+                    onValueChange={setPortalSite}
+                    disabled={isLoading}
+                  >
+                    <SelectTrigger className="pl-10 h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                      <SelectValue placeholder="選択してください" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PORTAL_SITES.map((site) => (
+                        <SelectItem key={site} value={site}>
+                          {site}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <Select
-                name="portalSite"
-                value={portalSite || undefined}
-                onValueChange={setPortalSite}
-                disabled={isLoading}
-              >
-                <SelectTrigger className="pl-10 h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
-                  <SelectValue placeholder="選択してください" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PORTAL_SITES.map((site) => (
-                    <SelectItem key={site} value={site}>
-                      {site}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
 
-          {/* 受領番号 */}
-          <div className="space-y-2">
-            <Label htmlFor="receiptNumber" className="text-sm font-medium text-slate-700 dark:text-slate-300">受領番号</Label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <Receipt className="h-4 w-4" />
+              {/* 受領番号 */}
+              <div className="space-y-2">
+                <Label htmlFor="receiptNumber" className="text-sm font-medium text-slate-700 dark:text-slate-300">受領番号</Label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    <Receipt className="h-4 w-4" />
+                  </div>
+                  <Input
+                    id="receiptNumber"
+                    name="receiptNumber"
+                    type="text"
+                    placeholder="例: 2025-001234"
+                    maxLength={50}
+                    disabled={isLoading}
+                    className="pl-10 h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  />
+                </div>
               </div>
-              <Input
-                id="receiptNumber"
-                name="receiptNumber"
-                type="text"
-                placeholder="例: 2025-001234"
-                maxLength={50}
-                disabled={isLoading}
-                className="pl-10 h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
-              />
-            </div>
-          </div>
 
-          {/* メモ */}
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="notes" className="text-sm font-medium text-slate-700 dark:text-slate-300">メモ</Label>
-            <Textarea
-              id="notes"
-              name="notes"
-              placeholder="配送日や特記事項などを記録できます"
-              rows={4}
-              maxLength={500}
-              disabled={isLoading}
-              className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
-            />
-          </div>
-        </CardContent>
-      </Card>
+
+
+              {/* メモ */}
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="notes" className="text-sm font-medium text-slate-700 dark:text-slate-300">メモ</Label>
+                <Textarea
+                  id="notes"
+                  name="notes"
+                  placeholder="配送日や特記事項などを記録できます"
+                  rows={4}
+                  maxLength={500}
+                  disabled={isLoading}
+                  className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       {/* 登録ボタン */}
       <div className="pt-4">

@@ -83,9 +83,7 @@ export const amountSchema = z
 export const donationTypeSchema = z
   .enum(DONATION_TYPES, {
     message: "有効な寄付種別を選択してください",
-  })
-  .nullable()
-  .optional();
+  });
 
 /**
  * 支払方法スキーマ
@@ -127,11 +125,9 @@ export const receiptNumberSchema = z
  */
 export const returnItemSchema = z
   .string()
+  .min(1, "返礼品名を入力してください")
   .max(200, "返礼品は200文字以内で入力してください")
-  .trim()
-  .nullable()
-  .optional()
-  .or(z.literal(""));
+  .trim();
 
 /**
  * 備考スキーマ
