@@ -157,3 +157,35 @@ supabase/migrations/20250124000002_add_return_item_categorization.sql
 - **UI整理**: 重要な項目に集中でき、入力ストレスが軽減
 - **必須項目の明確化**: データの入力漏れを防ぎ、管理精度が向上
 - **URL保存**: 気に入った返礼品ページにすぐアクセス可能
+
+---
+
+## 6. Google Analytics (GA4) 導入 📊
+
+### 要件
+- ユーザーの利用状況を把握したい
+- 開発中のアクセスは計測したくない（本番環境のみ）
+
+### 実装
+
+**ファイル**: `src/app/layout.tsx`
+
+`next/script` を使用してGA4タグを導入。
+`process.env.NODE_ENV === "production"` の条件分岐を追加し、本番ビルド時のみスクリプトが出力されるように制御。
+
+```tsx
+{process.env.NODE_ENV === "production" && (
+  <>
+    <Script
+      src="https://www.googletagmanager.com/gtag/js?id=G-VQH3CPN8Z1"
+      strategy="afterInteractive"
+    />
+    <Script id="google-analytics" strategy="afterInteractive">
+      {/* GA設定コード */}
+    </Script>
+  </>
+)}
+```
+
+### セキュリティ
+測定ID（`G-VQH3CPN8Z1`）はクライアントサイドで公開される情報であるため、コードへの直書きを採用（セキュリティリスクなし）。

@@ -69,7 +69,7 @@ export default async function RootLayout({
         {process.env.NODE_ENV === "production" && (
           <>
             <Script
-              src="https://www.googletagmanager.com/gtag/js?id=G-YKEHHCHP4Y"
+              src="https://www.googletagmanager.com/gtag/js?id=G-VQH3CPN8Z1"
               strategy="afterInteractive"
             />
             <Script id="google-analytics" strategy="afterInteractive">
@@ -78,7 +78,7 @@ export default async function RootLayout({
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
 
-                gtag('config', 'G-YKEHHCHP4Y');
+                gtag('config', 'G-VQH3CPN8Z1');
               `}
             </Script>
           </>
