@@ -177,7 +177,7 @@ supabase/migrations/20250124000002_add_return_item_categorization.sql
 {process.env.NODE_ENV === "production" && (
   <>
     <Script
-      src="https://www.googletagmanager.com/gtag/js?id=G-YKEHHCHP4Y"
+      src="https://www.googletagmanager.com/gtag/js?id=G-VQH3CPN8Z1"
       strategy="afterInteractive"
     />
     <Script id="google-analytics" strategy="afterInteractive">
@@ -188,4 +188,4 @@ supabase/migrations/20250124000002_add_return_item_categorization.sql
 ```
 
 ### セキュリティ
-測定ID（`G-YKEHHCHP4Y`）はクライアントサイドで公開される情報であるため、コードへの直書きを採用（セキュリティリスクなし）。
+測定ID（`G-VQH3CPN8Z1`）はクライアントサイドで公開される情報であるため、コードへの直書きを採用（セキュリティリスクなし）。
