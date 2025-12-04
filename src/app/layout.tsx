@@ -8,7 +8,6 @@ import { CookieConsentBanner } from "@/components/layout/CookieConsent";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { TrackingProvider } from "@/components/providers/TrackingProvider";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
-import { Amplitude } from "@/components/analytics/Amplitude";
 import { Analytics } from "@vercel/analytics/react";
 import { createClient } from "@/lib/supabase/server";
 
@@ -71,7 +70,6 @@ export default async function RootLayout({
             </AuthProvider>
             <CookieConsentBanner />
             <GoogleAnalytics />
-            <Amplitude />
             <Analytics />
           </TrackingProvider>
         </div>
