@@ -1,7 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Menu, Calculator } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 type HeaderProps = {
   isLoggedIn?: boolean;
@@ -33,8 +40,8 @@ export function Header({ isLoggedIn = false }: HeaderProps) {
           </span>
         </Link>
 
-        {/* ナビゲーション */}
-        <nav className="flex items-center space-x-1 sm:space-x-2">
+        {/* デスクトップナビゲーション */}
+        <nav className="hidden md:flex items-center space-x-1 sm:space-x-2">
           <Button asChild variant="ghost" className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
             <Link href="/simulator">
               シミュレーター
@@ -56,6 +63,52 @@ export function Header({ isLoggedIn = false }: HeaderProps) {
             </>
           )}
         </nav>
+
+        {/* モバイルメニュー */}
+        <div className="md:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-slate-700 dark:text-slate-200">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">メニューを開く</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetHeader>
+                <SheetTitle className="text-left">メニュー</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-4 mt-8">
+                <Button asChild variant="ghost" className="justify-start text-base font-medium">
+                  <Link href="/simulator">
+                    <Calculator className="mr-2 h-5 w-5" />
+                    シミュレーター
+                  </Link>
+                </Button>
+                {!isLoggedIn ? (
+                  <>
+                    <Button asChild variant="ghost" className="justify-start text-base font-medium">
+                      <Link href="/login">
+                        ログイン
+                      </Link>
+                    </Button>
+                    <Button asChild className="justify-start text-base font-medium bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                      <Link href="/signup">
+                        <Sparkles className="mr-2 h-5 w-5" />
+                        無料で始める
+                      </Link>
+                    </Button>
+                  </>
+                ) : (
+                  <Button asChild variant="ghost" className="justify-start text-base font-medium">
+                    <Link href="/dashboard">
+                      ダッシュボード
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );
