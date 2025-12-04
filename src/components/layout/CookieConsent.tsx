@@ -2,6 +2,7 @@
 
 import CookieConsent from "react-cookie-consent";
 import Link from "next/link";
+import { useTracking } from "@/components/providers/TrackingProvider";
 
 /**
  * Cookie同意バナー
@@ -10,15 +11,7 @@ import Link from "next/link";
  * ユーザーに同意または拒否の選択肢を提供
  */
 export function CookieConsentBanner() {
-  const handleAccept = () => {
-    // 将来的にGoogle Analyticsなどの解析ツールを有効化
-    console.log("Cookie consent: accepted");
-  };
-
-  const handleDecline = () => {
-    // 将来的にGoogle Analyticsなどの解析ツールを無効化
-    console.log("Cookie consent: declined");
-  };
+  const { accept, decline } = useTracking();
 
   return (
     <CookieConsent
@@ -57,8 +50,8 @@ export function CookieConsentBanner() {
         cursor: "pointer",
       }}
       buttonWrapperClasses="flex gap-3 items-center"
-      onAccept={handleAccept}
-      onDecline={handleDecline}
+      onAccept={accept}
+      onDecline={decline}
       expires={365}
       overlay
     >
