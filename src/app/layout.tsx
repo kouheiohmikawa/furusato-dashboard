@@ -9,6 +9,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { TrackingProvider } from "@/components/providers/TrackingProvider";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { Amplitude } from "@/components/analytics/Amplitude";
+import { Analytics } from "@vercel/analytics/react";
 import { createClient } from "@/lib/supabase/server";
 
 const geistSans = Geist({
@@ -71,6 +72,7 @@ export default async function RootLayout({
             <CookieConsentBanner />
             <GoogleAnalytics />
             <Amplitude />
+            <Analytics />
           </TrackingProvider>
         </div>
       </body>
