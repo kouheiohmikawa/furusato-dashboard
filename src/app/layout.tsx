@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Script from "next/script";
+import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CookieConsentBanner } from "@/components/layout/CookieConsent";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { TrackingProvider } from "@/components/providers/TrackingProvider";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { createClient } from "@/lib/supabase/server";
 
 const geistSans = Geist({
@@ -59,30 +61,16 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="flex min-h-screen flex-col">
-          <AuthProvider>
-            <Header isLoggedIn={!!user} />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </AuthProvider>
-          <CookieConsentBanner />
+          <TrackingProvider>
+            <AuthProvider>
+              <Header isLoggedIn={!!user} />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </AuthProvider>
+            <CookieConsentBanner />
+            <GoogleAnalytics />
+          </TrackingProvider>
         </div>
-        {process.env.NODE_ENV === "production" && (
-          <>
-            <Script
-              src="https://www.googletagmanager.com/gtag/js?id=G-VQH3CPN8Z1"
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-
-                gtag('config', 'G-VQH3CPN8Z1');
-              `}
-            </Script>
-          </>
-        )}
       </body>
     </html>
   );
